@@ -1,0 +1,4 @@
+data/raw_garmin_dump.json
+.garmin_creds.json
+.venv/
+__pycache__/

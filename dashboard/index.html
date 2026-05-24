@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Golf Stats Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-left">
+        <span class="logo">⛳</span>
+        <h1>Golf Stats</h1>
+      </div>
+      <span id="last-updated" class="last-updated"></span>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <p class="sidebar-title">Filters</p>
+        <div class="filter-group">
+          <label for="filter-course">Course</label>
+          <select id="filter-course"><option value="">All Courses</option></select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-holes">Round Length</label>
+          <select id="filter-holes">
+            <option value="18">18 holes</option>
+            <option value="9">9 holes</option>
+            <option value="">All</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-date-from">From</label>
+          <input type="date" id="filter-date-from">
+        </div>
+        <div class="filter-group">
+          <label for="filter-date-to">To</label>
+          <input type="date" id="filter-date-to">
+        </div>
+        <div id="round-count" class="round-count"></div>
+      </aside>
+
+      <main class="main">
+        <!-- KPI row -->
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-label">Avg Score</div><div class="kpi-value" id="kpi-score">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Avg Putts</div><div class="kpi-value" id="kpi-putts">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Avg GIR</div><div class="kpi-value" id="kpi-gir">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">GIR %</div><div class="kpi-value" id="kpi-gir-pct">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">Fairway %</div><div class="kpi-value" id="kpi-fwy">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">1-Putt %</div><div class="kpi-value" id="kpi-1putt">—</div></div>
+          <div class="kpi-card"><div class="kpi-label">3-Putt %</div><div class="kpi-value" id="kpi-3putt">—</div></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="trends">Trends</button>
+          <button class="tab-btn" data-tab="scoring">Scoring</button>
+          <button class="tab-btn" data-tab="putting">Putting</button>
+          <button class="tab-btn" data-tab="holes">Holes</button>
+          <button class="tab-btn" data-tab="clubs">Clubs</button>
+          <button class="tab-btn" data-tab="scorecards">Scorecards</button>
+        </div>
+
+        <!-- ── Trends ───────────────────────────────────────── -->
+        <div id="tab-trends" class="tab-content active">
+          <div class="chart-grid-2">
+            <div class="chart-card"><div class="chart-title">Score per Round</div><div id="chart-score-trend"></div><div id="summary-score" class="chart-summary"></div></div>
+            <div class="chart-card"><div class="chart-title">Total Putts per Round</div><div id="chart-putts-trend"></div><div id="summary-putts" class="chart-summary"></div></div>
+            <div class="chart-card"><div class="chart-title">Greens in Regulation %</div><div id="chart-gir-trend"></div><div id="summary-gir" class="chart-summary"></div></div>
+            <div class="chart-card"><div class="chart-title">Fairways Hit %</div><div id="chart-fwy-trend"></div><div id="summary-fwy" class="chart-summary"></div></div>
+          </div>
+          <div class="chart-card"><div class="chart-title">Score vs Putts</div><div id="chart-scatter"></div><div id="summary-scatter" class="chart-summary"></div></div>
+        </div>
+
+        <!-- ── Scoring ──────────────────────────────────────── -->
+        <div id="tab-scoring" class="tab-content">
+          <div class="chart-grid-2">
+            <div class="chart-card">
+              <div class="chart-title">Scoring Summary</div>
+              <div id="chart-scoring-donut"></div>
+              <div id="summary-scoring-donut" class="chart-summary"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Par 3 / 4 / 5 Breakdown</div>
+              <div id="chart-par-breakdown"></div>
+              <div id="summary-par-breakdown" class="chart-summary"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Scoring by Round</div>
+            <div id="chart-scoring-stacked"></div>
+            <div id="summary-scoring-stacked" class="chart-summary"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Scoring Distribution</div>
+            <div id="chart-score-dist"></div>
+            <div id="summary-score-dist" class="chart-summary"></div>
+          </div>
+        </div>
+
+        <!-- ── Putting ──────────────────────────────────────── -->
+        <div id="tab-putting" class="tab-content">
+          <div class="chart-grid-2">
+            <div class="chart-card">
+              <div class="chart-title">Putting Summary</div>
+              <div id="chart-putting-donut"></div>
+              <div id="summary-putting-donut" class="chart-summary"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">1-Putt % by Round</div>
+              <div id="chart-1putt-trend"></div>
+              <div id="summary-1putt-trend" class="chart-summary"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">3-Putt Free Streak</div>
+            <div id="chart-streak"></div>
+            <div id="summary-streak" class="chart-summary"></div>
+          </div>
+          <div class="chart-grid-2">
+            <div class="chart-card"><div class="chart-title">Avg Putts by Hole</div><div id="chart-hole-putts"></div><div id="summary-hole-putts" class="chart-summary"></div></div>
+            <div class="chart-card"><div class="chart-title">Putts per Round Trend</div><div id="chart-putts-trend-2"></div></div>
+          </div>
+        </div>
+
+        <!-- ── Holes ────────────────────────────────────────── -->
+        <div id="tab-holes" class="tab-content">
+          <div class="chart-grid-2">
+            <div class="chart-card"><div class="chart-title">Avg Score vs Par by Hole</div><div id="chart-hole-score"></div><div id="summary-hole-score" class="chart-summary"></div></div>
+            <div class="chart-card"><div class="chart-title">GIR % by Hole</div><div id="chart-hole-gir"></div><div id="summary-hole-gir" class="chart-summary"></div></div>
+            <div class="chart-card"><div class="chart-title">Fairway Miss Direction</div><div id="chart-miss-direction"></div><div id="summary-miss-direction" class="chart-summary"></div></div>
+            <div class="chart-card"><div class="chart-title">Penalties by Hole</div><div id="chart-hole-penalties"></div></div>
+          </div>
+        </div>
+
+        <!-- ── Clubs ────────────────────────────────────────── -->
+        <div id="tab-clubs" class="tab-content">
+          <div class="chart-card">
+            <div class="chart-title">Distance Distribution by Club</div>
+            <div id="chart-club-box"></div>
+            <div id="summary-club-box" class="chart-summary"></div>
+          </div>
+          <div class="chart-grid-2">
+            <div class="chart-card">
+              <div class="chart-title">Club Distance Stats</div>
+              <div id="club-distance-table"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Shot Distance by Lie</div>
+              <div id="chart-lie-distance"></div>
+              <div id="summary-lie-distance" class="chart-summary"></div>
+            </div>
+          </div>
+          <div class="chart-grid-2">
+            <div class="chart-card"><div class="chart-title">Club Usage Frequency</div><div id="chart-club-usage"></div><div id="summary-club-usage" class="chart-summary"></div></div>
+            <div class="chart-card"><div class="chart-title">Shot Lie Distribution</div><div id="chart-lie-dist"></div></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Driving Distance Trend</div>
+            <div id="chart-drive-trend"></div>
+            <div id="summary-drive-trend" class="chart-summary"></div>
+          </div>
+        </div>
+
+        <!-- ── Scorecards ───────────────────────────────────── -->
+        <div id="tab-scorecards" class="tab-content">
+          <div class="filter-group" style="max-width:520px;margin-bottom:20px">
+            <label for="scorecard-selector">Select Round</label>
+            <select id="scorecard-selector" style="width:100%"></select>
+          </div>
+          <div id="scorecard-table"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
