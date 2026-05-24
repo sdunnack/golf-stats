@@ -757,34 +757,51 @@ function renderScorecard(actId) {
   const allHaveYd   = holes.every(h=>h.yardage!=null);
   const totalYards  = allHaveYd ? holes.reduce((a,h)=>a+h.yardage,0) : null;
 
+  const vsPar     = totalPar != null ? totalScore - totalPar : null;
+  const vsParStr  = vsPar != null ? (vsPar > 0 ? `+${vsPar}` : `${vsPar}`) : null;
+  const vsParCls  = vsPar != null ? (vsPar < 0 ? 'birdie' : vsPar > 0 ? 'bogey' : '') : '';
+
+  const holeHeaders = holes.map(h => `<th>${h.hole}</th>`).join('');
+  const parRow      = holes.map(h => `<td>${h.par??'—'}</td>`).join('');
+  const scoreRow    = holes.map(h => {
+    const diff = h.par != null && h.score != null ? h.score - h.par : null;
+    const cls  = diff != null ? (diff < 0 ? 'birdie' : diff === 0 ? '' : diff === 1 ? 'bogey' : 'double-plus') : '';
+    return `<td class="score-cell ${cls}"><strong>${h.score??'—'}</strong></td>`;
+  }).join('');
+  const puttsRow    = holes.map(h => `<td>${h.putts??'—'}</td>`).join('');
+  const girRow      = holes.map(h => `<td>${fmtBool(h.gir)}</td>`).join('');
+  const fwyRow      = holes.map(h => `<td>${fmtBool(h.fairway_hit)}</td>`).join('');
+  const penRow      = holes.map(h => `<td>${h.penalties??0}</td>`).join('');
+  const ydRow       = holes.map(h => `<td>${h.yardage??'—'}</td>`).join('');
+
   document.getElementById('scorecard-table').innerHTML = `
     <div class="scorecard-wrap">
       <table class="scorecard-table">
-        <thead><tr>
-          <th>Hole</th><th>Par</th><th>Score</th><th>Putts</th>
-          <th>GIR</th><th>Fairway</th><th>Penalties</th><th>Yards</th>
-        </tr></thead>
+        <thead><tr><th class="stat-label-col"></th>${holeHeaders}</tr></thead>
         <tbody>
-          ${holes.map(h => {
-            const diff = h.par != null && h.score != null ? h.score - h.par : null;
-            const cls  = diff != null ? (diff < 0 ? 'birdie' : diff === 0 ? '' : diff === 1 ? 'bogey' : 'double-plus') : '';
-            return `<tr>
-              <td>${h.hole}</td><td>${h.par??'—'}</td>
-              <td class="score-cell ${cls}"><strong>${h.score}</strong></td>
-              <td>${h.putts??'—'}</td>
-              <td>${fmtBool(h.gir)}</td><td>${fmtBool(h.fairway_hit)}</td>
-              <td>${h.penalties??0}</td><td>${h.yardage??'—'}</td>
-            </tr>`;
-          }).join('')}
-          <tr class="totals-row">
-            <td>TOTAL</td><td>${totalPar??'—'}</td><td><strong>${totalScore}</strong></td>
-            <td>${totalPutts}</td>
-            <td>${girTotal>0?`${girCount}/${girTotal}`:'—'}</td>
-            <td>${fwyTotal>0?`${fwyHit}/${fwyTotal}`:'—'}</td>
-            <td>${totalPen}</td><td>${totalYards??'—'}</td>
-          </tr>
+          <tr><td class="stat-label">Par</td>${parRow}</tr>
+          <tr><td class="stat-label">Score</td>${scoreRow}</tr>
+          <tr><td class="stat-label">Putts</td>${puttsRow}</tr>
+          <tr><td class="stat-label">GIR</td>${girRow}</tr>
+          <tr><td class="stat-label">Fairway</td>${fwyRow}</tr>
+          <tr><td class="stat-label">Penalties</td>${penRow}</tr>
+          ${allHaveYd ? `<tr><td class="stat-label">Yards</td>${ydRow}</tr>` : ''}
         </tbody>
       </table>
+    </div>
+    <div class="scorecard-summary">
+      <div class="sc-sum-item">
+        <span class="sc-sum-label">Score</span>
+        <span class="sc-sum-value">${totalScore}${vsParStr != null ? ` <span class="sc-vs-par ${vsParCls}">(${vsParStr})</span>` : ''}</span>
+      </div>
+      <div class="sc-sum-item">
+        <span class="sc-sum-label">Putts</span>
+        <span class="sc-sum-value">${totalPutts}</span>
+      </div>
+      ${girTotal > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">GIR</span><span class="sc-sum-value">${girCount}/${girTotal}</span></div>` : ''}
+      ${fwyTotal > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Fairways</span><span class="sc-sum-value">${fwyHit}/${fwyTotal}</span></div>` : ''}
+      ${totalPen > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Penalties</span><span class="sc-sum-value">${totalPen}</span></div>` : ''}
+      ${totalYards != null ? `<div class="sc-sum-item"><span class="sc-sum-label">Yards</span><span class="sc-sum-value">${totalYards.toLocaleString()}</span></div>` : ''}
     </div>`;
 }
 
