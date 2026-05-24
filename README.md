@@ -1,4 +1,4 @@
-# Garmin Golf Tracker
+# Golf Stats Tracker
 
 Personal golf stats dashboard — pulls data from Garmin Connect (including CT10 club sensor data)
 and visualizes it in a local JavaScript dashboard stored in a JSON file you own.
