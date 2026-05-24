@@ -110,9 +110,12 @@ async function loadData() {
       allShots.push({
         activity_id:    r.activity_id,
         date:           r.date,
-        club_name:      s.club_name || s.club || 'Unknown',
+        hole:           s.hole,
+        shot_number:    s.shot_number,
+        club_name:      s.club_name || s.club || null,
         distance_yards: s.distance_yards,
         lie:            s.lie,
+        shot_type:      s.shot_type,
       });
     }
   }
@@ -131,8 +134,7 @@ function applyFilters() {
     if (holes === '9'  && r.holes_played !== 9)  return false;
     if (dateFrom && r.date < dateFrom) return false;
     if (dateTo   && r.date > dateTo)   return false;
-    if (!r.score || r.score <= 0)             return false;
-    if (!r.putts || r.putts <= 0)             return false;
+    if (!r.score || r.score <= 0)               return false;
     if (!r.holes_played || r.holes_played <= 0) return false;
     return true;
   }).sort((a, b) => a.date.localeCompare(b.date));
@@ -774,6 +776,12 @@ function renderScorecard(actId) {
   const penRow      = holes.map(h => `<td>${h.penalties??0}</td>`).join('');
   const ydRow       = holes.map(h => `<td>${h.yardage??'—'}</td>`).join('');
 
+  const roundShots = allShots.filter(s => s.activity_id === actId);
+  const teeShots   = roundShots.filter(s => s.shot_type === 'TEE' || s.lie === 'TeeBox');
+  const longestDrive = teeShots.length
+    ? Math.round(Math.max(...teeShots.map(s => s.distance_yards ?? 0)))
+    : null;
+
   document.getElementById('scorecard-table').innerHTML = `
     <div class="scorecard-wrap">
       <table class="scorecard-table">
@@ -802,6 +810,7 @@ function renderScorecard(actId) {
       ${fwyTotal > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Fairways</span><span class="sc-sum-value">${fwyHit}/${fwyTotal}</span></div>` : ''}
       ${totalPen > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Penalties</span><span class="sc-sum-value">${totalPen}</span></div>` : ''}
       ${totalYards != null ? `<div class="sc-sum-item"><span class="sc-sum-label">Yards</span><span class="sc-sum-value">${totalYards.toLocaleString()}</span></div>` : ''}
+      ${longestDrive != null && longestDrive > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Longest Drive</span><span class="sc-sum-value">${longestDrive} yds</span></div>` : ''}
     </div>`;
 }
 
@@ -810,6 +819,10 @@ function setupFilters() {
   const courses = [...new Set(allRounds.map(r=>r.course))].sort();
   const sel = document.getElementById('filter-course');
   courses.forEach(c => { const o=document.createElement('option'); o.value=o.textContent=c; sel.appendChild(o); });
+  const defaultCourse = courses.find(c => c.toLowerCase().includes('manchester'));
+  if (defaultCourse) sel.value = defaultCourse;
+
+  document.getElementById('filter-holes').value = '18';
 
   const dates = allRounds.map(r=>r.date).filter(Boolean).sort();
   if (dates.length) {
