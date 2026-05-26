@@ -19,10 +19,128 @@ from pathlib import Path
 
 import garminconnect
 
-DATA_FILE = Path(__file__).parent.parent / "data" / "rounds.json"
-RAW_DUMP_FILE = Path(__file__).parent.parent / "data" / "raw_garmin_dump.json"
+BASE_DIR = Path(__file__).parent.parent / "data"
+DATA_FILE = BASE_DIR / "rounds.json"
+HOLES_FILE = BASE_DIR / "holes.json"
+SHOTS_FILE = BASE_DIR / "shots.json"
+RAW_DUMP_FILE = BASE_DIR / "raw_garmin_dump.json"
+COURSES_FILE = BASE_DIR / "courses.json"
+CLUBS_FILE = BASE_DIR / "clubs.json"
 CREDS_FILE = Path(__file__).parent.parent / ".garmin_creds.json"
 TOKENSTORE_DIR = Path.home() / ".garminconnect"
+
+
+# ---------------------------------------------------------------------------
+# Reference data helpers (courses.json, clubs.json)
+# ---------------------------------------------------------------------------
+
+
+def load_course_lookup():
+    """
+    Returns {"by_id": {garmin_course_id: (canonical_name, hole_map)},
+             "by_name": {name_or_alias_lower: (canonical_name, hole_map)}}
+    Lookup priority: by_id (unambiguous) then by_name/alias (fallback).
+    """
+    if not COURSES_FILE.exists():
+        return {"by_id": {}, "by_name": {}}
+    with open(COURSES_FILE) as f:
+        data = json.load(f)
+    by_id, by_name = {}, {}
+    for course in data.get("courses", []):
+        name = course.get("name")
+        if not name:
+            continue
+        hole_map = {}
+        for h in course.get("holes", []):
+            num = h.get("hole")
+            if num is not None:
+                hole_map[num] = {"par": h.get("par"), "yardage": h.get("yardage")}
+        entry = (name, hole_map)
+        gid = course.get("garmin_course_id")
+        if gid is not None:
+            by_id[int(gid)] = entry
+        by_name[name.lower()] = entry
+        for alias in course.get("aliases") or []:
+            by_name[alias.lower()] = entry
+    return {"by_id": by_id, "by_name": by_name}
+
+
+def find_course(course_id, garmin_name, lookup):
+    """Returns (canonical_name, hole_map) or (None, {}). Tries by_id first."""
+    if course_id is not None:
+        result = lookup["by_id"].get(int(course_id))
+        if result:
+            return result
+    if garmin_name:
+        result = lookup["by_name"].get(garmin_name.lower())
+        if result:
+            return result
+    return (None, {})
+
+
+def load_club_type_names():
+    """Return {club_type_id (int): type_name_str} from clubs.json."""
+    if not CLUBS_FILE.exists():
+        return {}
+    with open(CLUBS_FILE) as f:
+        data = json.load(f)
+    return {int(k): v for k, v in data.get("club_type_names", {}).items()}
+
+
+def upsert_clubs(club_map):
+    """Merge new club details into clubs.json, preserving existing entries."""
+    if not club_map or not CLUBS_FILE.exists():
+        return
+    with open(CLUBS_FILE) as f:
+        clubs_data = json.load(f)
+    existing = {c["id"]: c for c in clubs_data.get("clubs", [])}
+    changed = False
+    for cid, cd in club_map.items():
+        if cid not in existing:
+            existing[cid] = {
+                "id": cid,
+                "club_type_id": cd.get("clubTypeId"),
+                "name": cd.get("name"),
+                "model": cd.get("model"),
+                "retired": cd.get("retired", False),
+            }
+            changed = True
+        else:
+            # Update mutable fields that may have changed
+            entry = existing[cid]
+            for src_key, dst_key in (
+                ("name", "name"),
+                ("model", "model"),
+                ("retired", "retired"),
+            ):
+                new_val = cd.get(src_key)
+                if new_val is not None and entry.get(dst_key) != new_val:
+                    entry[dst_key] = new_val
+                    changed = True
+    if changed:
+        clubs_data["clubs"] = sorted(existing.values(), key=lambda c: c["id"])
+        with open(CLUBS_FILE, "w") as f:
+            json.dump(clubs_data, f, indent=2)
+
+
+def _parse_nine_stats(stats):
+    """Normalize a frontNine/backNine stats dict from Garmin scorecardStats."""
+    if not stats or not isinstance(stats, dict):
+        return None
+    holes_played = stats.get("holesPlayed", 0)
+    if not holes_played:
+        return None
+    return {
+        "holes_played": holes_played,
+        "strokes": stats.get("strokes"),
+        "putts": stats.get("putts"),
+        "gir": stats.get("greensInRegulation"),
+        "birdies": stats.get("holesBirdie"),
+        "pars": stats.get("holesPar"),
+        "bogeys": stats.get("holesBogey"),
+        "doubles_plus": stats.get("holesOverBogey"),
+        "eagles": stats.get("holesEagle"),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -389,14 +507,20 @@ def parse_shot(shot_data, club_map=None):
     return {
         "shot_number": shot_data.get("shotOrder"),
         "club_id": club_id,
-        "club_type_id": club_info.get("clubTypeId"),   # numeric Garmin club type
-        "club_name": club_info.get("name"),             # custom name e.g. "The Avenger"
-        "club_model": club_info.get("model"),           # e.g. "Taylormade Qi35"
+        "club_type_id": club_info.get("clubTypeId"),  # numeric Garmin club type
+        "club_name": club_info.get("name"),  # custom name e.g. "The Avenger"
+        "club_model": club_info.get("model"),  # e.g. "Taylormade Qi35"
         "distance_yards": round(meters * 1.09361, 1) if meters is not None else None,
-        "lie": safe_get(shot_data, "startLoc", "lie"),  # "TeeBox", "Fairway", "Rough", "Green", etc.
-        "shot_type": shot_data.get("shotType"),          # "TEE", "APPROACH", "CHIP", "PUTT", etc.
+        "lie": safe_get(
+            shot_data, "startLoc", "lie"
+        ),  # "TeeBox", "Fairway", "Rough", "Green", etc.
+        "shot_type": shot_data.get(
+            "shotType"
+        ),  # "TEE", "APPROACH", "CHIP", "PUTT", etc.
         "lat": safe_get(shot_data, "startLoc", "lat"),
         "lon": safe_get(shot_data, "startLoc", "lon"),
+        "end_lat": safe_get(shot_data, "endLoc", "lat"),
+        "end_lon": safe_get(shot_data, "endLoc", "lon"),
     }
 
 
@@ -422,6 +546,7 @@ def fetch_shot_data(client, scorecard_id):
             if not club_map:
                 for cd in (raw.get("clubDetails") or []):
                     club_map[cd["id"]] = cd
+                upsert_clubs(club_map)
             hole_entries = raw.get("holeShots") or []
         elif isinstance(raw, list):
             hole_entries = raw
@@ -453,6 +578,12 @@ def parse_activity(activity, scorecard_detail):
         or activity.get("activityName", "Unknown"),
         "duration_seconds": activity.get("duration"),
         "distance_meters": activity.get("distance"),
+        "course_id": None,
+        "tee_box": None,
+        "tee_box_rating": None,
+        "tee_box_slope": None,
+        "front_nine": None,
+        "back_nine": None,
         "totals": {},
         "holes": [],
         "shots": [],  # shot-by-shot club data (populated if CT10 data present)
@@ -571,6 +702,32 @@ def parse_activity(activity, scorecard_detail):
     if shots_raw:
         round_record["shots"] = [parse_shot(s) for s in shots_raw]
 
+    # ── Tee box, course ID & round stats ──────────────────────────────────────
+    sc = scorecard_detail.get("scorecard") or {}
+    course_id = sc.get("courseGlobalId")
+    round_record["course_id"] = course_id
+    round_record["tee_box"] = sc.get("teeBox")
+    round_record["tee_box_rating"] = sc.get("teeBoxRating")
+    round_record["tee_box_slope"] = sc.get("teeBoxSlope")
+
+    sc_stats = scorecard_detail.get("scorecardStats") or {}
+    round_record["front_nine"] = _parse_nine_stats(sc_stats.get("frontNine"))
+    round_record["back_nine"] = _parse_nine_stats(sc_stats.get("backNine"))
+
+    # ── Par / yardage from courses.json (by ID first, then name/alias) ────────
+    cl = load_course_lookup()
+    canonical_name, course_holes = find_course(course_id, round_record["course"], cl)
+    if canonical_name:
+        round_record["course"] = canonical_name
+    for hole in round_record["holes"]:
+        h_num = hole.get("hole")
+        if h_num in course_holes:
+            ref = course_holes[h_num]
+            if hole.get("par") is None:
+                hole["par"] = ref.get("par")
+            if hole.get("yardage") is None:
+                hole["yardage"] = ref.get("yardage")
+
     return round_record
 
 
@@ -603,16 +760,50 @@ def prune_rounds_without_scores(data):
 
 def load_existing_rounds():
     if DATA_FILE.exists():
+        data = {}
         with open(DATA_FILE) as f:
-            return json.load(f)
+            data = json.load(f)
+        holes_by_id = {}
+        if HOLES_FILE.exists():
+            with open(HOLES_FILE) as f:
+                for h in json.load(f).get("holes", []):
+                    aid = h.pop("activity_id", None)
+                    if aid:
+                        holes_by_id.setdefault(aid, []).append(h)
+        shots_by_id = {}
+        if SHOTS_FILE.exists():
+            with open(SHOTS_FILE) as f:
+                for s in json.load(f).get("shots", []):
+                    aid = s.pop("activity_id", None)
+                    if aid:
+                        shots_by_id.setdefault(aid, []).append(s)
+        for r in data["rounds"]:
+            aid = r["activity_id"]
+            r["holes"] = holes_by_id.get(aid, [])
+            r["shots"] = shots_by_id.get(aid, [])
+        return data
     return {"rounds": [], "last_updated": None}
 
 
 def save_rounds(data):
     data["last_updated"] = datetime.now().isoformat()
+    all_holes, all_shots = [], []
+    rounds_clean = []
+    for r in data["rounds"]:
+        aid = r["activity_id"]
+        for h in r.pop("holes", []):
+            all_holes.append({"activity_id": aid, **h})
+        for s in r.pop("shots", []):
+            all_shots.append({"activity_id": aid, **s})
+        rounds_clean.append(r)
+    data["rounds"] = rounds_clean
     with open(DATA_FILE, "w") as f:
         json.dump(data, f, indent=2, default=str)
-    print(f"Saved {len(data['rounds'])} round(s) to {DATA_FILE}")
+    with open(HOLES_FILE, "w") as f:
+        json.dump({"holes": all_holes}, f, indent=2, default=str)
+    with open(SHOTS_FILE, "w") as f:
+        json.dump({"shots": all_shots}, f, indent=2, default=str)
+    print(f"Saved {len(rounds_clean)} round(s) to {DATA_FILE}")
 
 
 def merge_rounds(existing_data, new_rounds):

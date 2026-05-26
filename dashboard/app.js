@@ -33,6 +33,8 @@ function L(overrides = {}) {
 let allRounds = [], allHoles = [], allShots = [];
 let filteredRounds = [], filteredHoles = [], filteredShots = [];
 let lastUpdated = null;
+let shotsLoaded = false;
+let shotsLoading = null; // pending Promise while fetch is in-flight
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 const avg    = arr => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : null;
@@ -66,11 +68,20 @@ function catAxis(overrides = {}) {
 
 // ── Load & parse ──────────────────────────────────────────────────────────────
 async function loadData() {
-  const res  = await fetch('../data/rounds.json');
-  const data = await res.json();
-  lastUpdated = data.last_updated || null;
+  const [roundsRes, holesRes] = await Promise.all([
+    fetch('../data/rounds.json'),
+    fetch('../data/holes.json'),
+  ]);
+  const [roundsData, holesData] = await Promise.all([roundsRes.json(), holesRes.json()]);
+  lastUpdated = roundsData.last_updated || null;
 
-  for (const r of data.rounds) {
+  // Index holes by activity_id for fast lookup
+  const holesById = {};
+  for (const h of holesData.holes || []) {
+    (holesById[h.activity_id] ||= []).push(h);
+  }
+
+  for (const r of roundsData.rounds) {
     const t = r.totals || {};
     allRounds.push({
       activity_id:       r.activity_id,
@@ -84,9 +95,14 @@ async function loadData() {
       fairways_possible: t.fairways_possible?? null,
       fairway_pct:       t.fairway_pct      ?? null,
       holes_played:      t.holes_played     ?? null,
+      tee_box:           r.tee_box          ?? null,
+      tee_box_rating:    r.tee_box_rating   ?? null,
+      tee_box_slope:     r.tee_box_slope    ?? null,
+      front_nine:        r.front_nine       ?? null,
+      back_nine:         r.back_nine        ?? null,
     });
 
-    for (const h of r.holes || []) {
+    for (const h of holesById[r.activity_id] || []) {
       if (h.score == null) continue;
       allHoles.push({
         activity_id:    r.activity_id,
@@ -102,23 +118,46 @@ async function loadData() {
         penalties:      h.penalties ?? 0,
         yardage:        h.yardage,
         sand_shots:     h.sand_shots,
+        end_lat:        h.end_lat  ?? null,
+        end_lon:        h.end_lon  ?? null,
       });
     }
+  }
+}
 
-    for (const s of r.shots || []) {
+async function loadShots() {
+  if (shotsLoaded) return;
+  // Deduplicate concurrent calls — reuse in-flight promise if one exists
+  if (shotsLoading) return shotsLoading;
+  shotsLoading = (async () => {
+    const res  = await fetch('../data/shots.json');
+    const data = await res.json();
+    const ids  = new Set(filteredRounds.map(r => r.activity_id));
+    for (const s of data.shots || []) {
       if (s.shot_number == null) continue;
       allShots.push({
-        activity_id:    r.activity_id,
-        date:           r.date,
+        activity_id:    s.activity_id,
+        date:           (allRounds.find(r => r.activity_id === s.activity_id) || {}).date ?? null,
         hole:           s.hole,
         shot_number:    s.shot_number,
+        club_id:        s.club_id        ?? null,
+        club_type_id:   s.club_type_id   ?? null,
+        club_type_name: s.club_type_name ?? null,
         club_name:      s.club_name || s.club || null,
         distance_yards: s.distance_yards,
         lie:            s.lie,
         shot_type:      s.shot_type,
+        lat:            s.lat   ?? null,
+        lon:            s.lon   ?? null,
+        end_lat:        s.end_lat ?? null,
+        end_lon:        s.end_lon ?? null,
       });
     }
-  }
+    filteredShots = allShots.filter(s => ids.has(s.activity_id));
+    shotsLoaded  = true;
+    shotsLoading = null;
+  })();
+  return shotsLoading;
 }
 
 // ── Filters ───────────────────────────────────────────────────────────────────
@@ -201,7 +240,8 @@ function trendLine(chartId, summaryId, dates, vals, label, color, yRange = null)
 function renderTrends() {
   const dates = filteredRounds.map(r => r.date);
   trendLine('chart-score-trend', 'summary-score', dates, filteredRounds.map(r => r.score),       'Score',  C_GREEN);
-  trendLine('chart-putts-trend', 'summary-putts', dates, filteredRounds.map(r => r.putts),       'Putts',  C_BLUE);
+  const puttsRounds = filteredRounds.filter(r => r.putts != null && r.putts > 0);
+  trendLine('chart-putts-trend', 'summary-putts', puttsRounds.map(r => r.date), puttsRounds.map(r => r.putts), 'Putts', C_BLUE);
   trendLine('chart-gir-trend',   'summary-gir',   dates, filteredRounds.map(r => r.gir_pct),     'GIR %',  C_TEAL,   [0, 100]);
   trendLine('chart-fwy-trend',   'summary-fwy',   dates, filteredRounds.map(r => r.fairway_pct), 'FWY %',  C_PURPLE, [0, 100]);
 
@@ -423,9 +463,7 @@ function renderPutting() {
     noData('chart-hole-putts', 'No putt data');
   }
 
-  // Putts per round (duplicate trend for context)
-  trendLine('chart-putts-trend-2', null,
-    filteredRounds.map(r => r.date), filteredRounds.map(r => r.putts), 'Putts', C_BLUE);
+  // Putts per round trend handled in Trends tab
 }
 
 function renderStreakChart() {
@@ -622,20 +660,24 @@ function renderClubs() {
   const valid = filteredShots.filter(s => s.distance_yards != null && s.distance_yards > 0);
 
   if (!valid.length) {
-    ['chart-club-box','chart-club-usage','chart-lie-dist','chart-lie-distance','chart-drive-trend']
+    ['chart-club-box','chart-club-usage','chart-lie-distance','chart-drive-trend']
       .forEach(id => noData(id, 'No club/shot data available'));
-    document.getElementById('club-distance-table').innerHTML =
-      '<div class="no-data">Populates when CT10 sensor data is present.</div>';
     return;
   }
 
   const clubs = [...new Set(valid.map(s => s.club_name))].filter(Boolean);
 
-  // Box plot by club
+  // Box plot by club — hover shows key stats
   Plotly.newPlot('chart-club-box',
     clubs.map(club => {
       const dists = valid.filter(s => s.club_name === club).map(s => s.distance_yards);
-      return { x: dists.map(()=>club), y: dists, type: 'box', name: club, boxpoints: 'outliers' };
+      const clubAvg = avg(dists)?.toFixed(1);
+      const clubMed = median(dists)?.toFixed(1);
+      const clubSd  = stddev(dists)?.toFixed(1);
+      return {
+        x: dists.map(()=>club), y: dists, type: 'box', name: club, boxpoints: 'outliers',
+        hovertemplate: `<b>%{x}</b><br>Median: ${clubMed} yds<br>Avg: ${clubAvg} yds<br>Std Dev: ${clubSd} yds<br>Shots: ${dists.length}<extra></extra>`,
+      };
     }),
     L({ height: 320, showlegend: false,
       xaxis: { ...AX, type: 'category' },
@@ -650,26 +692,6 @@ function renderClubs() {
 
   const longest = clubStats[0];
   setSummary('summary-club-box', `Longest median club: ${longest.club} at ${longest.med?.toFixed(1)} yards.`);
-
-  // Enhanced stats table
-  document.getElementById('club-distance-table').innerHTML = `
-    <table class="club-table">
-      <thead>
-        <tr><th>Club</th><th>Avg</th><th>Median</th><th>Std Dev</th><th>Min</th><th>Max</th><th>Shots</th></tr>
-      </thead>
-      <tbody>
-        ${clubStats.map(s => `
-          <tr>
-            <td>${s.club}</td>
-            <td>${s.avg?.toFixed(1) ?? '—'}</td>
-            <td><strong>${s.med?.toFixed(1) ?? '—'}</strong></td>
-            <td>${s.sd?.toFixed(1) ?? '—'}</td>
-            <td>${s.min?.toFixed(0) ?? '—'}</td>
-            <td>${s.max?.toFixed(0) ?? '—'}</td>
-            <td>${s.count}</td>
-          </tr>`).join('')}
-      </tbody>
-    </table>`;
 
   // Shot distance by lie (box plot)
   const lies = [...new Set(valid.map(s => s.lie))].filter(l => l && l !== 'Unknown');
@@ -700,18 +722,6 @@ function renderClubs() {
     hovertemplate: '%{x}: %{y} shots<extra></extra>',
   }], L({ showlegend: false, xaxis: catAxis() }), CFG);
   setSummary('summary-club-usage', `Most-used: ${usage[0].c} (${usage[0].n} shots).`);
-
-  // Lie distribution donut
-  const lieCount = {};
-  valid.filter(s => s.lie).forEach(s => { lieCount[s.lie] = (lieCount[s.lie]||0)+1; });
-  if (Object.keys(lieCount).length) {
-    Plotly.newPlot('chart-lie-dist', [{
-      labels: Object.keys(lieCount), values: Object.values(lieCount),
-      type: 'pie', hole: 0.42,
-    }], L({ height: 220, showlegend: true, legend: { orientation: 'v', x:1, y:0.5 } }), CFG);
-  } else {
-    noData('chart-lie-dist', 'No lie data');
-  }
 
   // Driving distance trend (TeeBox shots averaged per round)
   const teeShots = valid.filter(s => s.lie === 'TeeBox');
@@ -835,11 +845,16 @@ function setupFilters() {
 
   document.getElementById('scorecard-selector').addEventListener('change', e => renderScorecard(e.target.value));
 
-  document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', async () => {
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+    if (btn.dataset.tab === 'clubs' || btn.dataset.tab === 'scorecards') {
+      await loadShots();
+      if (btn.dataset.tab === 'clubs') renderClubs();
+      else renderScorecardSelector();
+    }
   }));
 }
 
