@@ -1,0 +1,198 @@
+{
+  "club_type_names": {
+    "0": "Unknown",
+    "1": "Driver",
+    "2": "2-Wood",
+    "3": "3-Wood",
+    "4": "4-Wood",
+    "5": "5-Wood",
+    "6": "6-Wood",
+    "7": "7-Wood",
+    "8": "Hybrid",
+    "9": "1-Iron",
+    "10": "2-Iron",
+    "11": "3-Iron",
+    "12": "4-Iron",
+    "13": "5-Iron",
+    "14": "6-Iron",
+    "15": "7-Iron",
+    "16": "8-Iron",
+    "17": "9-Iron",
+    "18": "Pitching Wedge",
+    "19": "Approach Wedge",
+    "20": "Sand Wedge",
+    "21": "Lob Wedge",
+    "22": "Chipper",
+    "23": "Putter"
+  },
+  "clubs": [
+    {
+      "id": 0,
+      "club_type_id": 0,
+      "name": null,
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 40216909,
+      "club_type_id": 1,
+      "name": null,
+      "model": "Taylormade Stealth 2",
+      "retired": true
+    },
+    {
+      "id": 40216916,
+      "club_type_id": 14,
+      "name": null,
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 40216917,
+      "club_type_id": 15,
+      "name": "cobra 6",
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 40216918,
+      "club_type_id": 16,
+      "name": "cobra 7",
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 40216919,
+      "club_type_id": 17,
+      "name": "cobra 8",
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 40216920,
+      "club_type_id": 18,
+      "name": "cobra 9",
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 40216921,
+      "club_type_id": 19,
+      "name": "cobra pw ",
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 40216922,
+      "club_type_id": 20,
+      "name": "cobra gap",
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 41673598,
+      "club_type_id": 23,
+      "name": null,
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 536137541,
+      "club_type_id": 22,
+      "name": "chip and run",
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 552417288,
+      "club_type_id": 2,
+      "name": null,
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 564356956,
+      "club_type_id": 21,
+      "name": "56* CO",
+      "model": "Cleveland One",
+      "retired": false
+    },
+    {
+      "id": 570395710,
+      "club_type_id": 7,
+      "name": "rescue+",
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 611678380,
+      "club_type_id": 8,
+      "name": null,
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 617621680,
+      "club_type_id": 20,
+      "name": "50* 790",
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 617621870,
+      "club_type_id": 19,
+      "name": "Pitcher",
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 617622007,
+      "club_type_id": 15,
+      "name": "Puncher",
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 617622095,
+      "club_type_id": 16,
+      "name": "Ol' Reliable",
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 617622250,
+      "club_type_id": 17,
+      "name": "Par 3 killer",
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 617622372,
+      "club_type_id": 18,
+      "name": "Extra juice",
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 631191051,
+      "club_type_id": 20,
+      "name": "52* MG1",
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 631191122,
+      "club_type_id": 22,
+      "name": "58* MG1",
+      "model": null,
+      "retired": true
+    },
+    {
+      "id": 632560216,
+      "club_type_id": 8,
+      "name": "Little Engine",
+      "model": null,
+      "retired": false
+    }
+  ]
+}
