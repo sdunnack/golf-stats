@@ -2125,24 +2125,6 @@
       "_raw_available": true
     },
     {
-      "activity_id": "15963679957",
-      "date": "2024-06-17",
-      "course": "Manchester Country Club",
-      "duration_seconds": 19583.3515625,
-      "distance_meters": 14274.849609375,
-      "totals": {
-        "holes_played": 18,
-        "score": 61,
-        "putts": 27,
-        "gir_count": 15,
-        "gir_pct": 83.3,
-        "fairways_hit": 9,
-        "fairways_possible": 14,
-        "fairway_pct": 64.3
-      },
-      "_raw_available": true
-    },
-    {
       "activity_id": "15929833180",
       "date": "2024-06-15",
       "course": "Manchester Country Club",

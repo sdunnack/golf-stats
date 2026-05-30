@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Golf Stats Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 </head>
@@ -70,21 +73,11 @@
 
           <!-- ── Overview ── -->
           <h3 class="section-title">Overview</h3>
-          <div class="chart-grid-2">
-            <div class="chart-card">
-              <div class="chart-title">Score Over Visits</div>
-              <div class="chart-desc">Your total score each time you've played this course, oldest to newest. The dotted line is a
-                3-round moving average — a downward slope means you're improving here.</div>
-              <div id="chart-c-score-trend"></div>
-              <div id="summary-c-score-trend" class="chart-summary"></div>
-            </div>
-            <div class="chart-card">
-              <div class="chart-title">Score vs Par Over Visits</div>
-              <div class="chart-desc">Strokes over (or under) par per round at this course. Requires hole par data for the course;
-                falls back to a note when unavailable.</div>
-              <div id="chart-c-vspar-trend"></div>
-              <div id="summary-c-vspar-trend" class="chart-summary"></div>
-            </div>
+          <div class="chart-card">
+            <div class="chart-title">Score &amp; Score vs Par Over Visits</div>
+            <div class="chart-desc">Your total score (left axis) and strokes vs par (right axis) each round at this course, oldest to newest. The dotted line is a 3-round moving average — a downward slope means you're improving here.</div>
+            <div id="chart-c-score-trend"></div>
+            <div id="summary-c-score-trend" class="chart-summary"></div>
           </div>
           <div class="chart-card">
             <div class="chart-title">Records &amp; Milestones</div>
@@ -96,9 +89,9 @@
           <h3 class="section-title">Per-Hole Breakdown</h3>
           <div class="chart-grid-2">
             <div class="chart-card">
-              <div class="chart-title">Avg Score vs Par by Hole</div>
-              <div class="chart-desc">Average strokes over or under par on each hole at this course. Bars above zero are holes that
-                cost you strokes — your problem holes here.</div>
+              <div class="chart-title">Score by Hole</div>
+              <div class="chart-desc">Best, average, and worst score on each hole at this course, with par shown for reference. Holes
+                where your worst and average are furthest above par are your problem holes.</div>
               <div id="chart-c-hole-score"></div>
               <div id="summary-c-hole-score" class="chart-summary"></div>
             </div>
@@ -110,9 +103,9 @@
               <div id="summary-c-hole-gir" class="chart-summary"></div>
             </div>
             <div class="chart-card">
-              <div class="chart-title">Avg Putts by Hole</div>
-              <div class="chart-desc">Average putts on each green at this course. Consistently high holes may signal tricky greens or
-                tough approach distances.</div>
+              <div class="chart-title">Putts by Hole</div>
+              <div class="chart-desc">Best, average, and worst putts on each green at this course. Holes with a high average or wide
+                spread may signal tricky greens or tough approach distances.</div>
               <div id="chart-c-hole-putts"></div>
               <div id="summary-c-hole-putts" class="chart-summary"></div>
             </div>

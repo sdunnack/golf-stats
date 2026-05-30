@@ -75,6 +75,23 @@ function setSummary(id, text) {
 }
 function catAxis(overrides = {}) { return { ...AX, type: 'category', ...overrides }; }
 
+// Format date strings (YYYY-MM-DD) as sparse tick labels.
+// Shows the month abbreviation only the first time each month appears.
+// Appends ''YY the first time a new year appears.
+const MONTH_ABB = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function dateTicks(dates) {
+  let lastMonthKey = null, lastYear = null;
+  return dates.map(d => {
+    const [y, m] = d.split('-');
+    const key = `${y}-${m}`;
+    if (key === lastMonthKey) return '';
+    lastMonthKey = key;
+    const label = MONTH_ABB[+m - 1];
+    if (y !== lastYear) { lastYear = y; return `${label} '${y.slice(2)}`; }
+    return label;
+  });
+}
+
 // ── Load & parse ──────────────────────────────────────────────────────────────
 async function loadData() {
   const [roundsRes, holesRes, coursesRes] = await Promise.all([
@@ -141,6 +158,13 @@ async function loadData() {
       // Enrich par/yardage from courses.json when missing on the hole record
       const par = h.par ?? meta?.holePar[h.hole] ?? null;
       const yd  = h.yardage ?? meta?.holeYd[h.hole] ?? null;
+      // Derive GIR from score/putts/par when not explicitly recorded.
+      // GIR = reached green in (par - 2) strokes or fewer, i.e. (score - putts) <= (par - 2).
+      // This correctly handles 3-putt pars: e.g. par 4, score 4, putts 3 → 1 approach ≤ 2 regulation → GIR.
+      let gir = h.gir;
+      if (gir == null && par != null && h.score != null && h.putts != null) {
+        gir = (h.score - h.putts) <= (par - 2);
+      }
       allHoles.push({
         activity_id:    r.activity_id,
         date:           r.date,
@@ -149,7 +173,7 @@ async function loadData() {
         par,
         score:          h.score,
         putts:          h.putts,
-        gir:            h.gir,
+        gir,
         fairway_hit:    h.fairway_hit,
         fairway_missed: h.fairway_missed_direction,
         penalties:      h.penalties ?? 0,
@@ -276,7 +300,7 @@ function trendLine(chartId, summaryId, dates, vals, label, color, yRange = null)
       name: `${MA_WINDOW}-rd avg`, line: { color: C_ORANGE, width: 2, dash: 'dot' } });
   }
   const yax = yRange ? { ...AX, type: 'linear', range: yRange } : { ...AX, type: 'linear' };
-  plotClear(chartId, traces, L({ xaxis: { ...AX, type: 'category' }, yaxis: yax }), CFG);
+  plotClear(chartId, traces, L({ xaxis: { ...AX, type: 'category', tickvals: dates, ticktext: dateTicks(dates) }, yaxis: yax }), CFG);
   if (summaryId) {
     const mn = Math.min(...valid), mx = Math.max(...valid), a = avg(valid);
     setSummary(summaryId, `Avg ${fmt(a)} · Best ${mn} · Worst ${mx}`
@@ -328,17 +352,54 @@ function renderCourseView() {
   document.getElementById('ck-gir').textContent    = fmt(agg.girPct, '%');
   document.getElementById('ck-fwy').textContent    = fmt(agg.fwyPct, '%');
 
-  // Overview trends
-  trendLine('chart-c-score-trend', 'summary-c-score-trend',
-    rounds.map(r => r.date), rounds.map(r => r.score), 'Score', C_GREEN);
-
-  const vsParPts = stats.filter(s => s.vsPar != null);
-  if (vsParPts.length) {
-    trendLine('chart-c-vspar-trend', 'summary-c-vspar-trend',
-      vsParPts.map(s => s.date), vsParPts.map(s => s.vsPar), 'vs Par', C_NAVY);
+  // Overview trends — combined score + vs-par chart
+  const scoreVals  = rounds.map(r => r.score);
+  const scoreDates = rounds.map(r => r.date);
+  const vsParPts   = stats.filter(s => s.vsPar != null);
+  const hasVsPar   = vsParPts.length > 0;
+  const validScores = scoreVals.filter(v => v != null);
+  if (!validScores.length) {
+    noData('chart-c-score-trend', 'No score data');
+    setSummary('summary-c-score-trend', '');
   } else {
-    noData('chart-c-vspar-trend', 'No par data for this course');
-    setSummary('summary-c-vspar-trend', '');
+    const traces = [
+      { x: scoreDates, y: scoreVals, mode: 'lines+markers', name: 'Score',
+        line: { color: C_GREEN, width: 2 }, marker: { color: C_GREEN, size: 6 },
+        yaxis: 'y' },
+    ];
+    if (validScores.length >= 2) {
+      traces.push({ x: scoreDates, y: movingAvg(scoreVals, MA_WINDOW), mode: 'lines',
+        name: `${MA_WINDOW}-rd avg (Score)`, line: { color: C_ORANGE, width: 2, dash: 'dot' }, yaxis: 'y' });
+    }
+    if (hasVsPar) {
+      const vpDates = vsParPts.map(s => s.date);
+      const vpVals  = vsParPts.map(s => s.vsPar);
+      traces.push({ x: vpDates, y: vpVals, mode: 'lines+markers', name: 'vs Par',
+        line: { color: C_NAVY, width: 2 }, marker: { color: C_NAVY, size: 6 },
+        yaxis: 'y2' });
+      if (vpVals.length >= 2) {
+        traces.push({ x: vpDates, y: movingAvg(vpVals, MA_WINDOW), mode: 'lines',
+          name: `${MA_WINDOW}-rd avg (vs Par)`, line: { color: C_PURPLE, width: 2, dash: 'dot' }, yaxis: 'y2' });
+      }
+    }
+    const layout = L({
+      xaxis: { ...AX, type: 'category', tickvals: scoreDates, ticktext: dateTicks(scoreDates) },
+      yaxis: { ...AX, type: 'linear', title: { text: 'Score', standoff: 4 } },
+      ...(hasVsPar ? {
+        yaxis2: { ...AX, type: 'linear', title: { text: 'vs Par', standoff: 4 },
+          overlaying: 'y', side: 'right', zeroline: true, zerolinecolor: '#94a3b8', zerolinewidth: 1 },
+        margin: { ...BASE_LAYOUT.margin, r: 44 },
+      } : {}),
+    });
+    plotClear('chart-c-score-trend', traces, layout, CFG);
+    const mn = Math.min(...validScores), mx = Math.max(...validScores), a = avg(validScores);
+    let summary = `Avg ${fmt(a)} · Best ${mn} · Worst ${mx}`
+      + (validScores.length >= 2 ? ` · ${scoreVals.filter(v=>v!=null).at(-1) < validScores[0] ? '↓ improving' : '↑ up'} ${Math.abs(scoreVals.filter(v=>v!=null).at(-1)-validScores[0]).toFixed(1)} first to last` : '');
+    if (hasVsPar) {
+      const vpVals = vsParPts.map(s => s.vsPar);
+      summary += `  ·  Avg vs Par: ${fmtSigned(avg(vpVals))}`;
+    }
+    setSummary('summary-c-score-trend', summary);
   }
 
   renderCourseRecords(rounds, stats);
@@ -394,32 +455,49 @@ function renderCourseHoles(holes) {
   if (!holes.length) { ids.forEach(id => noData(id, 'No hole-level data')); return; }
   const holeNums = [...new Set(holes.map(h => h.hole))].sort((a,b) => a-b);
 
-  // Avg score vs par by hole
+  // Best / Avg / Worst score per hole
   const hs = holeNums.map(n => {
     const hh = holes.filter(h => h.hole === n);
     const scores = hh.map(h => h.score).filter(s => s != null);
     const pars   = hh.map(h => h.par).filter(p => p != null);
-    return { hole: n, avg_score: avg(scores), avg_par: avg(pars),
-      avg_vs_par: avg(scores) != null && avg(pars) != null ? avg(scores) - avg(pars) : null };
+    return {
+      hole: n,
+      avg_score: avg(scores),
+      best_score: scores.length ? Math.min(...scores) : null,
+      worst_score: scores.length ? Math.max(...scores) : null,
+      avg_par: avg(pars),
+    };
   });
-  if (hs.some(d => d.avg_vs_par != null)) {
-    const d = hs.filter(d => d.avg_vs_par != null);
-    plotClear('chart-c-hole-score', [{
-      x: d.map(d => `H${d.hole}`), y: d.map(d => d.avg_vs_par), type: 'bar',
-      marker: { color: d.map(d => d.avg_vs_par > 0 ? C_RED : d.avg_vs_par < 0 ? C_BLUE : C_GREEN) },
-      hovertemplate: 'Hole %{x}: %{y:+.2f}<extra></extra>',
-    }], L({ showlegend: false, xaxis: catAxis(),
-      yaxis: { ...AX, type: 'linear', zeroline: true, zerolinecolor: '#94a3b8', zerolinewidth: 2 } }), CFG);
-    const hardest = d.reduce((a,b) => b.avg_vs_par > a.avg_vs_par ? b : a);
-    const easiest = d.reduce((a,b) => b.avg_vs_par < a.avg_vs_par ? b : a);
+  const d = hs.filter(d => d.avg_score != null);
+  if (d.length) {
+    const xLabels = d.map(d => `H${d.hole}`);
+    const traces = [
+      { x: xLabels, y: d.map(d => d.worst_score), mode: 'lines+markers', name: 'Worst',
+        line: { color: C_RED, width: 2 }, marker: { color: C_RED, size: 6 },
+        hovertemplate: 'Hole %{x} — Worst: %{y}<extra></extra>' },
+      { x: xLabels, y: d.map(d => d.avg_score), mode: 'lines+markers', name: 'Avg',
+        line: { color: C_ORANGE, width: 2 }, marker: { color: C_ORANGE, size: 6 },
+        hovertemplate: 'Hole %{x} — Avg: %{y:.2f}<extra></extra>' },
+      { x: xLabels, y: d.map(d => d.best_score), mode: 'lines+markers', name: 'Best',
+        line: { color: C_BLUE, width: 2 }, marker: { color: C_BLUE, size: 6 },
+        hovertemplate: 'Hole %{x} — Best: %{y}<extra></extra>' },
+    ];
+    if (d.some(d => d.avg_par != null)) {
+      traces.push({ x: xLabels, y: d.map(d => d.avg_par), mode: 'lines', name: 'Par',
+        line: { color: C_GREEN, width: 2, dash: 'dot' },
+        hovertemplate: 'Hole %{x} — Par: %{y}<extra></extra>' });
+    }
+    plotClear('chart-c-hole-score', traces, L({
+      xaxis: catAxis(),
+      yaxis: { ...AX, type: 'linear' },
+    }), CFG);
+    const hardest = d.reduce((a,b) => (b.avg_score ?? -Infinity) > (a.avg_score ?? -Infinity) ? b : a);
+    const easiest = d.reduce((a,b) => (b.avg_score ?? Infinity) < (a.avg_score ?? Infinity) ? b : a);
     setSummary('summary-c-hole-score',
-      `Hardest: H${hardest.hole} (${fmtSigned(hardest.avg_vs_par)}). Easiest: H${easiest.hole} (${fmtSigned(easiest.avg_vs_par)}).`);
+      `Hardest avg: H${hardest.hole} (${fmt(hardest.avg_score)}). Easiest avg: H${easiest.hole} (${fmt(easiest.avg_score)}).`);
   } else {
-    const d = hs.filter(d => d.avg_score != null);
-    plotClear('chart-c-hole-score', [{
-      x: d.map(d => `H${d.hole}`), y: d.map(d => d.avg_score), type: 'bar', marker: { color: C_GREEN },
-    }], L({ showlegend: false, xaxis: catAxis() }), CFG);
-    setSummary('summary-c-hole-score', 'No par data — showing average raw score per hole.');
+    noData('chart-c-hole-score', 'No score data');
+    setSummary('summary-c-hole-score', '');
   }
 
   // GIR % by hole
@@ -437,19 +515,29 @@ function renderCourseHoles(holes) {
     setSummary('summary-c-hole-gir', `Best GIR: H${best.hole} (${best.gir_pct.toFixed(1)}%). Lowest: H${worst.hole} (${worst.gir_pct.toFixed(1)}%).`);
   } else { noData('chart-c-hole-gir', 'No GIR data'); }
 
-  // Avg putts by hole
+  // Best / Avg / Worst putts by hole
   const puttData = holeNums.map(n => {
     const hh = holes.filter(h => h.hole === n && h.putts != null);
-    return hh.length ? { hole: n, avg_putts: avg(hh.map(h => h.putts)) } : null;
+    if (!hh.length) return null;
+    const putts = hh.map(h => h.putts);
+    return { hole: n, avg_putts: avg(putts), best_putts: Math.min(...putts), worst_putts: Math.max(...putts) };
   }).filter(Boolean);
   if (puttData.length) {
-    plotClear('chart-c-hole-putts', [{
-      x: puttData.map(d => `H${d.hole}`), y: puttData.map(d => d.avg_putts), type: 'bar',
-      marker: { color: C_BLUE }, hovertemplate: 'H%{x}: %{y:.2f} putts<extra></extra>',
-    }], L({ showlegend: false, xaxis: catAxis(),
-      yaxis: { ...AX, type: 'linear', range: [0, Math.max(4, Math.ceil(Math.max(...puttData.map(d=>d.avg_putts))+0.5))] } }), CFG);
+    const xLabels = puttData.map(d => `H${d.hole}`);
+    const yMax = Math.max(4, Math.ceil(Math.max(...puttData.map(d => d.worst_putts)) + 0.5));
+    plotClear('chart-c-hole-putts', [
+      { x: xLabels, y: puttData.map(d => d.worst_putts), mode: 'lines+markers', name: 'Worst',
+        line: { color: C_RED, width: 2 }, marker: { color: C_RED, size: 6 },
+        hovertemplate: 'Hole %{x} — Worst: %{y}<extra></extra>' },
+      { x: xLabels, y: puttData.map(d => d.avg_putts), mode: 'lines+markers', name: 'Avg',
+        line: { color: C_ORANGE, width: 2 }, marker: { color: C_ORANGE, size: 6 },
+        hovertemplate: 'Hole %{x} — Avg: %{y:.2f}<extra></extra>' },
+      { x: xLabels, y: puttData.map(d => d.best_putts), mode: 'lines+markers', name: 'Best',
+        line: { color: C_BLUE, width: 2 }, marker: { color: C_BLUE, size: 6 },
+        hovertemplate: 'Hole %{x} — Best: %{y}<extra></extra>' },
+    ], L({ xaxis: catAxis(), yaxis: { ...AX, type: 'linear', range: [0, yMax] } }), CFG);
     const worst = puttData.reduce((a,b) => b.avg_putts > a.avg_putts ? b : a);
-    setSummary('summary-c-hole-putts', `Toughest green: H${worst.hole} (${worst.avg_putts.toFixed(2)} putts). Baseline ~2/hole.`);
+    setSummary('summary-c-hole-putts', `Toughest green: H${worst.hole} (${worst.avg_putts.toFixed(2)} avg putts). Baseline ~2/hole.`);
   } else { noData('chart-c-hole-putts', 'No putt data'); }
 
   // Penalties by hole
