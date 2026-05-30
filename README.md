@@ -1,7 +1,7 @@
 # Golf Stats Tracker
 
 Personal golf stats dashboard — pulls data from Garmin Connect (including CT10 club sensor data)
-and visualizes it in a local JavaScript dashboard stored in a JSON file you own.
+and visualizes it in a local JavaScript dashboard backed by JSON files you own.
 
 ## Setup
 
@@ -33,24 +33,62 @@ Credentials are saved to `.garmin_creds.json` (chmod 600, owner read-only).
 OAuth session tokens are cached in `~/.garminconnect` and reused automatically on later runs.
 If tokens expire or are revoked, you'll be prompted to authenticate again. MFA is supported.
 
+## Backfill Course Data
+
+Garmin doesn't have all the updated tee boxes present, so you will need to update `data/courses.json` manually to get the most accurate stats. Also, the Garmin pull doesn't send over the course name or `global_course_id`, so we have to fill that ourselves. Still figuring out the best way to represent multiple courses/town and tracks/course.
+
+Example: "Hebron" could mean:
+
+- Tallwood
+- Blackledge - Gilead Highlands
+- Blackledge - Anderson Glen
+
+Future: Will try to automate this in the future, but for now this is fine.
+
 ## Launch dashboard
 
-Open `dashboard/index.html` in a browser, or serve from the project root:
+Serve from the project root (required — the dashboard uses `fetch()` for local JSON files):
 
 ```bash
-python -m http.server
+python3 -m http.server 8000
 ```
 
 Then navigate to http://localhost:8000/dashboard/. Powered by Plotly via CDN.
 
-The dashboard has four tabs:
+## Dashboard overview
 
-- **📈 Trends** — score, putts, GIR %, and fairway % over time
-- **🕳️ Holes** — per-hole performance across all rounds
-- **🏌️ Club Data** — shot-by-shot club distances (requires CT10 sensors)
-- **📋 Scorecards** — individual round scorecards
+The dashboard has two top-level views switchable via the pill tabs at the top:
 
-Filters let you narrow by course, round length (9 or 18 holes), and date range.
+### By Course
+Focuses on a single course selected from the sidebar dropdown.
+
+- **Score & Score vs Par Over Visits** — combined trend chart with score (left axis) and strokes vs par (right axis), each with a 3-round moving average
+- **Records & Milestones** — personal bests: best round, low vs par, best front/back 9, birdies, fewest putts, and trajectory trend
+- **Score by Hole** — best, average, and worst score per hole with a par reference line
+- **GIR % by Hole** — green in regulation rate per hole (derived from score/putts when not explicitly recorded)
+- **Putts by Hole** — best, average, and worst putts per hole
+- **Penalties by Hole** — total penalty strokes by hole
+- **This Course vs All Courses** — side-by-side comparison table across score, vs par, putts, GIR %, fairway %, 1-putt %, and 3-putt %
+- **Scoring Mix vs All Courses** — grouped bar chart comparing result distribution (Eagle, Birdie, Par, Bogey, Double, Triple+)
+- **Scorecards** — full hole-by-hole scorecard for any round at this course
+
+### Overall
+Aggregates across all courses in the current filter.
+
+- **Score / Putts / GIR % / Fairway % trends** — time-series trend lines with moving averages
+- **Scoring Distribution** — donut chart showing result mix across all rounds
+- **Putting Distribution** — donut chart of 1-putt / 2-putt / 3-putt+ breakdown
+- **Club Distance** — box plots of distance by club and lie type; club usage frequency
+- **Drive Distance Trend** — average tee-shot distance per round over time (requires CT10 data)
+- **Course Comparison** — table ranking all played courses by avg score, vs par, putts, GIR %, fairway %
+
+### Filters (sidebar)
+- **Course** — select which course to focus on in the By Course view
+- **Round Length** — filter to 18-hole, 9-hole, or all rounds
+- **Date range** — from/to date pickers
+  
+Future: will look to add support for tee boxes, as I sometimes need to play
+a different tee, but not enough to worry about now.
 
 ## After each round
 
@@ -64,12 +102,10 @@ The fetch script upserts by `activity_id`:
 - Existing rounds with full detail are skipped.
 - Existing rounds missing detail or newer schema fields are refreshed automatically.
 
-You can set this up as a cron job or just run it manually.
-
 ## Backfilling shot data
 
 If you have a `raw_garmin_dump.json` from a previous `--dump-raw` run, you can re-parse
-shot/club data into `rounds.json` without making any API calls:
+shot/club data without making any API calls:
 
 ```bash
 ./.venv/bin/python ingestion/backfill_shots.py
@@ -78,25 +114,31 @@ shot/club data into `rounds.json` without making any API calls:
 ./.venv/bin/python ingestion/backfill_shots.py --raw data/raw_garmin_dump.json --rounds data/rounds.json
 ```
 
-This is useful after updating the shot parsing logic to pick up newly supported fields.
-
 ## Data fields
 
-Each hole record in `data/rounds.json` now includes handicap-aware fields:
-- `hole_handicap_index` (1-18 course handicap ranking for that hole)
-- `handicap_score` (Garmin's per-hole handicap-adjusted score)
-
-These are useful for analysis like performance on harder (`1-6`) vs easier (`13-18`) holes.
+Each hole record in `data/holes.json` includes:
+- `par` — hole par (enriched from `data/courses.json` when missing from Garmin)
+- `score`, `putts`, `penalties`, `fairway_hit`, `sand_shots`
+- `gir` — green in regulation (stored if Garmin provides it; otherwise derived as `(score - putts) <= (par - 2)`)
+- `hole_handicap_index` — course handicap ranking for that hole (1–18)
+- `handicap_score` — Garmin's per-hole handicap-adjusted score
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `ingestion/fetch_rounds.py` | Pulls data from Garmin Connect API, writes to `data/rounds.json` |
-| `ingestion/backfill_shots.py` | Re-parses shot data from `data/raw_garmin_dump.json` into `data/rounds.json` without API calls. Helpful if you have CT10 sensors and want club data. |
+| `ingestion/fetch_rounds.py` | Pulls data from Garmin Connect API, writes to `data/` |
+| `ingestion/backfill_shots.py` | Re-parses shot data from `data/raw_garmin_dump.json` without API calls |
+| `ingestion/backfill_enrichment.py` | Enriches existing records from `data/courses.json` |
+| `ingestion/split_data.py` | Splits raw rounds data into separate `rounds.json`, `holes.json`, `shots.json` files |
 | `ingestion/garmin-download.js` | Browser console script for exporting data from Garmin Connect web |
-| `dashboard/index.html` / `dashboard/app.js` / `dashboard/styles.css` | JavaScript dashboard (no server required) |
-| `data/rounds.json` | Your data store (committed to repo — powers GitHub Pages) |
+| `dashboard/index.html` | Dashboard HTML shell |
+| `dashboard/app.js` | All dashboard logic — data loading, chart rendering, filtering |
+| `dashboard/styles.css` | Dashboard styles (Inter font, dark header, card layout) |
+| `data/rounds.json` | Round-level data (score, putts, GIR %, fairway %) |
+| `data/holes.json` | Hole-level data for all rounds |
+| `data/shots.json` | Shot-level data (club, distance, lie) — requires CT10 sensors |
+| `data/courses.json` | Course metadata: par, rating, slope, yardage, hole pars |
 | `.garmin_creds.json` | Saved credentials (git-ignored, chmod 600) |
 | `data/raw_garmin_dump.json` | Raw API responses (git-ignored — only created with `--dump-raw`) |
 
@@ -110,9 +152,6 @@ your first run:
 3. Look at the actual field names in the `holes` and `shots` arrays
 4. Update `parse_hole()` and `parse_shot()` in `ingestion/fetch_rounds.py` accordingly
 
-`--dump-raw` now writes a debug entry for every processed activity (including lookup metadata
-and fetch errors), even when scorecard detail is missing.
-
 Common variations seen in the wild:
 - Holes: `holeNumber` vs `number`, `strokes` vs `totalStrokes`
 - GIR: `greenInRegulation` vs `gir` (bool)
@@ -120,9 +159,9 @@ Common variations seen in the wild:
 
 ## CT10 club data
 
-Shot-by-shot club data (club name, distance, lie) appears in the **Club Data** tab.
+Shot-by-shot club data (club name, distance, lie) appears in the **Club Distance** charts.
 This only populates if you have CT10 sensors paired and data synced through the Garmin Golf app.
-If the tab shows empty, check `data/raw_garmin_dump.json` for a `shots` or `shotData` array.
+If charts show empty, check `data/raw_garmin_dump.json` for a `shots` or `shotData` array.
 
 ## .gitignore
 
