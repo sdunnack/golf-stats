@@ -326,13 +326,86 @@ body {
 }
 .club-table tr:hover td { background: #f8fafc; }
 
+/* ── Mode tabs + views ───────────────────────────────────── */
+.mode-tabs .tab-btn { font-size: 14px; padding: 10px 26px; }
+.mode-view { display: none; }
+.mode-view.active { display: block; }
+
+.section-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--text);
+  margin: 26px 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--border);
+}
+.mode-view > .section-title:first-of-type { margin-top: 20px; }
+
+/* ── Course header ───────────────────────────────────────── */
+.course-head { margin-bottom: 16px; }
+.course-name { font-size: 24px; font-weight: 700; letter-spacing: -.4px; color: var(--text); }
+.course-meta { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+.kpi-row-course { grid-template-columns: repeat(7, 1fr); }
+.kpi-row-course .kpi-value { font-size: 26px; }
+
+/* ── Records / milestones ────────────────────────────────── */
+.records-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+}
+.record-card {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 12px;
+  text-align: center;
+}
+.record-value { font-size: 26px; font-weight: 700; color: var(--primary); letter-spacing: -.5px; }
+.record-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--text-muted); margin-top: 4px;
+}
+.record-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* ── Comparison tables ───────────────────────────────────── */
+.compare-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.compare-table th {
+  background: #f1f5f9;
+  padding: 8px 12px;
+  text-align: right;
+  font-size: 11px; font-weight: 700; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: .05em;
+  border-bottom: 2px solid var(--border);
+}
+.compare-table th:first-child { text-align: left; }
+.compare-table td { padding: 8px 12px; text-align: right; border-bottom: 1px solid var(--border); }
+.compare-table td.metric-label { text-align: left; font-weight: 600; color: var(--text); }
+.compare-table td.metric-here { font-weight: 700; color: var(--primary); }
+.compare-table tbody tr:hover td { background: #f8fafc; }
+.diff-good { color: var(--primary); font-weight: 700; }
+.diff-bad  { color: #dc2626; font-weight: 700; }
+.diff-flat { color: var(--text-muted); }
+
+.comparison-table tbody tr { cursor: pointer; }
+.comparison-table tr.row-home td { background: #f0fdf4; }
+.comparison-table tr.row-home:hover td { background: #dcfce7; }
+.home-badge {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  background: var(--primary); color: white; padding: 1px 6px; border-radius: 4px; margin-left: 6px;
+  vertical-align: middle;
+}
+
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 900px) {
   .sidebar { display: none; }
-  .kpi-row { grid-template-columns: repeat(3, 1fr); }
+  .kpi-row, .kpi-row-course { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 640px) {
-  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .kpi-row, .kpi-row-course { grid-template-columns: repeat(2, 1fr); }
   .chart-grid-2 { grid-template-columns: 1fr; }
   .main { padding: 14px; }
 }

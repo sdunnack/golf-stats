@@ -724,119 +724,119 @@
       "name": "Manchester Country Club",
       "garmin_course_id": null,
       "aliases": ["Manchester"],
-      "tee_box": null,
-      "par": null,
-      "rating": null,
-      "slope": null,
-      "yards": null,
+      "tee_box": "Red/Green",
+      "par": 72,
+      "rating": 69.6,
+      "slope": 123,
+      "yards": 5038,
       "holes": [
         {
           "hole": 1,
           "par": 4,
-          "yardage": null,
-          "handicap": null
+          "yardage": 300,
+          "handicap": 13
         },
         {
           "hole": 2,
           "par": 4,
-          "yardage": null,
-          "handicap": null
+          "yardage": 317,
+          "handicap": 11
         },
         {
           "hole": 3,
           "par": 5,
-          "yardage": null,
-          "handicap": null
+          "yardage": 406,
+          "handicap": 1
         },
         {
           "hole": 4,
           "par": 5,
-          "yardage": null,
-          "handicap": null
+          "yardage": 379,
+          "handicap": 5
         },
         {
           "hole": 5,
           "par": 3,
-          "yardage": null,
-          "handicap": null
+          "yardage": 126,
+          "handicap": 17
         },
         {
           "hole": 6,
           "par": 4,
-          "yardage": null,
-          "handicap": null
+          "yardage": 293,
+          "handicap": 3
         },
         {
           "hole": 7,
           "par": 4,
-          "yardage": null,
-          "handicap": null
+          "yardage": 310,
+          "handicap": 7
         },
         {
           "hole": 8,
           "par": 3,
-          "yardage": null,
-          "handicap": null
+          "yardage": 128,
+          "handicap": 15
         },
         {
           "hole": 9,
           "par": 4,
-          "yardage": null,
-          "handicap": null
+          "yardage": 271,
+          "handicap": 9
         },
         {
           "hole": 10,
           "par": 4,
-          "yardage": null,
-          "handicap": null
+          "yardage": 207,
+          "handicap": 18
         },
         {
           "hole": 11,
           "par": 4,
-          "yardage": null,
-          "handicap": null
+          "yardage": 289,
+          "handicap": 12
         },
         {
           "hole": 12,
           "par": 3,
-          "yardage": null,
-          "handicap": null
+          "yardage": 123,
+          "handicap": 16
         },
         {
           "hole": 13,
           "par": 4,
-          "yardage": null,
-          "handicap": null
+          "yardage": 259,
+          "handicap": 4
         },
         {
           "hole": 14,
           "par": 5,
-          "yardage": null,
-          "handicap": null
+          "yardage": 444,
+          "handicap": 2
         },
         {
           "hole": 15,
           "par": 5,
-          "yardage": null,
-          "handicap": null
+          "yardage": 410,
+          "handicap": 10
         },
         {
           "hole": 16,
           "par": 4,
-          "yardage": null,
-          "handicap": null
+          "yardage": 341,
+          "handicap": 8
         },
         {
           "hole": 17,
           "par": 4,
-          "yardage": null,
-          "handicap": null
+          "yardage": 302,
+          "handicap": 6
         },
         {
           "hole": 18,
           "par": 3,
-          "yardage": null,
-          "handicap": null
+          "yardage": 133,
+          "handicap": 14
         }
       ]
     },
