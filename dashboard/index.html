@@ -52,6 +52,7 @@
         <div class="tabs mode-tabs">
           <button class="tab-btn active" data-mode="course">By Course</button>
           <button class="tab-btn" data-mode="overall">Overall</button>
+          <button class="tab-btn" data-mode="manage">Manage <span id="manage-badge" class="badge" style="display:none"></span></button>
         </div>
 
         <!-- ═══════════════ COURSE VIEW ═══════════════ -->
@@ -86,6 +87,10 @@
             <div id="course-records" class="records-grid"></div>
           </div>
 
+          <!-- ── Insights ── -->
+          <h3 class="section-title">Insights</h3>
+          <div id="insights-course"></div>
+
           <!-- ── Holes ── -->
           <h3 class="section-title">Per-Hole Breakdown</h3>
           <div class="chart-grid-2">
@@ -116,6 +121,41 @@
               <div id="chart-c-hole-pen"></div>
               <div id="summary-c-hole-pen" class="chart-summary"></div>
             </div>
+          </div>
+
+          <!-- ── Advanced Stats ── -->
+          <h3 class="section-title">Advanced Stats</h3>
+          <div class="chart-grid-2">
+            <div class="chart-card">
+              <div class="chart-title">Scoring by Par Type</div>
+              <div class="chart-desc">Average strokes relative to par on par-3, par-4, and par-5 holes at this course. Reveals which hole type is costing you the most strokes here.</div>
+              <div id="chart-c-par-type"></div>
+              <div id="summary-c-par-type" class="chart-summary"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Fairway Miss Direction</div>
+              <div class="chart-desc">Breakdown of tee shots at this course: fairway hit vs. missed left vs. missed right.</div>
+              <div id="chart-c-fwy-miss"></div>
+              <div id="summary-c-fwy-miss" class="chart-summary"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Scrambling %</div>
+              <div class="chart-desc">How often you make par or better after missing the green in regulation at this course.</div>
+              <div id="chart-c-scramble-trend"></div>
+              <div id="summary-c-scramble-trend" class="chart-summary"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Penalty Strokes per Round</div>
+              <div class="chart-desc">Total penalty strokes taken each round at this course.</div>
+              <div id="chart-c-penalty-trend"></div>
+              <div id="summary-c-penalty-trend" class="chart-summary"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Handicap Differential Trend</div>
+            <div class="chart-desc">Calculated as (Score − Course Rating) / Course Slope × 113. Each point is one round at this course — a lower value is better.</div>
+            <div id="chart-c-hcap-trend"></div>
+            <div id="summary-c-hcap-trend" class="chart-summary"></div>
           </div>
 
           <!-- ── vs Overall ── -->
@@ -159,12 +199,33 @@
             <div class="kpi-card"><div class="kpi-label">1-Putt %</div><div class="kpi-value" id="ok-1putt">—</div></div>
           </div>
 
+          <h3 class="section-title">Insights</h3>
+          <div id="insights-overall"></div>
+
           <h3 class="section-title">Trends</h3>
           <div class="chart-grid-2">
             <div class="chart-card"><div class="chart-title">Score per Round</div><div id="chart-o-score-trend"></div><div id="summary-o-score" class="chart-summary"></div></div>
             <div class="chart-card"><div class="chart-title">Total Putts per Round</div><div id="chart-o-putts-trend"></div><div id="summary-o-putts" class="chart-summary"></div></div>
             <div class="chart-card"><div class="chart-title">Greens in Regulation %</div><div id="chart-o-gir-trend"></div><div id="summary-o-gir" class="chart-summary"></div></div>
             <div class="chart-card"><div class="chart-title">Fairways Hit %</div><div id="chart-o-fwy-trend"></div><div id="summary-o-fwy" class="chart-summary"></div></div>
+            <div class="chart-card">
+              <div class="chart-title">Scrambling %</div>
+              <div class="chart-desc">How often you make par or better after missing the green in regulation. A key short-game metric separate from GIR.</div>
+              <div id="chart-o-scramble-trend"></div>
+              <div id="summary-o-scramble-trend" class="chart-summary"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Penalty Strokes per Round</div>
+              <div class="chart-desc">Total penalty strokes taken each round. A downward trend means fewer costly mistakes.</div>
+              <div id="chart-o-penalty-trend"></div>
+              <div id="summary-o-penalty-trend" class="chart-summary"></div>
+            </div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-title">Handicap Differential Trend</div>
+            <div class="chart-desc">Calculated as (Score − Course Rating) / Course Slope × 113. Normalizes each round for course difficulty — a lower value is better. Requires rating and slope data for each course.</div>
+            <div id="chart-o-hcap-trend"></div>
+            <div id="summary-o-hcap-trend" class="chart-summary"></div>
           </div>
 
           <h3 class="section-title">Scoring &amp; Putting</h3>
@@ -180,6 +241,18 @@
               <div class="chart-desc">Breakdown of 1-putt, 2-putt, and 3-putt-or-worse holes across all rounds.</div>
               <div id="chart-o-putting-donut"></div>
               <div id="summary-o-putting-donut" class="chart-summary"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Scoring by Par Type</div>
+              <div class="chart-desc">Average strokes relative to par on par-3, par-4, and par-5 holes. Reveals which hole type is costing you the most strokes.</div>
+              <div id="chart-o-par-type"></div>
+              <div id="summary-o-par-type" class="chart-summary"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Fairway Miss Direction</div>
+              <div class="chart-desc">Breakdown of tee shots: fairway hit vs. missed left vs. missed right. A lopsided miss pattern points to a consistent swing tendency.</div>
+              <div id="chart-o-fwy-miss"></div>
+              <div id="summary-o-fwy-miss" class="chart-summary"></div>
             </div>
           </div>
 
@@ -218,6 +291,25 @@
             <div id="course-comparison-table"></div>
           </div>
         </div>
+
+        <!-- ═══════════════ MANAGE VIEW ═══════════════ -->
+        <div id="view-manage" class="mode-view">
+          <div class="manage-header">
+            <div>
+              <h2 class="course-name">Course Manager</h2>
+              <p id="manage-summary" class="course-meta"></p>
+            </div>
+            <button class="btn btn-secondary" id="btn-export-courses">⬇ Download courses.json</button>
+          </div>
+
+          <h3 class="section-title">Unmatched Rounds</h3>
+          <p class="chart-desc" style="margin-top:-12px;margin-bottom:16px">Garmin course strings that don't match any entry in courses.json. Map them to an existing course or create a new entry. Changes are saved locally and applied on reload. Use Download to get the updated file.</p>
+          <div id="manage-unmatched"></div>
+
+          <h3 class="section-title">Known Courses</h3>
+          <div id="manage-known"></div>
+        </div>
+
       </main>
     </div>
   </div>

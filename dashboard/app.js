@@ -34,6 +34,8 @@ function L(overrides = {}) {
 // ── Data state ────────────────────────────────────────────────────────────────
 let allRounds = [], allHoles = [], allShots = [];
 let courseMeta = {};          // canonical name -> { par, rating, slope, yards, tee_box, holePar: {n: par}, holeYd, holeHcp }
+let aliasIndex = {};          // lowercased alias -> canonical name (module-level so manage panel can read it)
+let rawCoursesData = [];      // original courses array from file, used by export
 let lastUpdated = null;
 let shotsLoaded = false;
 let shotsLoading = null;
@@ -75,6 +77,17 @@ function setSummary(id, text) {
 }
 function catAxis(overrides = {}) { return { ...AX, type: 'category', ...overrides }; }
 
+// Resolve a course string to its metadata using the module-level alias index.
+function getCourseMeta(courseStr) {
+  if (!courseStr) return null;
+  const key = courseStr.toLowerCase();
+  if (aliasIndex[key]) return courseMeta[aliasIndex[key]];
+  for (const [alias, canon] of Object.entries(aliasIndex)) {
+    if (key.includes(alias) || alias.includes(key)) return courseMeta[canon];
+  }
+  return null;
+}
+
 // Format date strings (YYYY-MM-DD) as sparse tick labels.
 // Shows the month abbreviation only the first time each month appears.
 // Appends ''YY the first time a new year appears.
@@ -104,9 +117,11 @@ async function loadData() {
   ]);
   lastUpdated = roundsData.last_updated || null;
 
-  // Build course metadata + an alias index for matching round.course -> canonical name
-  const aliasIndex = {}; // lowercased name/alias -> canonical name
-  for (const c of coursesData.courses || []) {
+  rawCoursesData = coursesData.courses || [];
+
+  // Build course metadata + alias index (module-level) from courses.json
+  aliasIndex = {};
+  for (const c of rawCoursesData) {
     const holePar = {}, holeYd = {}, holeHcp = {};
     for (const h of c.holes || []) {
       if (h.par     != null) holePar[h.hole] = h.par;
@@ -117,6 +132,26 @@ async function loadData() {
       name: c.name, par: c.par, rating: c.rating, slope: c.slope,
       yards: c.yards, tee_box: c.tee_box, holePar, holeYd, holeHcp,
     };
+    aliasIndex[c.name.toLowerCase()] = c.name;
+    for (const a of c.aliases || []) aliasIndex[a.toLowerCase()] = c.name;
+  }
+
+  // Apply any aliases/courses saved via the Course Manager panel (stored in localStorage)
+  const _savedAliases = JSON.parse(localStorage.getItem('golfstats.aliases') || '{}');
+  for (const [alias, canon] of Object.entries(_savedAliases)) {
+    if (courseMeta[canon]) aliasIndex[alias.toLowerCase()] = canon;
+  }
+  const _savedCourses = JSON.parse(localStorage.getItem('golfstats.new_courses') || '[]');
+  for (const c of _savedCourses) {
+    if (courseMeta[c.name]) continue;
+    const hp = {}, hy = {}, hh = {};
+    for (const h of c.holes || []) {
+      if (h.par != null) hp[h.hole] = h.par;
+      if (h.yardage != null) hy[h.hole] = h.yardage;
+      if (h.handicap != null) hh[h.hole] = h.handicap;
+    }
+    courseMeta[c.name] = { name: c.name, par: c.par, rating: c.rating, slope: c.slope,
+      yards: c.yards, tee_box: c.tee_box, holePar: hp, holeYd: hy, holeHcp: hh };
     aliasIndex[c.name.toLowerCase()] = c.name;
     for (const a of c.aliases || []) aliasIndex[a.toLowerCase()] = c.name;
   }
@@ -403,7 +438,13 @@ function renderCourseView() {
   }
 
   renderCourseRecords(rounds, stats);
+  renderInsights(rounds, holes, 'insights-course');
   renderCourseHoles(holes);
+  renderParTypeBreakdown(holes, 'chart-c-par-type', 'summary-c-par-type');
+  renderFairwayMissDirection(holes, 'chart-c-fwy-miss', 'summary-c-fwy-miss');
+  renderScramblingTrend(rounds, holes, 'chart-c-scramble-trend', 'summary-c-scramble-trend');
+  renderPenaltyTrend(rounds, holes, 'chart-c-penalty-trend', 'summary-c-penalty-trend');
+  renderHandicapDiffTrend(rounds, 'chart-c-hcap-trend', 'summary-c-hcap-trend');
   renderCourseVsOverall(rounds, holes, base);
   renderCourseScorecards(rounds, holes, shots);
 }
@@ -698,6 +739,8 @@ function renderOverallView() {
   document.getElementById('ok-fwy').textContent     = fmt(agg.fwyPct, '%');
   document.getElementById('ok-1putt').textContent   = fmt(agg.onePct, '%');
 
+  renderInsights(rounds, holes, 'insights-overall');
+
   const dates = rounds.map(r => r.date);
   trendLine('chart-o-score-trend', 'summary-o-score', dates, rounds.map(r => r.score), 'Score', C_GREEN);
   const pr = rounds.filter(r => r.putts != null && r.putts > 0);
@@ -707,6 +750,11 @@ function renderOverallView() {
 
   renderScoringDonut(holes);
   renderPuttingDonut(holes);
+  renderParTypeBreakdown(holes);
+  renderFairwayMissDirection(holes);
+  renderScramblingTrend(rounds, holes);
+  renderPenaltyTrend(rounds, holes);
+  renderHandicapDiffTrend(rounds);
   renderOverallClubs(shots);
   renderComparisonTable(rounds, holes);
 }
@@ -824,12 +872,426 @@ function renderComparisonTable(rounds, holes) {
   });
 }
 
+// ── New overall charts ──────────────────────────────────────────────────────────
+
+function renderParTypeBreakdown(holes, chartId = 'chart-o-par-type', summaryId = 'summary-o-par-type') {
+  const data = [3, 4, 5].map(par => {
+    const hs = holes.filter(h => h.par === par && h.score != null);
+    if (!hs.length) return null;
+    return { par, n: hs.length, avgVsPar: avg(hs.map(h => h.score - h.par)) };
+  }).filter(Boolean);
+
+  if (!data.length) { noData(chartId, 'Par data required'); setSummary(summaryId, ''); return; }
+
+  plotClear(chartId, [{
+    x: data.map(d => `Par ${d.par}`),
+    y: data.map(d => d.avgVsPar),
+    type: 'bar',
+    marker: { color: data.map(d => d.avgVsPar > 0 ? C_RED : C_GREEN) },
+    customdata: data.map(d => d.n),
+    hovertemplate: 'Par %{x}: avg %{y:.2f} vs par (%{customdata} holes)<extra></extra>',
+  }], L({
+    showlegend: false,
+    xaxis: catAxis(),
+    yaxis: { ...AX, zeroline: true, zerolinecolor: '#94a3b8', zerolinewidth: 1,
+      title: { text: 'Avg vs Par', standoff: 6 } },
+  }), CFG);
+
+  const worst = data.reduce((a, b) => b.avgVsPar > a.avgVsPar ? b : a);
+  const best  = data.reduce((a, b) => b.avgVsPar < a.avgVsPar ? b : a);
+  setSummary(summaryId,
+    `Strongest: Par ${best.par} (avg ${fmtSigned(best.avgVsPar)}). Weakest: Par ${worst.par} (avg ${fmtSigned(worst.avgVsPar)}).`);
+}
+
+function renderFairwayMissDirection(holes, chartId = 'chart-o-fwy-miss', summaryId = 'summary-o-fwy-miss') {
+  const hit   = holes.filter(h => h.fairway_hit === true).length;
+  const left  = holes.filter(h => h.fairway_missed === 'LEFT').length;
+  const right = holes.filter(h => h.fairway_missed === 'RIGHT').length;
+  const total = hit + left + right;
+
+  if (!total) { noData(chartId, 'No fairway direction data'); setSummary(summaryId, ''); return; }
+
+  plotClear(chartId, [{
+    labels: ['Hit', 'Miss Left', 'Miss Right'],
+    values: [hit, left, right],
+    type: 'pie', hole: 0.55,
+    marker: { colors: [C_GREEN, C_BLUE, C_RED] },
+    hovertemplate: '%{label}: %{value} holes (%{percent})<extra></extra>',
+  }], L({
+    height: 300, showlegend: true,
+    legend: { orientation: 'v', x: 1.02, y: 0.5 },
+    annotations: [{ text: `<b>${(hit / total * 100).toFixed(0)}%</b><br>Hit`,
+      x: 0.5, y: 0.5, font: { size: 14, color: C_NAVY }, showarrow: false }],
+  }), CFG);
+
+  const misses = left + right;
+  const bias = misses === 0 ? 'No misses recorded'
+    : left > right  ? `Left bias (${(left  / misses * 100).toFixed(0)}% of misses left)`
+    : right > left  ? `Right bias (${(right / misses * 100).toFixed(0)}% of misses right)`
+    : 'Even miss distribution';
+  setSummary(summaryId, `${(hit / total * 100).toFixed(1)}% fairways hit. ${bias}.`);
+}
+
+function renderScramblingTrend(rounds, holes, chartId = 'chart-o-scramble-trend', summaryId = 'summary-o-scramble-trend') {
+  const byId = {};
+  for (const h of holes) (byId[h.activity_id] ||= []).push(h);
+
+  const pts = rounds.map(r => {
+    const hs = byId[r.activity_id] || [];
+    const missed = hs.filter(h => h.gir === false && h.par != null && h.score != null);
+    if (!missed.length) return null;
+    const saved = missed.filter(h => (h.score - h.par) <= 0).length;
+    return { date: r.date, pct: saved / missed.length * 100 };
+  }).filter(Boolean);
+
+  if (!pts.length) { noData(chartId, 'No scrambling data (requires GIR + par + score)'); setSummary(summaryId, ''); return; }
+  trendLine(chartId, summaryId, pts.map(p => p.date), pts.map(p => p.pct), 'Scrambling %', C_TEAL, [0, 100]);
+}
+
+function renderPenaltyTrend(rounds, holes, chartId = 'chart-o-penalty-trend', summaryId = 'summary-o-penalty-trend') {
+  const byId = {};
+  for (const h of holes) (byId[h.activity_id] ||= []).push(h);
+
+  const dates = rounds.map(r => r.date);
+  const vals  = rounds.map(r => sum((byId[r.activity_id] || []).map(h => h.penalties || 0)));
+
+  if (!vals.length) { noData(chartId, 'No data'); setSummary(summaryId, ''); return; }
+  trendLine(chartId, summaryId, dates, vals, 'Penalties', C_RED);
+}
+
+function renderHandicapDiffTrend(rounds, chartId = 'chart-o-hcap-trend', summaryId = 'summary-o-hcap-trend') {
+  const pts = rounds.map(r => {
+    const meta = getCourseMeta(r.course);
+    if (!meta?.rating || !meta?.slope || r.score == null) return null;
+    return { date: r.date, diff: (r.score - meta.rating) / meta.slope * 113 };
+  }).filter(Boolean);
+
+  if (!pts.length) { noData(chartId, 'Course rating/slope data required'); setSummary(summaryId, ''); return; }
+  trendLine(chartId, summaryId, pts.map(p => p.date), pts.map(p => p.diff), 'Handicap Diff', C_NAVY);
+}
+
+// ── Insights engine ─────────────────────────────────────────────────────────────
+//
+// Each rule returns null (not enough data) or an insight object:
+//   { category, title, stat, statLabel, body, tip, severity, score }
+//   severity: 'high' | 'med' | 'low' | 'good'
+//   score: 0–1, higher = more urgent (used to rank + cap visible cards)
+//
+// Rules are evaluated against the filtered rounds + holes for the current view.
+
+const INSIGHT_RULES = [
+
+  // ── Putting ──────────────────────────────────────────────────────────────────
+  function ruleAvgPutts(rounds, holes) {
+    const vals = rounds.map(r => r.putts).filter(v => v != null && v > 0);
+    if (vals.length < 2) return null;
+    const a = avg(vals);
+    // Baseline refs: scratch ~28, 10-hdcp ~31, 20-hdcp ~34, 30-hdcp ~36
+    const score = Math.min(1, Math.max(0, (a - 28) / 10));
+    const severity = a >= 35 ? 'high' : a >= 32 ? 'med' : a >= 30 ? 'low' : 'good';
+    if (severity === 'good') return null;
+    return {
+      category: 'Putting', title: 'High average putt count',
+      stat: fmt(a), statLabel: 'putts / round',
+      body: `Averaging ${fmt(a)} putts per round. A scratch player averages ~28; a 20-handicap ~34. Every putt over 36 is a stroke you're giving away on the green.`,
+      tip: a >= 35
+        ? 'Prioritize lag putting — most extra putts come from long-range 3-putts, not missed short putts.'
+        : 'Work on mid-range putts (10–20 ft). Converting one more per round saves a stroke immediately.',
+      group: 'putting', severity, score,
+    };
+  },
+
+  function ruleThreePuttPct(rounds, holes) {
+    const hp = holes.filter(h => h.putts != null);
+    if (hp.length < 18) return null;
+    const threePct = hp.filter(h => h.putts >= 3).length / hp.length * 100;
+    if (threePct < 8) return null;
+    const score = Math.min(1, (threePct - 8) / 20);
+    const severity = threePct >= 20 ? 'high' : threePct >= 14 ? 'med' : 'low';
+    return {
+      category: 'Putting', title: '3-putt rate is elevated',
+      stat: `${threePct.toFixed(1)}%`, statLabel: 'of greens 3-putted',
+      body: `You're 3-putting ${threePct.toFixed(1)}% of greens. Tour average is ~3%; a solid amateur target is under 10%.`,
+      tip: 'Practice distance control on putts over 20 feet. Getting to within 3 feet eliminates almost all 3-putts.',
+      group: 'putting', severity, score,
+    };
+  },
+
+  // ── Greens in Regulation ─────────────────────────────────────────────────────
+  function ruleGIR(rounds, holes) {
+    const vals = rounds.map(r => r.gir_pct).filter(v => v != null);
+    if (vals.length < 2) return null;
+    const a = avg(vals);
+    // 10-hdcp ~35%, 20-hdcp ~20%, 30-hdcp ~10%
+    if (a >= 40) return null;
+    const score = Math.min(1, (40 - a) / 35);
+    const severity = a < 15 ? 'high' : a < 25 ? 'med' : 'low';
+    return {
+      category: 'Approach', title: 'Low greens in regulation %',
+      stat: `${fmt(a)}%`, statLabel: 'GIR',
+      body: `Hitting ${fmt(a)}% of greens in regulation. A 20-handicap averages around 20–25%. Missing greens forces recoveries that cost strokes even when you scramble well.`,
+      tip: severity === 'high'
+        ? 'Focus on iron contact before distance. Solid, centred strikes at 80% produce more GIRs than hard swings.'
+        : 'Identify your most reliable iron distance and position tee shots to that yardage more often.',
+      severity, score,
+    };
+  },
+
+  // ── Scrambling ───────────────────────────────────────────────────────────────
+  function ruleScrambling(rounds, holes) {
+    const byId = {};
+    for (const h of holes) (byId[h.activity_id] ||= []).push(h);
+    const pts = rounds.map(r => {
+      const hs = byId[r.activity_id] || [];
+      const missed = hs.filter(h => h.gir === false && h.par != null && h.score != null);
+      if (!missed.length) return null;
+      return missed.filter(h => (h.score - h.par) <= 0).length / missed.length * 100;
+    }).filter(v => v != null);
+    if (pts.length < 2) return null;
+    const a = avg(pts);
+    // Tour ~60%, 10-hdcp ~40%, 20-hdcp ~25%
+    if (a >= 45) return null;
+    const score = Math.min(1, (45 - a) / 40);
+    const severity = a < 20 ? 'high' : a < 30 ? 'med' : 'low';
+    return {
+      category: 'Short Game', title: 'Scrambling % needs work',
+      stat: `${fmt(a)}%`, statLabel: 'scrambles',
+      body: `You're saving par or better after a missed GIR ${fmt(a)}% of the time. A 20-handicap target is ~25–30%. This is the biggest leverage point after GIR for reducing scores.`,
+      tip: 'Get up-and-down practice from within 30 yards. One extra chip to gimme range per round saves a stroke.',
+      severity, score,
+    };
+  },
+
+  // ── Fairways ─────────────────────────────────────────────────────────────────
+  function ruleFairways(rounds, holes) {
+    const vals = rounds.map(r => r.fairway_pct).filter(v => v != null);
+    if (vals.length < 2) return null;
+    const a = avg(vals);
+    if (a >= 55) return null;
+    const score = Math.min(1, (55 - a) / 50);
+    const severity = a < 25 ? 'high' : a < 40 ? 'med' : 'low';
+    return {
+      category: 'Off the Tee', title: 'Low fairway hit %',
+      stat: `${fmt(a)}%`, statLabel: 'fairways hit',
+      body: `Hitting ${fmt(a)}% of fairways. Even a 20-handicap typically hits 40–50%. Fairways matter because second shots from rough cost roughly half a stroke each.`,
+      tip: severity === 'high'
+        ? 'Consider using a 3-wood or hybrid off tight tees. Fairway from 220 yds beats rough from 250 yds.'
+        : 'Check your miss pattern below — a consistent left or right miss points to a fixable ball-flight tendency.',
+      severity, score,
+    };
+  },
+
+  // ── Fairway miss bias ────────────────────────────────────────────────────────
+  function ruleFwyBias(rounds, holes) {
+    const left  = holes.filter(h => h.fairway_missed === 'LEFT').length;
+    const right = holes.filter(h => h.fairway_missed === 'RIGHT').length;
+    const total = left + right;
+    if (total < 10) return null;
+    const ratio = Math.max(left, right) / total;
+    if (ratio < 0.65) return null;
+    const dominant = left > right ? 'left' : 'right';
+    const pct = (ratio * 100).toFixed(0);
+    const score = Math.min(1, (ratio - 0.65) / 0.25);
+    const severity = ratio >= 0.80 ? 'high' : ratio >= 0.72 ? 'med' : 'low';
+    return {
+      category: 'Off the Tee', title: `Consistent miss ${dominant}`,
+      stat: `${pct}%`, statLabel: `misses go ${dominant}`,
+      body: `${pct}% of your fairway misses go ${dominant}. A strong bias this consistent is almost always a swing pattern issue, not bad luck.`,
+      tip: dominant === 'left'
+        ? 'A left miss for a right-hander usually means early extension or a closed face at impact. Try strengthening your grip slightly or delaying the release.'
+        : 'A right miss for a right-hander often means an over-the-top path or open face. Focus on dropping the club into the slot from the top.',
+      severity, score,
+    };
+  },
+
+  // ── Penalties ────────────────────────────────────────────────────────────────
+  function rulePenalties(rounds, holes) {
+    const byId = {};
+    for (const h of holes) (byId[h.activity_id] ||= []).push(h);
+    const vals = rounds.map(r => sum((byId[r.activity_id] || []).map(h => h.penalties || 0)));
+    if (vals.length < 2) return null;
+    const a = avg(vals);
+    if (a < 1) return null;
+    const score = Math.min(1, (a - 1) / 3);
+    const severity = a >= 3 ? 'high' : a >= 2 ? 'med' : 'low';
+    return {
+      category: 'Course Management', title: 'Penalty strokes piling up',
+      stat: fmt(a), statLabel: 'penalties / round',
+      body: `Averaging ${fmt(a)} penalty strokes per round. Penalties are the most expensive shots in golf — each one costs you the stroke plus distance.`,
+      tip: 'On high-risk shots, ask: "What\'s the cost of the worst outcome?" Laying up to a comfortable yardage often costs less than a penalty.',
+      severity, score,
+    };
+  },
+
+  // ── Par type ─────────────────────────────────────────────────────────────────
+  function ruleParType(rounds, holes) {
+    const data = [3, 4, 5].map(par => {
+      const hs = holes.filter(h => h.par === par && h.score != null);
+      if (hs.length < 6) return null;
+      return { par, avg: avg(hs.map(h => h.score - h.par)), n: hs.length };
+    }).filter(Boolean);
+    if (data.length < 2) return null;
+    const worst = data.reduce((a, b) => b.avg > a.avg ? b : a);
+    const best  = data.reduce((a, b) => b.avg < a.avg ? b : a);
+    if (worst.avg - best.avg < 0.4) return null;   // not a meaningful gap
+    const score = Math.min(1, (worst.avg - best.avg) / 2);
+    const severity = worst.avg - best.avg >= 1.2 ? 'high' : worst.avg - best.avg >= 0.7 ? 'med' : 'low';
+    const tips = {
+      3: 'Par 3s reward reliable iron consistency over power. Club down one and make a smooth swing to the middle of the green.',
+      4: 'Par 4s: fairway first, then distance. One extra fairway hit typically saves ~0.5 strokes vs. rough.',
+      5: 'Par 5s are birdie opportunities. If you can\'t reach in 2 reliably, lay up to your favourite wedge distance instead of guessing.',
+    };
+    return {
+      category: 'Par Type', title: `Struggling on par ${worst.par}s`,
+      stat: fmtSigned(worst.avg), statLabel: `avg vs par on par ${worst.par}s`,
+      body: `Your par ${worst.par}s average ${fmtSigned(worst.avg)} vs par, compared to ${fmtSigned(best.avg)} on par ${best.par}s — a gap of ${(worst.avg - best.avg).toFixed(1)} strokes per hole.`,
+      tip: tips[worst.par],
+      severity, score,
+    };
+  },
+
+  // ── Handicap trend ───────────────────────────────────────────────────────────
+  function ruleHcapTrend(rounds) {
+    const pts = rounds.map(r => {
+      const meta = getCourseMeta(r.course);
+      if (!meta?.rating || !meta?.slope || r.score == null) return null;
+      return { date: r.date, diff: (r.score - meta.rating) / meta.slope * 113 };
+    }).filter(Boolean);
+    if (pts.length < 5) return null;
+    const half = Math.floor(pts.length / 2);
+    const early = avg(pts.slice(0, half).map(p => p.diff));
+    const late  = avg(pts.slice(half).map(p => p.diff));
+    const delta = late - early;
+    if (delta <= 0.5) return null;   // improving or flat
+    const score = Math.min(1, delta / 5);
+    const severity = delta >= 3 ? 'high' : delta >= 1.5 ? 'med' : 'low';
+    return {
+      category: 'Trend', title: 'Handicap differential is rising',
+      stat: `+${delta.toFixed(1)}`, statLabel: 'diff rise (first half → recent)',
+      body: `Your handicap differential has risen by ${delta.toFixed(1)} points comparing your first ${half} rounds to your most recent ${pts.length - half}. Something in your game has regressed.`,
+      tip: 'Compare your GIR %, putts, and penalties between early and recent rounds to identify the specific category that changed.',
+      severity, score,
+    };
+  },
+];
+
+// Benchmarks that should surface as positive reinforcement when truly strong
+const GOOD_RULES = [
+  function goodScrambling(rounds, holes) {
+    const byId = {};
+    for (const h of holes) (byId[h.activity_id] ||= []).push(h);
+    const pts = rounds.map(r => {
+      const hs = byId[r.activity_id] || [];
+      const missed = hs.filter(h => h.gir === false && h.par != null && h.score != null);
+      if (!missed.length) return null;
+      return missed.filter(h => (h.score - h.par) <= 0).length / missed.length * 100;
+    }).filter(v => v != null);
+    if (pts.length < 2) return null;
+    const a = avg(pts);
+    if (a < 45) return null;
+    return {
+      category: 'Short Game', title: 'Strong short game',
+      stat: `${fmt(a)}%`, statLabel: 'scrambles',
+      body: `Scrambling ${fmt(a)}% — that's genuinely good. Your short game is compensating well for missed greens.`,
+      tip: 'Keep it up. Maintaining this while improving GIR would compound quickly into lower scores.',
+      severity: 'good', score: 0,
+    };
+  },
+  function goodFairways(rounds, holes) {
+    const vals = rounds.map(r => r.fairway_pct).filter(v => v != null);
+    if (vals.length < 2) return null;
+    const a = avg(vals);
+    if (a < 60) return null;
+    return {
+      category: 'Off the Tee', title: 'Accurate off the tee',
+      stat: `${fmt(a)}%`, statLabel: 'fairways hit',
+      body: `Hitting ${fmt(a)}% of fairways is above average for most amateurs. You're giving yourself good looks at the green regularly.`,
+      tip: 'With tee accuracy this strong, the next lever is iron consistency — closing the gap between fairway and GIR %.',
+      severity: 'good', score: 0,
+    };
+  },
+];
+
+function generateInsights(rounds, holes) {
+  const allRules = [...INSIGHT_RULES, ...GOOD_RULES];
+  const insights = allRules
+    .map(fn => {
+      try { return fn(rounds, holes); } catch { return null; }
+    })
+    .filter(Boolean);
+
+  // Deduplicate: within each group keep only the highest-scoring insight
+  const seen = new Map();
+  for (const i of insights) {
+    if (!i.group) { seen.set(Symbol(), i); continue; }
+    const existing = seen.get(i.group);
+    if (!existing || i.score > existing.score) seen.set(i.group, i);
+  }
+  const deduped = [...seen.values()];
+
+  // Rank: problems first (by score desc), then good news at the end
+  const problems = deduped.filter(i => i.severity !== 'good').sort((a, b) => b.score - a.score);
+  const good     = deduped.filter(i => i.severity === 'good');
+
+  // Show top 4 problems + up to 1 good-news card
+  return [...problems.slice(0, 4), ...good.slice(0, 1)];
+}
+
+function renderInsights(rounds, holes, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  const insights = generateInsights(rounds, holes);
+
+  // Preserve open/closed state across re-renders
+  const wasOpen = el.querySelector('details')?.open ?? false;
+
+  if (!insights.length) {
+    el.innerHTML = `<div class="insights-empty">⛳ Not enough data yet — play a few more rounds to unlock personalised insights.</div>`;
+    return;
+  }
+
+  const priorities = insights.filter(i => i.severity !== 'good');
+  const highCount  = priorities.filter(i => i.severity === 'high').length;
+  const label = priorities.length
+    ? `${priorities.length} insight${priorities.length !== 1 ? 's' : ''}${highCount ? ` · ${highCount} priority` : ''}`
+    : 'Looking good';
+
+  el.innerHTML = `
+    <details class="insights-details"${wasOpen ? ' open' : ''}>
+      <summary class="insights-summary">
+        <span class="insights-summary-label">
+          <span class="insights-toggle-icon"></span>
+          ${label}
+        </span>
+        <span class="insights-summary-pills">${priorities.slice(0, 3).map(i =>
+          `<span class="insight-pill severity-${i.severity}">${i.title}</span>`
+        ).join('')}</span>
+      </summary>
+      <div class="insights-grid">${insights.map(i => `
+        <div class="insight-card ${i.severity === 'good' ? 'insight-good' : `severity-${i.severity}`}">
+          <div class="insight-header">
+            <span class="insight-category">${i.category}</span>
+            <span class="insight-badge ${i.severity === 'good' ? 'insight-good' : `severity-${i.severity}`}">${
+              i.severity === 'high' ? 'Priority' : i.severity === 'med' ? 'Watch' : i.severity === 'low' ? 'Minor' : 'Strength'
+            }</span>
+          </div>
+          <div class="insight-title">${i.title}</div>
+          <div class="insight-stat">${i.stat}<span class="insight-stat-label">${i.statLabel}</span></div>
+          <div class="insight-body">${i.body}</div>
+          <div class="insight-tip">💡 ${i.tip}</div>
+        </div>`).join('')}
+      </div>
+    </details>`;
+}
+
 // ── Mode + setup ────────────────────────────────────────────────────────────────
 function switchMode(newMode) {
   mode = newMode;
   document.querySelectorAll('.mode-tabs .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
   document.getElementById('view-course').classList.toggle('active', mode === 'course');
   document.getElementById('view-overall').classList.toggle('active', mode === 'overall');
+  document.getElementById('view-manage').classList.toggle('active', mode === 'manage');
   render();
 }
 
@@ -838,7 +1300,8 @@ function render() {
   const n = base.length;
   document.getElementById('round-count').textContent = `${n} round${n !== 1 ? 's' : ''} (all courses)`;
   if (mode === 'course') renderCourseView();
-  else renderOverallView();
+  else if (mode === 'overall') renderOverallView();
+  else renderManageView();
 }
 
 function setupChrome() {
@@ -875,6 +1338,173 @@ function setupChrome() {
   });
   document.querySelectorAll('.mode-tabs .tab-btn').forEach(btn =>
     btn.addEventListener('click', () => switchMode(btn.dataset.mode)));
+  document.getElementById('btn-export-courses').addEventListener('click', exportCoursesJson);
+}
+
+// ── Course Manager ────────────────────────────────────────────────────────────
+
+// Returns true if the given Garmin course string resolves to a known course.
+function resolvesCourse(courseStr) {
+  if (!courseStr || courseStr === 'Unknown') return true;
+  const key = courseStr.toLowerCase();
+  if (aliasIndex[key]) return true;
+  for (const alias of Object.keys(aliasIndex)) {
+    if (key.includes(alias) || alias.includes(key)) return true;
+  }
+  return false;
+}
+
+function getUnmatchedCourseStrings() {
+  return [...new Set(allRounds.map(r => r.course))].filter(s => !resolvesCourse(s));
+}
+
+function saveAliasOverride(garminStr, canonicalName) {
+  const saved = JSON.parse(localStorage.getItem('golfstats.aliases') || '{}');
+  saved[garminStr] = canonicalName;
+  localStorage.setItem('golfstats.aliases', JSON.stringify(saved));
+}
+
+function saveNewCourseOverride(courseObj) {
+  const saved = JSON.parse(localStorage.getItem('golfstats.new_courses') || '[]');
+  const idx = saved.findIndex(c => c.name === courseObj.name);
+  if (idx >= 0) saved[idx] = courseObj; else saved.push(courseObj);
+  localStorage.setItem('golfstats.new_courses', JSON.stringify(saved));
+}
+
+function exportCoursesJson() {
+  const output = JSON.parse(JSON.stringify(rawCoursesData));
+  const savedAliases = JSON.parse(localStorage.getItem('golfstats.aliases') || '{}');
+  const savedCourses = JSON.parse(localStorage.getItem('golfstats.new_courses') || '[]');
+  for (const c of savedCourses) {
+    if (!output.find(x => x.name === c.name)) output.push(c);
+  }
+  for (const [alias, canon] of Object.entries(savedAliases)) {
+    const course = output.find(c => c.name === canon);
+    if (course) {
+      if (!course.aliases) course.aliases = [];
+      if (!course.aliases.map(a => a.toLowerCase()).includes(alias.toLowerCase())) course.aliases.push(alias);
+    }
+  }
+  const blob = new Blob([JSON.stringify({ courses: output }, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'courses.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function renderManageView() {
+  const unmatched = getUnmatchedCourseStrings();
+
+  // Update badge on the tab
+  const badge = document.getElementById('manage-badge');
+  if (badge) { badge.textContent = unmatched.length; badge.style.display = unmatched.length ? 'inline-flex' : 'none'; }
+
+  const knownCourses = Object.values(courseMeta).sort((a, b) => a.name.localeCompare(b.name));
+  document.getElementById('manage-summary').textContent =
+    `${knownCourses.length} known course${knownCourses.length !== 1 ? 's' : ''} · ${unmatched.length} unmatched Garmin string${unmatched.length !== 1 ? 's' : ''}`;
+
+  // ── Unmatched section ──
+  const unmatchedEl = document.getElementById('manage-unmatched');
+  if (!unmatched.length) {
+    unmatchedEl.innerHTML = '<div class="no-data" style="height:80px">All rounds are matched to a known course ✓</div>';
+  } else {
+    const existingOpts = knownCourses.map(c =>
+      `<option value="${c.name.replace(/"/g,'&quot;')}">${c.name}</option>`).join('');
+    unmatchedEl.innerHTML = unmatched.map(garminStr => {
+      const rounds = allRounds.filter(r => r.course === garminStr);
+      const dates  = rounds.map(r => r.date).sort();
+      const slug   = garminStr.replace(/[^a-z0-9]/gi, '_');
+      return `<div class="unmatched-card" data-garmin="${garminStr.replace(/"/g,'&quot;')}">
+        <div class="unmatched-header">
+          <div class="unmatched-name">${garminStr}</div>
+          <div class="unmatched-meta">${rounds.length} round${rounds.length !== 1 ? 's' : ''} · ${dates[0]} – ${dates.at(-1)}</div>
+        </div>
+        <div class="manage-actions-grid">
+          <div class="manage-form-panel">
+            <div class="manage-form-label">Map to existing course</div>
+            <select class="form-input map-select" data-slug="${slug}">
+              <option value="">Select course…</option>${existingOpts}
+            </select>
+            <button class="btn btn-primary map-save" data-garmin="${garminStr.replace(/"/g,'&quot;')}" data-slug="${slug}">Save &amp; Reload</button>
+          </div>
+          <div class="manage-form-panel">
+            <div class="manage-form-label">Create new course entry</div>
+            <div class="form-grid-2">
+              <input class="form-input" placeholder="Canonical name *" data-field="name" data-slug="${slug}">
+              <input class="form-input" placeholder="Tee box" data-field="tee_box" data-slug="${slug}">
+              <input class="form-input" type="number" placeholder="Par" data-field="par" data-slug="${slug}">
+              <input class="form-input" type="number" step="0.1" placeholder="Course rating" data-field="rating" data-slug="${slug}">
+              <input class="form-input" type="number" placeholder="Slope" data-field="slope" data-slug="${slug}">
+              <input class="form-input" type="number" placeholder="Yards" data-field="yards" data-slug="${slug}">
+            </div>
+            <button class="btn btn-primary new-course-save" data-garmin="${garminStr.replace(/"/g,'&quot;')}" data-slug="${slug}">Save &amp; Reload</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+
+    // Attach listeners for "map to existing"
+    unmatchedEl.querySelectorAll('.map-save').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const sel = unmatchedEl.querySelector(`.map-select[data-slug="${btn.dataset.slug}"]`);
+        if (!sel.value) { alert('Please select a course.'); return; }
+        saveAliasOverride(btn.dataset.garmin, sel.value);
+        location.reload();
+      });
+    });
+
+    // Attach listeners for "create new course"
+    unmatchedEl.querySelectorAll('.new-course-save').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const slug = btn.dataset.slug;
+        const get = f => unmatchedEl.querySelector(`input[data-field="${f}"][data-slug="${slug}"]`)?.value.trim() || '';
+        const name = get('name');
+        if (!name) { alert('Canonical name is required.'); return; }
+        const num = (v, float) => { const n = float ? parseFloat(v) : parseInt(v, 10); return isNaN(n) ? null : n; };
+        saveNewCourseOverride({
+          name,
+          aliases: [btn.dataset.garmin],
+          tee_box: get('tee_box') || null,
+          par:     num(get('par')),
+          rating:  num(get('rating'), true),
+          slope:   num(get('slope')),
+          yards:   num(get('yards')),
+          holes:   [],
+        });
+        location.reload();
+      });
+    });
+  }
+
+  // ── Known courses table ──
+  const knownEl = document.getElementById('manage-known');
+  const rows = knownCourses.map(c => {
+    const roundCount = allRounds.filter(r => {
+      const k = r.course.toLowerCase();
+      if (aliasIndex[k] === c.name) return true;
+      for (const a of Object.keys(aliasIndex)) {
+        if (aliasIndex[a] === c.name && (k.includes(a) || a.includes(k))) return true;
+      }
+      return false;
+    }).length;
+    const savedAliasesForCourse = Object.entries(JSON.parse(localStorage.getItem('golfstats.aliases') || '{}'))
+      .filter(([,v]) => v === c.name).map(([k]) => k);
+    const allAliases = [...(rawCoursesData.find(x => x.name === c.name)?.aliases || []), ...savedAliasesForCourse];
+    return `<tr>
+      <td class="metric-label">${c.name}</td>
+      <td>${c.par ?? '—'}</td>
+      <td>${c.rating ?? '—'}</td>
+      <td>${c.slope ?? '—'}</td>
+      <td>${roundCount}</td>
+      <td class="alias-cell">${allAliases.join(', ') || '—'}</td>
+    </tr>`;
+  }).join('');
+  knownEl.innerHTML = `<div class="chart-card" style="padding:0;overflow:hidden">
+    <table class="compare-table">
+      <thead><tr><th style="text-align:left">Course</th><th>Par</th><th>Rating</th><th>Slope</th><th>Rounds</th><th style="text-align:left">Aliases</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────────
@@ -883,6 +1513,9 @@ async function init() {
     await loadData();
     setupChrome();
     if (lastUpdated) document.getElementById('last-updated').textContent = `Last synced: ${lastUpdated.slice(0, 10)}`;
+    // Update manage badge immediately so it shows even before user clicks the tab
+    const _badge = document.getElementById('manage-badge');
+    if (_badge) { const _n = getUnmatchedCourseStrings().length; _badge.textContent = _n; _badge.style.display = _n ? 'inline-flex' : 'none'; }
     render();
     // Lazy-load shot data, then refresh shot-dependent sections.
     loadShots().then(() => render());

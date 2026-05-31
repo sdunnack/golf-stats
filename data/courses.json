@@ -485,118 +485,64 @@
       "garmin_course_id": 8938,
       "aliases": ["Glastonbury"],
       "tee_box": null,
-      "par": null,
-      "rating": null,
-      "slope": null,
-      "yards": null,
+      "par": 35,
+      "rating": 64.2,
+      "slope": 106,
+      "yards": 2068,
       "holes": [
         {
           "hole": 1,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 298,
+          "handicap": 2
         },
         {
           "hole": 2,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 122,
+          "handicap": 6
         },
         {
           "hole": 3,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 401,
+          "handicap": 7
         },
         {
           "hole": 4,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 310,
+          "handicap": 1
         },
         {
           "hole": 5,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 395,
+          "handicap": 4
         },
         {
           "hole": 6,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 133,
+          "handicap": 5
         },
         {
           "hole": 7,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 214,
+          "handicap": 9
         },
         {
           "hole": 8,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 80,
+          "handicap": 8
         },
         {
           "hole": 9,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 10,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 11,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 12,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 13,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 14,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 15,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 16,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 17,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 18,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 115,
+          "handicap": 3
         }
       ]
     },
@@ -844,119 +790,119 @@
       "name": "Connecticut National Golf Club",
       "garmin_course_id": null,
       "aliases": ["Putnam"],
-      "tee_box": null,
-      "par": null,
-      "rating": null,
-      "slope": null,
-      "yards": null,
+      "tee_box": "Red",
+      "par": 71,
+      "rating": 68.2,
+      "slope": 115,
+      "yards": 4815,
       "holes": [
         {
           "hole": 1,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 353,
+          "handicap": 7
         },
         {
           "hole": 2,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 267,
+          "handicap": 5
         },
         {
           "hole": 3,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 309,
+          "handicap": 3
         },
         {
           "hole": 4,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 145,
+          "handicap": 9
         },
         {
           "hole": 5,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 250,
+          "handicap": 11
         },
         {
           "hole": 6,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 417,
+          "handicap": 1
         },
         {
           "hole": 7,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 117,
+          "handicap": 15
         },
         {
           "hole": 8,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 255,
+          "handicap": 13
         },
         {
           "hole": 9,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 105,
+          "handicap": 17
         },
         {
           "hole": 10,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 308,
+          "handicap": 4
         },
         {
           "hole": 11,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 116,
+          "handicap": 18
         },
         {
           "hole": 12,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 425,
+          "handicap": 6
         },
         {
           "hole": 13,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 259,
+          "handicap": 14
         },
         {
           "hole": 14,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 304,
+          "handicap": 2
         },
         {
           "hole": 15,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 119,
+          "handicap": 16
         },
         {
           "hole": 16,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 339,
+          "handicap": 8
         },
         {
           "hole": 17,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 297,
+          "handicap": 12
         },
         {
           "hole": 18,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 430,
+          "handicap": 10
         }
       ]
     },
