@@ -444,7 +444,6 @@ function renderCourseView() {
   renderFairwayMissDirection(holes, 'chart-c-fwy-miss', 'summary-c-fwy-miss');
   renderScramblingTrend(rounds, holes, 'chart-c-scramble-trend', 'summary-c-scramble-trend');
   renderPenaltyTrend(rounds, holes, 'chart-c-penalty-trend', 'summary-c-penalty-trend');
-  renderHandicapDiffTrend(rounds, 'chart-c-hcap-trend', 'summary-c-hcap-trend');
   renderCourseVsOverall(rounds, holes, base);
   renderCourseScorecards(rounds, holes, shots);
 }
@@ -710,7 +709,6 @@ function renderScorecard(actId, holesAll, shotsAll) {
           <tr><td class="stat-label">GIR</td>${girRow}</tr>
           <tr><td class="stat-label">Fairway</td>${fwyRow}</tr>
           <tr><td class="stat-label">Penalties</td>${penRow}</tr>
-          ${allHaveYd ? `<tr><td class="stat-label">Yards</td>${ydRow}</tr>` : ''}
         </tbody>
       </table>
     </div>
@@ -720,7 +718,6 @@ function renderScorecard(actId, holesAll, shotsAll) {
       ${girTotal > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">GIR</span><span class="sc-sum-value">${girCount}/${girTotal}</span></div>` : ''}
       ${fwyTotal > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Fairways</span><span class="sc-sum-value">${fwyHit}/${fwyTotal}</span></div>` : ''}
       ${totalPen > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Penalties</span><span class="sc-sum-value">${totalPen}</span></div>` : ''}
-      ${totalYards != null ? `<div class="sc-sum-item"><span class="sc-sum-label">Yards</span><span class="sc-sum-value">${totalYards.toLocaleString()}</span></div>` : ''}
       ${longestDrive != null && longestDrive > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Longest Drive</span><span class="sc-sum-value">${longestDrive} yds</span></div>` : ''}
     </div>`;
 }
@@ -963,10 +960,18 @@ function renderHandicapDiffTrend(rounds, chartId = 'chart-o-hcap-trend', summary
   const pts = rounds.map(r => {
     const meta = getCourseMeta(r.course);
     if (!meta?.rating || !meta?.slope || r.score == null) return null;
-    return { date: r.date, diff: (r.score - meta.rating) / meta.slope * 113 };
+    return { date: r.date, course: r.course, diff: (r.score - meta.rating) / meta.slope * 113 };
   }).filter(Boolean);
 
   if (!pts.length) { noData(chartId, 'Course rating/slope data required'); setSummary(summaryId, ''); return; }
+
+  const uniqueCourses = new Set(pts.map(p => p.course));
+  if (uniqueCourses.size < 2) {
+    noData(chartId, 'Only meaningful across multiple courses — all rounds here are on the same course, so this would be identical to the score trend');
+    setSummary(summaryId, '');
+    return;
+  }
+
   trendLine(chartId, summaryId, pts.map(p => p.date), pts.map(p => p.diff), 'Handicap Diff', C_NAVY);
 }
 

@@ -193,6 +193,27 @@
       "name": "Little Engine",
       "model": null,
       "retired": false
+    },
+    {
+      "id": 813076061,
+      "club_type_id": 1,
+      "name": "Dream Machine",
+      "model": "Taylormade Qi35",
+      "retired": false
+    },
+    {
+      "id": 813076272,
+      "club_type_id": 26,
+      "name": "Heavenwood",
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 838043311,
+      "club_type_id": 21,
+      "name": "54* Vokey",
+      "model": "Vokey 54/12",
+      "retired": false
     }
   ]
 }

@@ -2,17 +2,17 @@
 """
 fetch_rounds.py
 Pulls golf round data from Garmin Connect and stores it in rounds.json.
-Run this after each round (or to backfill history).
+Always saves a raw API dump and runs backfill_shots + backfill_enrichment automatically.
 
 Usage:
     python fetch_rounds.py                    # fetch last 30 days
     python fetch_rounds.py --days 365         # fetch last year
-    python fetch_rounds.py --dump-raw         # also save raw API response for field inspection
 """
 
 import argparse
 import json
 import os
+import subprocess
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -837,9 +837,6 @@ def main():
     parser.add_argument(
         "--days", type=int, default=30, help="Days of history to fetch (default: 30)"
     )
-    parser.add_argument(
-        "--dump-raw", action="store_true", help="Save raw API responses for inspection"
-    )
     args = parser.parse_args()
 
     client = get_garmin_client()
@@ -892,8 +889,7 @@ def main():
         }
         scorecard = fetch_scorecard_detail(client, activity, debug=debug_entry)
 
-        if args.dump_raw:
-            debug_entry["scorecard_detail"] = scorecard
+        debug_entry["scorecard_detail"] = scorecard
 
         round_record = parse_activity(activity, scorecard)
         if not has_recorded_score(round_record):
@@ -911,9 +907,8 @@ def main():
             else:
                 print("    → No scorecard ID; skipping shot data")
 
-        if args.dump_raw:
-            debug_entry["shot_data_raw"] = shot_raw
-            raw_dump.append(debug_entry)
+        debug_entry["shot_data_raw"] = shot_raw
+        raw_dump.append(debug_entry)
 
         new_rounds.append(round_record)
 
@@ -931,12 +926,19 @@ def main():
     save_rounds(merged_data)
     print(f"\nDone. Added {added} new round(s), updated {updated} existing round(s).")
 
-    if args.dump_raw:
-        with open(RAW_DUMP_FILE, "w") as f:
-            json.dump(raw_dump, f, indent=2, default=str)
-        print(
-            f"Raw API data saved to {RAW_DUMP_FILE} — inspect this to verify field names."
-        )
+    with open(RAW_DUMP_FILE, "w") as f:
+        json.dump(raw_dump, f, indent=2, default=str)
+    print(f"Raw API data saved to {RAW_DUMP_FILE}")
+
+    ingestion_dir = Path(__file__).parent
+    print("\nRunning backfill_shots...")
+    subprocess.run(
+        [sys.executable, str(ingestion_dir / "backfill_shots.py")], check=True
+    )
+    print("\nRunning backfill_enrichment...")
+    subprocess.run(
+        [sys.executable, str(ingestion_dir / "backfill_enrichment.py")], check=True
+    )
 
 
 if __name__ == "__main__":
