@@ -1,6 +1,84 @@
 {
   "rounds": [
     {
+      "activity_id": "23237829591",
+      "date": "2026-06-13",
+      "course": "Manchester Country Club",
+      "duration_seconds": 15680.0595703125,
+      "distance_meters": 11637.16015625,
+      "course_id": 8401,
+      "tee_box": "Red",
+      "tee_box_rating": 72.6,
+      "tee_box_slope": 120,
+      "front_nine": {
+        "holes_played": 9,
+        "strokes": 46,
+        "putts": 19,
+        "gir": 3,
+        "birdies": 0,
+        "pars": 2,
+        "bogeys": 4,
+        "doubles_plus": 3,
+        "eagles": 0
+      },
+      "back_nine": {
+        "holes_played": 9,
+        "strokes": 51,
+        "putts": 17,
+        "gir": 0,
+        "birdies": 0,
+        "pars": 1,
+        "bogeys": 2,
+        "doubles_plus": 6,
+        "eagles": 0
+      },
+      "totals": {
+        "holes_played": 18,
+        "score": 97,
+        "putts": 36,
+        "gir_count": 3,
+        "gir_pct": 16.7,
+        "fairways_hit": 8,
+        "fairways_possible": 14,
+        "fairway_pct": 57.1
+      },
+      "_raw_available": true
+    },
+    {
+      "activity_id": "23193788559",
+      "date": "2026-06-09",
+      "course": "Manchester Country Club",
+      "duration_seconds": 8415.306640625,
+      "distance_meters": 6294.72998046875,
+      "course_id": 8401,
+      "tee_box": "Red",
+      "tee_box_rating": 72.6,
+      "tee_box_slope": 120,
+      "front_nine": {
+        "holes_played": 9,
+        "strokes": 50,
+        "putts": 19,
+        "gir": 1,
+        "birdies": 0,
+        "pars": 1,
+        "bogeys": 4,
+        "doubles_plus": 4,
+        "eagles": 0
+      },
+      "back_nine": null,
+      "totals": {
+        "holes_played": 9,
+        "score": 50,
+        "putts": 19,
+        "gir_count": 1,
+        "gir_pct": 11.1,
+        "fairways_hit": 3,
+        "fairways_possible": 7,
+        "fairway_pct": 42.9
+      },
+      "_raw_available": true
+    },
+    {
       "activity_id": "23167481578",
       "date": "2026-06-07",
       "course": "Manchester Country Club",
@@ -4302,5 +4380,5 @@
       "back_nine": null
     }
   ],
-  "last_updated": "2026-06-07T17:48:05.876846"
+  "last_updated": "2026-06-15T13:33:26.232783"
 }
