@@ -1,794 +1,368 @@
 {
   "courses": [
     {
-      "name": "Wintonbury Hills Golf Course",
-      "garmin_course_id": null,
-      "aliases": ["Bloomfield"],
-      "tee_box": "Yellow",
-      "par": 70,
-      "rating": 68.7,
-      "slope": 114,
-      "yards": 5005,
+      "name": "Blackledge - Anderson's Glen",
+      "garmin_course_id": 1890,
+      "aliases": [],
+      "tee_box": "white",
+      "par": 72,
+      "rating": 68.2,
+      "slope": 120,
+      "yards": 4886,
       "holes": [
         {
           "hole": 1,
           "par": 4,
-          "yardage": 315,
-          "handicap": 10
+          "yardage": 288,
+          "handicap": 5
         },
         {
           "hole": 2,
           "par": 4,
-          "yardage": 295,
-          "handicap": 8
+          "yardage": 285,
+          "handicap": 7
         },
         {
           "hole": 3,
-          "par": 3,
-          "yardage": 107,
-          "handicap": 18
+          "par": 4,
+          "yardage": 272,
+          "handicap": 13
         },
         {
           "hole": 4,
           "par": 5,
-          "yardage": 413,
-          "handicap": 2
+          "yardage": 418,
+          "handicap": 1
         },
         {
           "hole": 5,
           "par": 4,
-          "yardage": 302,
-          "handicap": 12
+          "yardage": 297,
+          "handicap": 9
         },
         {
           "hole": 6,
-          "par": 4,
-          "yardage": 325,
-          "handicap": 6
+          "par": 3,
+          "yardage": 143,
+          "handicap": 17
         },
         {
           "hole": 7,
-          "par": 3,
-          "yardage": 108,
-          "handicap": 16
+          "par": 4,
+          "yardage": 255,
+          "handicap": 11
         },
         {
           "hole": 8,
-          "par": 5,
-          "yardage": 418,
-          "handicap": 4
+          "par": 3,
+          "yardage": 132,
+          "handicap": 15
         },
         {
           "hole": 9,
-          "par": 3,
-          "yardage": 110,
-          "handicap": 14
+          "par": 5,
+          "yardage": 352,
+          "handicap": 3
         },
         {
           "hole": 10,
           "par": 4,
-          "yardage": 335,
-          "handicap": 9
+          "yardage": 291,
+          "handicap": 14
         },
         {
           "hole": 11,
           "par": 4,
-          "yardage": 290,
-          "handicap": 7
+          "yardage": 307,
+          "handicap": 12
         },
         {
           "hole": 12,
-          "par": 3,
-          "yardage": 134,
-          "handicap": 17
+          "par": 5,
+          "yardage": 364,
+          "handicap": 2
         },
         {
           "hole": 13,
-          "par": 5,
-          "yardage": 440,
-          "handicap": 1
+          "par": 3,
+          "yardage": 140,
+          "handicap": 16
         },
         {
           "hole": 14,
           "par": 4,
-          "yardage": 320,
-          "handicap": 3
+          "yardage": 260,
+          "handicap": 6
         },
         {
           "hole": 15,
           "par": 4,
-          "yardage": 314,
-          "handicap": 11
+          "yardage": 271,
+          "handicap": 8
         },
         {
           "hole": 16,
-          "par": 4,
-          "yardage": 312,
-          "handicap": 13
+          "par": 3,
+          "yardage": 129,
+          "handicap": 18
         },
         {
           "hole": 17,
-          "par": 3,
-          "yardage": 125,
-          "handicap": 15
+          "par": 5,
+          "yardage": 405,
+          "handicap": 4
         },
         {
           "hole": 18,
           "par": 4,
-          "yardage": 342,
-          "handicap": 5
+          "yardage": 277,
+          "handicap": 10
         }
       ]
     },
     {
-      "name": "Gillette Ridge GC",
-      "garmin_course_id": null,
+      "name": "Blackledge - Gilead Highlands",
+      "garmin_course_id": 1891,
       "aliases": [],
-      "tee_box": "Green",
+      "tee_box": "white",
       "par": 72,
-      "rating": 69.8,
-      "slope": 130,
-      "yards": 4847,
+      "rating": 67.7,
+      "slope": 120,
+      "yards": 4951,
       "holes": [
         {
           "hole": 1,
           "par": 4,
-          "yardage": 298,
-          "handicap": 18
+          "yardage": 309,
+          "handicap": 5
         },
         {
           "hole": 2,
-          "par": 5,
-          "yardage": 404,
-          "handicap": 4
+          "par": 3,
+          "yardage": 113,
+          "handicap": 17
         },
         {
           "hole": 3,
-          "par": 4,
-          "yardage": 241,
-          "handicap": 6
+          "par": 5,
+          "yardage": 405,
+          "handicap": 1
         },
         {
           "hole": 4,
-          "par": 3,
-          "yardage": 117,
-          "handicap": 12
+          "par": 4,
+          "yardage": 255,
+          "handicap": 13
         },
         {
           "hole": 5,
           "par": 4,
-          "yardage": 302,
-          "handicap": 10
+          "yardage": 288,
+          "handicap": 9
         },
         {
           "hole": 6,
           "par": 4,
-          "yardage": 253,
-          "handicap": 8
+          "yardage": 285,
+          "handicap": 11
         },
         {
           "hole": 7,
           "par": 5,
-          "yardage": 426,
-          "handicap": 2
+          "yardage": 400,
+          "handicap": 3
         },
         {
           "hole": 8,
           "par": 3,
-          "yardage": 123,
-          "handicap": 16
+          "yardage": 131,
+          "handicap": 15
         },
         {
           "hole": 9,
           "par": 4,
-          "yardage": 338,
-          "handicap": 14
+          "yardage": 311,
+          "handicap": 7
         },
         {
           "hole": 10,
-          "par": 4,
-          "yardage": 234,
-          "handicap": 11
+          "par": 5,
+          "yardage": 397,
+          "handicap": 4
         },
         {
           "hole": 11,
           "par": 3,
           "yardage": 119,
-          "handicap": 7
-        },
-        {
-          "hole": 12,
-          "par": 5,
-          "yardage": 394,
-          "handicap": 9
-        },
-        {
-          "hole": 13,
-          "par": 4,
-          "yardage": 215,
-          "handicap": 17
-        },
-        {
-          "hole": 14,
-          "par": 4,
-          "yardage": 225,
-          "handicap": 15
-        },
-        {
-          "hole": 15,
-          "par": 3,
-          "yardage": 124,
-          "handicap": 13
-        },
-        {
-          "hole": 16,
-          "par": 4,
-          "yardage": 345,
-          "handicap": 5
-        },
-        {
-          "hole": 17,
-          "par": 5,
-          "yardage": 436,
-          "handicap": 3
-        },
-        {
-          "hole": 18,
-          "par": 4,
-          "yardage": 301,
-          "handicap": 1
-        }
-      ]
-    },
-    {
-      "name": "Twin Hills CC",
-      "garmin_course_id": 14091,
-      "aliases": ["Coventry"],
-      "tee_box": "Red",
-      "par": 70,
-      "rating": 68.4,
-      "slope": 117,
-      "yards": 4964,
-      "holes": [
-        {
-          "hole": 1,
-          "par": 4,
-          "yardage": 364,
-          "handicap": 5
-        },
-        {
-          "hole": 2,
-          "par": 4,
-          "yardage": 247,
-          "handicap": 13
-        },
-        {
-          "hole": 3,
-          "par": 5,
-          "yardage": 447,
-          "handicap": 1
-        },
-        {
-          "hole": 4,
-          "par": 3,
-          "yardage": 133,
-          "handicap": 11
-        },
-        {
-          "hole": 5,
-          "par": 5,
-          "yardage": 397,
-          "handicap": 3
-        },
-        {
-          "hole": 6,
-          "par": 4,
-          "yardage": 264,
-          "handicap": 7
-        },
-        {
-          "hole": 7,
-          "par": 4,
-          "yardage": 391,
-          "handicap": 9
-        },
-        {
-          "hole": 8,
-          "par": 3,
-          "yardage": 127,
-          "handicap": 15
-        },
-        {
-          "hole": 9,
-          "par": 4,
-          "yardage": 278,
-          "handicap": 17
-        },
-        {
-          "hole": 10,
-          "par": 3,
-          "yardage": 112,
-          "handicap": 14
-        },
-        {
-          "hole": 11,
-          "par": 4,
-          "yardage": 322,
-          "handicap": 8
-        },
-        {
-          "hole": 12,
-          "par": 4,
-          "yardage": 295,
-          "handicap": 4
-        },
-        {
-          "hole": 13,
-          "par": 3,
-          "yardage": 179,
-          "handicap": 12
-        },
-        {
-          "hole": 14,
-          "par": 4,
-          "yardage": 301,
-          "handicap": 10
-        },
-        {
-          "hole": 15,
-          "par": 5,
-          "yardage": 396,
-          "handicap": 2
-        },
-        {
-          "hole": 16,
-          "par": 3,
-          "yardage": 131,
           "handicap": 18
         },
         {
-          "hole": 17,
-          "par": 4,
-          "yardage": 331,
-          "handicap": 6
-        },
-        {
-          "hole": 18,
-          "par": 4,
-          "yardage": 249,
-          "handicap": 16
-        }
-      ]
-    },
-    {
-      "name": "Farmington Country Club",
-      "garmin_course_id": null,
-      "aliases": ["Farmington"],
-      "tee_box": null,
-      "par": null,
-      "rating": null,
-      "slope": null,
-      "yards": null,
-      "holes": [
-        {
-          "hole": 1,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 2,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 3,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 4,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 5,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 6,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 7,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 8,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 9,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 10,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 11,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
           "hole": 12,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 13,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 14,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 15,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 16,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 17,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 18,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        }
-      ]
-    },
-    {
-      "name": "Minnechaug Golf Club",
-      "garmin_course_id": 8938,
-      "aliases": ["Glastonbury"],
-      "tee_box": null,
-      "par": 35,
-      "rating": 64.2,
-      "slope": 106,
-      "yards": 2068,
-      "holes": [
-        {
-          "hole": 1,
-          "par": 4,
-          "yardage": 298,
-          "handicap": 2
-        },
-        {
-          "hole": 2,
-          "par": 4,
-          "yardage": 122,
-          "handicap": 6
-        },
-        {
-          "hole": 3,
           "par": 5,
           "yardage": 401,
-          "handicap": 7
-        },
-        {
-          "hole": 4,
-          "par": 4,
-          "yardage": 310,
-          "handicap": 1
-        },
-        {
-          "hole": 5,
-          "par": 5,
-          "yardage": 395,
-          "handicap": 4
-        },
-        {
-          "hole": 6,
-          "par": 3,
-          "yardage": 133,
-          "handicap": 5
-        },
-        {
-          "hole": 7,
-          "par": 4,
-          "yardage": 214,
-          "handicap": 9
-        },
-        {
-          "hole": 8,
-          "par": 3,
-          "yardage": 80,
-          "handicap": 8
-        },
-        {
-          "hole": 9,
-          "par": 3,
-          "yardage": 115,
-          "handicap": 3
-        }
-      ]
-    },
-    {
-      "name": "Hebron",
-      "garmin_course_id": null,
-      "aliases": [],
-      "tee_box": null,
-      "par": null,
-      "rating": null,
-      "slope": null,
-      "yards": null,
-      "holes": [
-        {
-          "hole": 1,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 2,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 3,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 4,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 5,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 6,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 7,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 8,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 9,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 10,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 11,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 12,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 13,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 14,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 15,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 16,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 17,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        },
-        {
-          "hole": 18,
-          "par": null,
-          "yardage": null,
-          "handicap": null
-        }
-      ]
-    },
-    {
-      "name": "Manchester Country Club",
-      "garmin_course_id": null,
-      "aliases": ["Manchester"],
-      "tee_box": "Red/Green",
-      "par": 72,
-      "rating": 69.6,
-      "slope": 123,
-      "yards": 5038,
-      "holes": [
-        {
-          "hole": 1,
-          "par": 4,
-          "yardage": 300,
-          "handicap": 13
-        },
-        {
-          "hole": 2,
-          "par": 4,
-          "yardage": 317,
-          "handicap": 11
-        },
-        {
-          "hole": 3,
-          "par": 5,
-          "yardage": 406,
-          "handicap": 1
-        },
-        {
-          "hole": 4,
-          "par": 5,
-          "yardage": 379,
-          "handicap": 5
-        },
-        {
-          "hole": 5,
-          "par": 3,
-          "yardage": 126,
-          "handicap": 17
-        },
-        {
-          "hole": 6,
-          "par": 4,
-          "yardage": 293,
-          "handicap": 3
-        },
-        {
-          "hole": 7,
-          "par": 4,
-          "yardage": 310,
-          "handicap": 7
-        },
-        {
-          "hole": 8,
-          "par": 3,
-          "yardage": 128,
-          "handicap": 15
-        },
-        {
-          "hole": 9,
-          "par": 4,
-          "yardage": 271,
-          "handicap": 9
-        },
-        {
-          "hole": 10,
-          "par": 4,
-          "yardage": 207,
-          "handicap": 18
-        },
-        {
-          "hole": 11,
-          "par": 4,
-          "yardage": 289,
-          "handicap": 12
-        },
-        {
-          "hole": 12,
-          "par": 3,
-          "yardage": 123,
-          "handicap": 16
-        },
-        {
-          "hole": 13,
-          "par": 4,
-          "yardage": 259,
-          "handicap": 4
-        },
-        {
-          "hole": 14,
-          "par": 5,
-          "yardage": 444,
           "handicap": 2
         },
         {
+          "hole": 13,
+          "par": 3,
+          "yardage": 114,
+          "handicap": 16
+        },
+        {
+          "hole": 14,
+          "par": 4,
+          "yardage": 327,
+          "handicap": 8
+        },
+        {
           "hole": 15,
-          "par": 5,
-          "yardage": 410,
+          "par": 4,
+          "yardage": 248,
           "handicap": 10
         },
         {
           "hole": 16,
           "par": 4,
-          "yardage": 341,
-          "handicap": 8
+          "yardage": 277,
+          "handicap": 14
         },
         {
           "hole": 17,
           "par": 4,
-          "yardage": 302,
+          "yardage": 298,
           "handicap": 6
         },
         {
           "hole": 18,
+          "par": 4,
+          "yardage": 273,
+          "handicap": 12
+        }
+      ]
+    },
+    {
+      "name": "Cedar Knob Golf Club",
+      "garmin_course_id": 2835,
+      "aliases": ["Somers"],
+      "tee_box": "Red",
+      "par": 74,
+      "rating": 5784,
+      "slope": 127,
+      "yards": 73.4,
+      "holes": [
+        {
+          "hole": 1,
+          "par": 4,
+          "yardage": 372,
+          "handicap": 7
+        },
+        {
+          "hole": 2,
           "par": 3,
-          "yardage": 133,
+          "yardage": 143,
+          "handicap": 17
+        },
+        {
+          "hole": 3,
+          "par": 5,
+          "yardage": 453,
+          "handicap": 1
+        },
+        {
+          "hole": 4,
+          "par": 5,
+          "yardage": 375,
+          "handicap": 5
+        },
+        {
+          "hole": 5,
+          "par": 3,
+          "yardage": 173,
+          "handicap": 15
+        },
+        {
+          "hole": 6,
+          "par": 4,
+          "yardage": 299,
+          "handicap": 13
+        },
+        {
+          "hole": 7,
+          "par": 5,
+          "yardage": 448,
+          "handicap": 3
+        },
+        {
+          "hole": 8,
+          "par": 4,
+          "yardage": 310,
+          "handicap": 9
+        },
+        {
+          "hole": 9,
+          "par": 4,
+          "yardage": 306,
+          "handicap": 11
+        },
+        {
+          "hole": 10,
+          "par": 5,
+          "yardage": 430,
+          "handicap": 2
+        },
+        {
+          "hole": 11,
+          "par": 4,
+          "yardage": 355,
+          "handicap": 10
+        },
+        {
+          "hole": 12,
+          "par": 5,
+          "yardage": 380,
+          "handicap": 6
+        },
+        {
+          "hole": 13,
+          "par": 4,
+          "yardage": 330,
+          "handicap": 12
+        },
+        {
+          "hole": 14,
+          "par": 3,
+          "yardage": 140,
+          "handicap": 18
+        },
+        {
+          "hole": 15,
+          "par": 4,
+          "yardage": 330,
           "handicap": 14
+        },
+        {
+          "hole": 16,
+          "par": 3,
+          "yardage": 160,
+          "handicap": 16
+        },
+        {
+          "hole": 17,
+          "par": 5,
+          "yardage": 440,
+          "handicap": 4
+        },
+        {
+          "hole": 18,
+          "par": 4,
+          "yardage": 340,
+          "handicap": 8
         }
       ]
     },
     {
       "name": "Connecticut National Golf Club",
-      "garmin_course_id": null,
+      "garmin_course_id": 11012,
       "aliases": ["Putnam"],
       "tee_box": "Red",
       "par": 71,
@@ -907,9 +481,795 @@
       ]
     },
     {
-      "name": "Cedar Knob Golf Club",
-      "garmin_course_id": null,
-      "aliases": ["Somers"],
+      "name": "Country Club of Farmington",
+      "garmin_course_id": 3563,
+      "aliases": ["Farmington"],
+      "tee_box": null,
+      "par": null,
+      "rating": null,
+      "slope": null,
+      "yards": null,
+      "holes": [
+        {
+          "hole": 1,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 2,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 3,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 4,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 5,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 6,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 7,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 8,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 9,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 10,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 11,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 12,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 13,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 14,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 15,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 16,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 17,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 18,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        }
+      ]
+    },
+    {
+      "name": "Gillette Ridge GC",
+      "garmin_course_id": 5476,
+      "aliases": [],
+      "tee_box": "Green",
+      "par": 72,
+      "rating": 69.8,
+      "slope": 130,
+      "yards": 4847,
+      "holes": [
+        {
+          "hole": 1,
+          "par": 4,
+          "yardage": 298,
+          "handicap": 18
+        },
+        {
+          "hole": 2,
+          "par": 5,
+          "yardage": 404,
+          "handicap": 4
+        },
+        {
+          "hole": 3,
+          "par": 4,
+          "yardage": 241,
+          "handicap": 6
+        },
+        {
+          "hole": 4,
+          "par": 3,
+          "yardage": 117,
+          "handicap": 12
+        },
+        {
+          "hole": 5,
+          "par": 4,
+          "yardage": 302,
+          "handicap": 10
+        },
+        {
+          "hole": 6,
+          "par": 4,
+          "yardage": 253,
+          "handicap": 8
+        },
+        {
+          "hole": 7,
+          "par": 5,
+          "yardage": 426,
+          "handicap": 2
+        },
+        {
+          "hole": 8,
+          "par": 3,
+          "yardage": 123,
+          "handicap": 16
+        },
+        {
+          "hole": 9,
+          "par": 4,
+          "yardage": 338,
+          "handicap": 14
+        },
+        {
+          "hole": 10,
+          "par": 4,
+          "yardage": 234,
+          "handicap": 11
+        },
+        {
+          "hole": 11,
+          "par": 3,
+          "yardage": 119,
+          "handicap": 7
+        },
+        {
+          "hole": 12,
+          "par": 5,
+          "yardage": 394,
+          "handicap": 9
+        },
+        {
+          "hole": 13,
+          "par": 4,
+          "yardage": 215,
+          "handicap": 17
+        },
+        {
+          "hole": 14,
+          "par": 4,
+          "yardage": 225,
+          "handicap": 15
+        },
+        {
+          "hole": 15,
+          "par": 3,
+          "yardage": 124,
+          "handicap": 13
+        },
+        {
+          "hole": 16,
+          "par": 4,
+          "yardage": 345,
+          "handicap": 5
+        },
+        {
+          "hole": 17,
+          "par": 5,
+          "yardage": 436,
+          "handicap": 3
+        },
+        {
+          "hole": 18,
+          "par": 4,
+          "yardage": 301,
+          "handicap": 1
+        }
+      ]
+    },
+    {
+      "name": "Manchester Country Club",
+      "garmin_course_id": 8401,
+      "aliases": ["Manchester"],
+      "tee_box": "Red/Green",
+      "par": 72,
+      "rating": 69.6,
+      "slope": 123,
+      "yards": 5038,
+      "holes": [
+        {
+          "hole": 1,
+          "par": 4,
+          "yardage": 300,
+          "handicap": 13
+        },
+        {
+          "hole": 2,
+          "par": 4,
+          "yardage": 317,
+          "handicap": 11
+        },
+        {
+          "hole": 3,
+          "par": 5,
+          "yardage": 406,
+          "handicap": 1
+        },
+        {
+          "hole": 4,
+          "par": 5,
+          "yardage": 379,
+          "handicap": 5
+        },
+        {
+          "hole": 5,
+          "par": 3,
+          "yardage": 126,
+          "handicap": 17
+        },
+        {
+          "hole": 6,
+          "par": 4,
+          "yardage": 293,
+          "handicap": 3
+        },
+        {
+          "hole": 7,
+          "par": 4,
+          "yardage": 310,
+          "handicap": 7
+        },
+        {
+          "hole": 8,
+          "par": 3,
+          "yardage": 128,
+          "handicap": 15
+        },
+        {
+          "hole": 9,
+          "par": 4,
+          "yardage": 271,
+          "handicap": 9
+        },
+        {
+          "hole": 10,
+          "par": 4,
+          "yardage": 207,
+          "handicap": 18
+        },
+        {
+          "hole": 11,
+          "par": 4,
+          "yardage": 289,
+          "handicap": 12
+        },
+        {
+          "hole": 12,
+          "par": 3,
+          "yardage": 123,
+          "handicap": 16
+        },
+        {
+          "hole": 13,
+          "par": 4,
+          "yardage": 259,
+          "handicap": 4
+        },
+        {
+          "hole": 14,
+          "par": 5,
+          "yardage": 444,
+          "handicap": 2
+        },
+        {
+          "hole": 15,
+          "par": 5,
+          "yardage": 410,
+          "handicap": 10
+        },
+        {
+          "hole": 16,
+          "par": 4,
+          "yardage": 341,
+          "handicap": 8
+        },
+        {
+          "hole": 17,
+          "par": 4,
+          "yardage": 302,
+          "handicap": 6
+        },
+        {
+          "hole": 18,
+          "par": 3,
+          "yardage": 133,
+          "handicap": 14
+        }
+      ]
+    },
+    {
+      "name": "Minnechaug Golf Club",
+      "garmin_course_id": 8938,
+      "aliases": ["Glastonbury"],
+      "tee_box": null,
+      "par": 35,
+      "rating": 64.2,
+      "slope": 106,
+      "yards": 2068,
+      "holes": [
+        {
+          "hole": 1,
+          "par": 4,
+          "yardage": 298,
+          "handicap": 2
+        },
+        {
+          "hole": 2,
+          "par": 4,
+          "yardage": 122,
+          "handicap": 6
+        },
+        {
+          "hole": 3,
+          "par": 5,
+          "yardage": 401,
+          "handicap": 7
+        },
+        {
+          "hole": 4,
+          "par": 4,
+          "yardage": 310,
+          "handicap": 1
+        },
+        {
+          "hole": 5,
+          "par": 5,
+          "yardage": 395,
+          "handicap": 4
+        },
+        {
+          "hole": 6,
+          "par": 3,
+          "yardage": 133,
+          "handicap": 5
+        },
+        {
+          "hole": 7,
+          "par": 4,
+          "yardage": 214,
+          "handicap": 9
+        },
+        {
+          "hole": 8,
+          "par": 3,
+          "yardage": 80,
+          "handicap": 8
+        },
+        {
+          "hole": 9,
+          "par": 3,
+          "yardage": 115,
+          "handicap": 3
+        }
+      ]
+    },
+    {
+      "name": "Mohegan Sun Golf Club",
+      "garmin_course_id": 10260,
+      "aliases": ["Sprague"],
+      "tee_box": null,
+      "par": null,
+      "rating": null,
+      "slope": null,
+      "yards": null,
+      "holes": [
+        {
+          "hole": 1,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 2,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 3,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 4,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 5,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 6,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 7,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 8,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 9,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 10,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 11,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 12,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 13,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 14,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 15,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 16,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 17,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 18,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        }
+      ]
+    },
+    {
+      "name": "Rolling Meadows Country Club",
+      "garmin_course_id": 11787,
+      "aliases": ["Ellington"],
+      "tee_box": null,
+      "par": null,
+      "rating": null,
+      "slope": null,
+      "yards": null,
+      "holes": [
+        {
+          "hole": 1,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 2,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 3,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 4,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 5,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 6,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 7,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 8,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 9,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 10,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 11,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 12,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 13,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 14,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 15,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 16,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 17,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 18,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        }
+      ]
+    },
+    {
+      "name": "Skungamaug River Golf Course",
+      "garmin_course_id": 12594,
+      "aliases": [],
+      "tee_box": null,
+      "par": null,
+      "rating": null,
+      "slope": null,
+      "yards": null,
+      "holes": [
+        {
+          "hole": 1,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 2,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 3,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 4,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 5,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 6,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 7,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 8,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 9,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 10,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 11,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 12,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 13,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 14,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 15,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 16,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 17,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        },
+        {
+          "hole": 18,
+          "par": null,
+          "yardage": null,
+          "handicap": null
+        }
+      ]
+    },
+    {
+      "name": "Tallwood Country Club",
+      "garmin_course_id": 13474,
+      "aliases": [],
       "tee_box": null,
       "par": null,
       "rating": null,
@@ -1147,128 +1507,128 @@
       ]
     },
     {
-      "name": "Mohegan Sun Golf Club",
-      "garmin_course_id": null,
-      "aliases": ["Sprague"],
-      "tee_box": null,
-      "par": null,
-      "rating": null,
-      "slope": null,
-      "yards": null,
+      "name": "Twin Hills CC",
+      "garmin_course_id": 14091,
+      "aliases": ["Coventry"],
+      "tee_box": "Red",
+      "par": 70,
+      "rating": 68.4,
+      "slope": 117,
+      "yards": 4964,
       "holes": [
         {
           "hole": 1,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 364,
+          "handicap": 5
         },
         {
           "hole": 2,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 247,
+          "handicap": 13
         },
         {
           "hole": 3,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 447,
+          "handicap": 1
         },
         {
           "hole": 4,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 133,
+          "handicap": 11
         },
         {
           "hole": 5,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 397,
+          "handicap": 3
         },
         {
           "hole": 6,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 264,
+          "handicap": 7
         },
         {
           "hole": 7,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 391,
+          "handicap": 9
         },
         {
           "hole": 8,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 127,
+          "handicap": 15
         },
         {
           "hole": 9,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 278,
+          "handicap": 17
         },
         {
           "hole": 10,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 112,
+          "handicap": 14
         },
         {
           "hole": 11,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 322,
+          "handicap": 8
         },
         {
           "hole": 12,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 295,
+          "handicap": 4
         },
         {
           "hole": 13,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 179,
+          "handicap": 12
         },
         {
           "hole": 14,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 301,
+          "handicap": 10
         },
         {
           "hole": 15,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 396,
+          "handicap": 2
         },
         {
           "hole": 16,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 131,
+          "handicap": 18
         },
         {
           "hole": 17,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 331,
+          "handicap": 6
         },
         {
           "hole": 18,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 249,
+          "handicap": 16
         }
       ]
     },
     {
       "name": "Wethersfield Country Club",
-      "garmin_course_id": null,
+      "garmin_course_id": 14809,
       "aliases": ["Wethersfield"],
       "tee_box": null,
       "par": null,
@@ -1387,122 +1747,122 @@
       ]
     },
     {
-      "name": "Skungamaug River Golf Course",
-      "garmin_course_id": null,
-      "aliases": [],
-      "tee_box": null,
-      "par": null,
-      "rating": null,
-      "slope": null,
-      "yards": null,
+      "name": "Wintonbury Hills Golf Course",
+      "garmin_course_id": 15193,
+      "aliases": ["Bloomfield"],
+      "tee_box": "Yellow",
+      "par": 70,
+      "rating": 68.7,
+      "slope": 114,
+      "yards": 5005,
       "holes": [
         {
           "hole": 1,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 315,
+          "handicap": 10
         },
         {
           "hole": 2,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 295,
+          "handicap": 8
         },
         {
           "hole": 3,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 107,
+          "handicap": 18
         },
         {
           "hole": 4,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 413,
+          "handicap": 2
         },
         {
           "hole": 5,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 302,
+          "handicap": 12
         },
         {
           "hole": 6,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 325,
+          "handicap": 6
         },
         {
           "hole": 7,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 108,
+          "handicap": 16
         },
         {
           "hole": 8,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 418,
+          "handicap": 4
         },
         {
           "hole": 9,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 110,
+          "handicap": 14
         },
         {
           "hole": 10,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 335,
+          "handicap": 9
         },
         {
           "hole": 11,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 290,
+          "handicap": 7
         },
         {
           "hole": 12,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 134,
+          "handicap": 17
         },
         {
           "hole": 13,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 5,
+          "yardage": 440,
+          "handicap": 1
         },
         {
           "hole": 14,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 320,
+          "handicap": 3
         },
         {
           "hole": 15,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 314,
+          "handicap": 11
         },
         {
           "hole": 16,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 312,
+          "handicap": 13
         },
         {
           "hole": 17,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 3,
+          "yardage": 125,
+          "handicap": 15
         },
         {
           "hole": 18,
-          "par": null,
-          "yardage": null,
-          "handicap": null
+          "par": 4,
+          "yardage": 342,
+          "handicap": 5
         }
       ]
     }
