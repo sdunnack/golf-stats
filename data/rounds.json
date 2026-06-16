@@ -42,7 +42,16 @@
         "fairways_possible": 14,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.18,
+        "approach": -8.51,
+        "putting": -3.6,
+        "short_game": -3.85,
+        "total": -16.14,
+        "basis": "estimate"
+      },
+      "hcap_index": 22.3
     },
     {
       "activity_id": "23193788559",
@@ -76,7 +85,15 @@
         "fairways_possible": 7,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.54,
+        "approach": -4.76,
+        "putting": -2.4,
+        "short_game": -2.32,
+        "total": -10.02,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "23167481578",
@@ -120,7 +137,16 @@
         "fairways_possible": 14,
         "fairway_pct": 78.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 1.17,
+        "approach": -8.51,
+        "putting": -7.2,
+        "short_game": -4.35,
+        "total": -18.89,
+        "basis": "estimate"
+      },
+      "hcap_index": 22.4
     },
     {
       "activity_id": "23156072210",
@@ -164,7 +190,16 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -9.52,
+        "putting": -4.8,
+        "short_game": -4.64,
+        "total": -20.04,
+        "basis": "estimate"
+      },
+      "hcap_index": 22.4
     },
     {
       "activity_id": "23082528848",
@@ -208,7 +243,16 @@
         "fairways_possible": 14,
         "fairway_pct": 64.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.27,
+        "approach": -7.52,
+        "putting": -4.8,
+        "short_game": -4.06,
+        "total": -16.11,
+        "basis": "estimate"
+      },
+      "hcap_index": 22.4
     },
     {
       "activity_id": "22987164205",
@@ -252,7 +296,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -7.52,
+        "putting": -4.8,
+        "short_game": -3.56,
+        "total": -18.31,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.9
     },
     {
       "activity_id": "22916850753",
@@ -296,7 +349,16 @@
         "fairways_possible": 14,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.18,
+        "approach": -9.52,
+        "putting": -3.6,
+        "short_game": -4.14,
+        "total": -17.44,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.7
     },
     {
       "activity_id": "22835796603",
@@ -340,7 +402,16 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -6.52,
+        "putting": -6.0,
+        "short_game": -3.77,
+        "total": -17.37,
+        "basis": "estimate"
+      },
+      "hcap_index": 22.1
     },
     {
       "activity_id": "22778748283",
@@ -358,7 +429,15 @@
         "fairways_possible": 7,
         "fairway_pct": 71.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.36,
+        "approach": -0.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -3.4,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "22752724344",
@@ -376,7 +455,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -8.51,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -11.54,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.7
     },
     {
       "activity_id": "22741523614",
@@ -394,7 +482,16 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -8.51,
+        "putting": -6.6,
+        "short_game": null,
+        "total": -16.19,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.3
     },
     {
       "activity_id": "22669999483",
@@ -412,7 +509,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -8.51,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -11.54,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.2
     },
     {
       "activity_id": "22624501424",
@@ -430,7 +536,15 @@
         "fairways_possible": 7,
         "fairway_pct": 71.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.36,
+        "approach": -4.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -6.8,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "22575572512",
@@ -448,7 +562,15 @@
         "fairways_possible": 14,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.18,
+        "approach": -6.52,
+        "putting": -6.6,
+        "short_game": null,
+        "total": -13.3,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "22492163027",
@@ -466,7 +588,16 @@
         "fairways_possible": 14,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.18,
+        "approach": -7.52,
+        "putting": -7.2,
+        "short_game": null,
+        "total": -14.9,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.3
     },
     {
       "activity_id": "22409057801",
@@ -484,7 +615,16 @@
         "fairways_possible": 14,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.18,
+        "approach": -10.51,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -14.89,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.3
     },
     {
       "activity_id": "22397697225",
@@ -502,7 +642,16 @@
         "fairways_possible": 14,
         "fairway_pct": 64.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.27,
+        "approach": -5.53,
+        "putting": -4.8,
+        "short_game": null,
+        "total": -10.06,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.3
     },
     {
       "activity_id": "22310409416",
@@ -520,7 +669,15 @@
         "fairways_possible": 5,
         "fairway_pct": 40.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -3.76,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -5.59,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "22252931995",
@@ -538,7 +695,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -9.52,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -13.75,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.5
     },
     {
       "activity_id": "21080937629",
@@ -556,7 +722,16 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -8.51,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -13.19,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.5
     },
     {
       "activity_id": "21062519218",
@@ -574,7 +749,15 @@
         "fairways_possible": 8,
         "fairway_pct": 62.5
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.09,
+        "approach": -5.4,
+        "putting": -2.0,
+        "short_game": null,
+        "total": -7.31,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "20729803149",
@@ -592,7 +775,16 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -6.52,
+        "putting": -6.0,
+        "short_game": null,
+        "total": -13.6,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.5
     },
     {
       "activity_id": "20659666721",
@@ -610,7 +802,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -9.52,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -14.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.5
     },
     {
       "activity_id": "20599416593",
@@ -628,7 +829,16 @@
         "fairways_possible": 14,
         "fairway_pct": 71.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.72,
+        "approach": -10.51,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -12.79,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.5
     },
     {
       "activity_id": "20589318332",
@@ -646,7 +856,16 @@
         "fairways_possible": 14,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.18,
+        "approach": -7.52,
+        "putting": -7.8,
+        "short_game": null,
+        "total": -15.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.6
     },
     {
       "activity_id": "20550201794",
@@ -664,7 +883,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -8.51,
+        "putting": -5.4,
+        "short_game": null,
+        "total": -14.54,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.7
     },
     {
       "activity_id": "20528522678",
@@ -682,7 +910,16 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -7.52,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -12.8,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.6
     },
     {
       "activity_id": "20385520877",
@@ -700,7 +937,16 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -12.6,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.3
     },
     {
       "activity_id": "20374958777",
@@ -718,7 +964,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -9.4,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -13.18,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.3
     },
     {
       "activity_id": "20302573586",
@@ -736,7 +991,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -8.35,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -13.18,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.4
     },
     {
       "activity_id": "20261101746",
@@ -754,7 +1018,15 @@
         "fairways_possible": 7,
         "fairway_pct": 100.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 1.26,
+        "approach": 0.24,
+        "putting": -0.6,
+        "short_game": null,
+        "total": 0.9,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "20247244510",
@@ -772,7 +1044,16 @@
         "fairways_possible": 14,
         "fairway_pct": 35.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.53,
+        "approach": -5.53,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -11.26,
+        "basis": "estimate"
+      },
+      "hcap_index": 22.1
     },
     {
       "activity_id": "20240214091",
@@ -790,7 +1071,16 @@
         "fairways_possible": 14,
         "fairway_pct": 35.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.53,
+        "approach": -6.52,
+        "putting": -6.0,
+        "short_game": null,
+        "total": -14.05,
+        "basis": "estimate"
+      },
+      "hcap_index": 22.6
     },
     {
       "activity_id": "20228888946",
@@ -808,7 +1098,15 @@
         "fairways_possible": 14,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.18,
+        "approach": -10.51,
+        "putting": -4.8,
+        "short_game": null,
+        "total": -15.49,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "20165452021",
@@ -826,7 +1124,15 @@
         "fairways_possible": 13,
         "fairway_pct": 38.5
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.28,
+        "approach": -7.89,
+        "putting": -4.0,
+        "short_game": null,
+        "total": -13.17,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "20154852457",
@@ -844,7 +1150,15 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.6,
+        "approach": -4.88,
+        "putting": -0.4,
+        "short_game": null,
+        "total": -5.88,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "20132823294",
@@ -862,7 +1176,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -6.52,
+        "putting": -6.0,
+        "short_game": null,
+        "total": -13.15,
+        "basis": "estimate"
+      },
+      "hcap_index": 22.6
     },
     {
       "activity_id": "20039058176",
@@ -880,7 +1203,15 @@
         "fairways_possible": 7,
         "fairway_pct": 71.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.36,
+        "approach": -3.76,
+        "putting": 0.0,
+        "short_game": null,
+        "total": -3.4,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "20005536137",
@@ -898,7 +1229,15 @@
         "fairways_possible": 7,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.99,
+        "approach": -4.76,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -7.55,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19929745303",
@@ -916,7 +1255,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -6.52,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -11.35,
+        "basis": "estimate"
+      },
+      "hcap_index": 23.3
     },
     {
       "activity_id": "19889242044",
@@ -934,7 +1282,15 @@
         "fairways_possible": 7,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.09,
+        "approach": -3.76,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -5.65,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19857526229",
@@ -952,7 +1308,16 @@
         "fairways_possible": 14,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.18,
+        "approach": -6.52,
+        "putting": -7.2,
+        "short_game": null,
+        "total": -13.9,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.3
     },
     {
       "activity_id": "19784082967",
@@ -970,7 +1335,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -8.51,
+        "putting": -5.4,
+        "short_game": null,
+        "total": -14.54,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.8
     },
     {
       "activity_id": "19776055867",
@@ -988,7 +1362,15 @@
         "fairways_possible": 10,
         "fairway_pct": 30.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.36,
+        "approach": -6.32,
+        "putting": -3.2,
+        "short_game": null,
+        "total": -10.88,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19723233797",
@@ -1006,7 +1388,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -6.52,
+        "putting": -6.0,
+        "short_game": null,
+        "total": -13.15,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.8
     },
     {
       "activity_id": "19712627385",
@@ -1024,7 +1415,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -6.52,
+        "putting": -8.4,
+        "short_game": null,
+        "total": -15.55,
+        "basis": "estimate"
+      },
+      "hcap_index": 25.1
     },
     {
       "activity_id": "19642476810",
@@ -1042,7 +1442,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -7.52,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -11.15,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.0
     },
     {
       "activity_id": "19631561767",
@@ -1060,7 +1469,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -8.51,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -10.34,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.0
     },
     {
       "activity_id": "19604244341",
@@ -1078,7 +1496,15 @@
         "fairways_possible": 7,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.54,
+        "approach": -4.76,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -8.9,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19584857025",
@@ -1096,7 +1522,15 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -8.51,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -11.99,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19573844875",
@@ -1114,7 +1548,15 @@
         "fairways_possible": 13,
         "fairway_pct": 23.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.32,
+        "approach": -8.51,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -14.43,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19534872830",
@@ -1132,7 +1574,15 @@
         "fairways_possible": 7,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.09,
+        "approach": -1.76,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -3.65,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19512078363",
@@ -1150,7 +1600,15 @@
         "fairways_possible": 4,
         "fairway_pct": 0.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.05,
+        "approach": -2.2,
+        "putting": -0.4,
+        "short_game": null,
+        "total": -3.65,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19504441443",
@@ -1168,7 +1626,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -7.52,
+        "putting": -5.4,
+        "short_game": null,
+        "total": -14.9,
+        "basis": "estimate"
+      },
+      "hcap_index": 23.6
     },
     {
       "activity_id": "19483135317",
@@ -1186,7 +1653,16 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -7.52,
+        "putting": -6.0,
+        "short_game": null,
+        "total": -14.6,
+        "basis": "estimate"
+      },
+      "hcap_index": 23.6
     },
     {
       "activity_id": "19464919992",
@@ -1204,7 +1680,15 @@
         "fairways_possible": 7,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.44,
+        "approach": -4.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -9.2,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19454638566",
@@ -1222,7 +1706,15 @@
         "fairways_possible": 6,
         "fairway_pct": 16.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.36,
+        "approach": -3.51,
+        "putting": -0.6,
+        "short_game": null,
+        "total": -5.47,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19443868214",
@@ -1240,7 +1732,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -6.52,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -12.7,
+        "basis": "estimate"
+      },
+      "hcap_index": 23.6
     },
     {
       "activity_id": "19372685323",
@@ -1258,7 +1759,16 @@
         "fairways_possible": 14,
         "fairway_pct": 64.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.27,
+        "approach": -7.52,
+        "putting": -7.8,
+        "short_game": null,
+        "total": -15.05,
+        "basis": "estimate"
+      },
+      "hcap_index": 23.6
     },
     {
       "activity_id": "19324624083",
@@ -1276,7 +1786,15 @@
         "fairways_possible": 7,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.99,
+        "approach": -3.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -7.15,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19303702665",
@@ -1294,7 +1812,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -9.52,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -15.7,
+        "basis": "estimate"
+      },
+      "hcap_index": 23.2
     },
     {
       "activity_id": "19254218832",
@@ -1312,7 +1839,15 @@
         "fairways_possible": 7,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.09,
+        "approach": -4.76,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -6.65,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19241928072",
@@ -1330,7 +1865,16 @@
         "fairways_possible": 14,
         "fairway_pct": 64.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.27,
+        "approach": -4.52,
+        "putting": -6.0,
+        "short_game": null,
+        "total": -10.25,
+        "basis": "estimate"
+      },
+      "hcap_index": 23.2
     },
     {
       "activity_id": "19223894056",
@@ -1348,7 +1892,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -4.52,
+        "putting": -6.6,
+        "short_game": null,
+        "total": -11.75,
+        "basis": "estimate"
+      },
+      "hcap_index": 23.8
     },
     {
       "activity_id": "19192484794",
@@ -1366,7 +1919,15 @@
         "fairways_possible": 6,
         "fairway_pct": 33.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.84,
+        "approach": -4.76,
+        "putting": -0.6,
+        "short_game": null,
+        "total": -6.2,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19156088398",
@@ -1384,7 +1945,15 @@
         "fairways_possible": 7,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.99,
+        "approach": -1.76,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -3.95,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "19095190524",
@@ -1402,7 +1971,16 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -12.6,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.6
     },
     {
       "activity_id": "19084379448",
@@ -1420,7 +1998,16 @@
         "fairways_possible": 14,
         "fairway_pct": 35.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.53,
+        "approach": -6.52,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -12.25,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.6
     },
     {
       "activity_id": "18965631009",
@@ -1438,7 +2025,15 @@
         "fairways_possible": 8,
         "fairway_pct": 62.5
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.09,
+        "approach": -4.4,
+        "putting": -2.0,
+        "short_game": null,
+        "total": -6.31,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "18954447954",
@@ -1456,7 +2051,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -9.52,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -13.3,
+        "basis": "estimate"
+      },
+      "hcap_index": 25.0
     },
     {
       "activity_id": "18877693764",
@@ -1474,7 +2078,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -8.51,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -14.54,
+        "basis": "estimate"
+      },
+      "hcap_index": 25.2
     },
     {
       "activity_id": "18867647986",
@@ -1492,7 +2105,15 @@
         "fairways_possible": 7,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.99,
+        "approach": -5.76,
+        "putting": null,
+        "short_game": null,
+        "total": -6.75,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "18838559374",
@@ -1510,7 +2131,16 @@
         "fairways_possible": 13,
         "fairway_pct": 23.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.32,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.84,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.4
     },
     {
       "activity_id": "18829385824",
@@ -1528,7 +2158,15 @@
         "fairways_possible": 7,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.99,
+        "approach": -2.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -6.75,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "18732774332",
@@ -1546,7 +2184,15 @@
         "fairways_possible": 10,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.46,
+        "approach": -8.32,
+        "putting": null,
+        "short_game": null,
+        "total": -8.78,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "18673123997",
@@ -1564,7 +2210,15 @@
         "fairways_possible": 7,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.44,
+        "approach": -5.76,
+        "putting": null,
+        "short_game": null,
+        "total": -7.2,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "18637471636",
@@ -1582,7 +2236,15 @@
         "fairways_possible": 7,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.07,
+        "approach": -4.48,
+        "putting": null,
+        "short_game": null,
+        "total": -4.55,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "18606699545",
@@ -1600,7 +2262,15 @@
         "fairways_possible": 6,
         "fairway_pct": 33.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.84,
+        "approach": -2.76,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -5.4,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "17554518535",
@@ -1618,7 +2288,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.95,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.4
     },
     {
       "activity_id": "17441248117",
@@ -1636,7 +2315,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.4
     },
     {
       "activity_id": "17384275392",
@@ -1654,7 +2342,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -12.15,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.4
     },
     {
       "activity_id": "17343761134",
@@ -1672,7 +2369,15 @@
         "fairways_possible": 7,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.99,
+        "approach": -1.76,
+        "putting": -4.8,
+        "short_game": null,
+        "total": -7.55,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "17284827376",
@@ -1690,7 +2395,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.95,
+        "basis": "estimate"
+      },
+      "hcap_index": 24.4
     },
     {
       "activity_id": "17275577116",
@@ -1708,7 +2422,15 @@
         "fairways_possible": 6,
         "fairway_pct": 16.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.06,
+        "approach": -4.48,
+        "putting": null,
+        "short_game": null,
+        "total": -5.54,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "17268749920",
@@ -1726,7 +2448,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 23.7
     },
     {
       "activity_id": "17261347501",
@@ -1744,7 +2475,15 @@
         "fairways_possible": 6,
         "fairway_pct": 33.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.84,
+        "approach": -3.76,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -5.8,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "17220529376",
@@ -1762,7 +2501,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -6.52,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -11.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 23.7
     },
     {
       "activity_id": "17211679240",
@@ -1780,7 +2528,15 @@
         "fairways_possible": 13,
         "fairway_pct": 53.8
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.37,
+        "approach": -10.88,
+        "putting": null,
+        "short_game": null,
+        "total": -11.25,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "17204087166",
@@ -1798,7 +2554,15 @@
         "fairways_possible": 13,
         "fairway_pct": 46.2
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.87,
+        "approach": -4.52,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -7.19,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "17161692004",
@@ -1816,7 +2580,16 @@
         "fairways_possible": 14,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.88,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -14.4,
+        "basis": "estimate"
+      },
+      "hcap_index": 25.0
     },
     {
       "activity_id": "17152371849",
@@ -1834,7 +2607,16 @@
         "fairways_possible": 14,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.88,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -14.4,
+        "basis": "estimate"
+      },
+      "hcap_index": 25.8
     },
     {
       "activity_id": "17045383088",
@@ -1852,7 +2634,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -12.15,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.1
     },
     {
       "activity_id": "16993270745",
@@ -1870,7 +2661,15 @@
         "fairways_possible": 8,
         "fairway_pct": 62.5
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.08,
+        "approach": -5.76,
+        "putting": null,
+        "short_game": null,
+        "total": -5.68,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16984295871",
@@ -1888,7 +2687,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.95,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.0
     },
     {
       "activity_id": "16975759752",
@@ -1906,7 +2714,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.4
     },
     {
       "activity_id": "16921519884",
@@ -1924,7 +2741,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -6.52,
+        "putting": -7.8,
+        "short_game": null,
+        "total": -16.75,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.4
     },
     {
       "activity_id": "16912673565",
@@ -1942,7 +2768,16 @@
         "fairways_possible": 14,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.88,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -14.4,
+        "basis": "estimate"
+      },
+      "hcap_index": 27.3
     },
     {
       "activity_id": "16903879830",
@@ -1960,7 +2795,15 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -7.52,
+        "putting": -6.0,
+        "short_game": null,
+        "total": -14.6,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16840890666",
@@ -1978,7 +2821,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 27.3
     },
     {
       "activity_id": "16817528658",
@@ -1996,7 +2848,15 @@
         "fairways_possible": 7,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.44,
+        "approach": -5.76,
+        "putting": null,
+        "short_game": null,
+        "total": -7.2,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16798426143",
@@ -2014,7 +2874,15 @@
         "fairways_possible": 7,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.09,
+        "approach": -5.76,
+        "putting": null,
+        "short_game": null,
+        "total": -5.85,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16790130377",
@@ -2032,7 +2900,16 @@
         "fairways_possible": 14,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -12.6,
+        "basis": "estimate"
+      },
+      "hcap_index": 27.3
     },
     {
       "activity_id": "16771620256",
@@ -2050,7 +2927,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -12.15,
+        "basis": "estimate"
+      },
+      "hcap_index": 27.3
     },
     {
       "activity_id": "16703896895",
@@ -2068,7 +2954,15 @@
         "fairways_possible": 7,
         "fairway_pct": 42.9
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.54,
+        "approach": -4.76,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -8.9,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16692709018",
@@ -2086,7 +2980,16 @@
         "fairways_possible": 13,
         "fairway_pct": 38.5
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.35,
+        "approach": -4.52,
+        "putting": -6.6,
+        "short_game": null,
+        "total": -12.47,
+        "basis": "estimate"
+      },
+      "hcap_index": 27.2
     },
     {
       "activity_id": "16666947172",
@@ -2104,7 +3007,15 @@
         "fairways_possible": 13,
         "fairway_pct": 30.8
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.74,
+        "approach": -10.88,
+        "putting": null,
+        "short_game": null,
+        "total": -12.62,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16648590343",
@@ -2122,7 +3033,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.4
     },
     {
       "activity_id": "16614756774",
@@ -2140,7 +3060,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.3
     },
     {
       "activity_id": "16606075828",
@@ -2158,7 +3087,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.95,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.9
     },
     {
       "activity_id": "16565459860",
@@ -2176,7 +3114,16 @@
         "fairways_possible": 14,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.88,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -14.4,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.2
     },
     {
       "activity_id": "16544841375",
@@ -2194,7 +3141,15 @@
         "fairways_possible": 7,
         "fairway_pct": 71.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.36,
+        "approach": -4.63,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -6.67,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16529748957",
@@ -2212,7 +3167,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.2
     },
     {
       "activity_id": "16498396925",
@@ -2230,7 +3194,15 @@
         "fairways_possible": 10,
         "fairway_pct": 30.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.36,
+        "approach": -8.32,
+        "putting": null,
+        "short_game": null,
+        "total": -9.68,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16477145259",
@@ -2248,7 +3220,15 @@
         "fairways_possible": 7,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.09,
+        "approach": -2.76,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -7.05,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16412984474",
@@ -2266,7 +3246,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 25.5
     },
     {
       "activity_id": "16348329432",
@@ -2284,7 +3273,15 @@
         "fairways_possible": 7,
         "fairway_pct": 85.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.81,
+        "approach": -5.76,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -8.55,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16277959866",
@@ -2302,7 +3299,16 @@
         "fairways_possible": 14,
         "fairway_pct": 35.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.53,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.05,
+        "basis": "estimate"
+      },
+      "hcap_index": 25.5
     },
     {
       "activity_id": "16262704732",
@@ -2320,7 +3326,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.3
     },
     {
       "activity_id": "16243017909",
@@ -2338,7 +3353,16 @@
         "fairways_possible": 14,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.18,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -11.7,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.3
     },
     {
       "activity_id": "16160312856",
@@ -2356,7 +3380,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.3
     },
     {
       "activity_id": "16146710121",
@@ -2374,7 +3407,15 @@
         "fairways_possible": 7,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.44,
+        "approach": -5.76,
+        "putting": null,
+        "short_game": null,
+        "total": -7.2,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "16080478564",
@@ -2392,7 +3433,16 @@
         "fairways_possible": 14,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.88,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -14.4,
+        "basis": "estimate"
+      },
+      "hcap_index": 25.1
     },
     {
       "activity_id": "16041725233",
@@ -2410,7 +3460,16 @@
         "fairways_possible": 14,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.88,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -14.4,
+        "basis": "estimate"
+      },
+      "hcap_index": 27.3
     },
     {
       "activity_id": "15929833180",
@@ -2428,7 +3487,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 27.6
     },
     {
       "activity_id": "15899000061",
@@ -2446,7 +3514,15 @@
         "fairways_possible": 7,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.99,
+        "approach": -3.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -7.75,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "15847186708",
@@ -2464,7 +3540,15 @@
         "fairways_possible": 6,
         "fairway_pct": 16.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.36,
+        "approach": -4.76,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -9.72,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "15812500902",
@@ -2482,7 +3566,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.0
     },
     {
       "activity_id": "15710837217",
@@ -2500,7 +3593,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.95,
+        "basis": "estimate"
+      },
+      "hcap_index": 26.0
     },
     {
       "activity_id": "15693449656",
@@ -2518,7 +3620,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -13.95,
+        "basis": "estimate"
+      },
+      "hcap_index": 25.0
     },
     {
       "activity_id": "15664110379",
@@ -2536,7 +3647,15 @@
         "fairways_possible": 7,
         "fairway_pct": 57.1
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.09,
+        "approach": -3.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -6.25,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "15479539050",
@@ -2554,7 +3673,15 @@
         "fairways_possible": 7,
         "fairway_pct": 71.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.36,
+        "approach": -5.76,
+        "putting": null,
+        "short_game": null,
+        "total": -5.4,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "15444279943",
@@ -2572,7 +3699,15 @@
         "fairways_possible": 7,
         "fairway_pct": 14.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.44,
+        "approach": -5.76,
+        "putting": null,
+        "short_game": null,
+        "total": -7.2,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "15343731310",
@@ -2590,7 +3725,16 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -9.52,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -14.5,
+        "basis": "estimate"
+      },
+      "hcap_index": 22.4
     },
     {
       "activity_id": "15312979120",
@@ -2608,7 +3752,15 @@
         "fairways_possible": 6,
         "fairway_pct": 83.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.73,
+        "approach": -4.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -6.43,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "15278040730",
@@ -2626,7 +3778,15 @@
         "fairways_possible": 10,
         "fairway_pct": 10.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.27,
+        "approach": -8.32,
+        "putting": -3.8,
+        "short_game": null,
+        "total": -14.39,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "15225300749",
@@ -2644,7 +3804,15 @@
         "fairways_possible": 13,
         "fairway_pct": 38.5
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.35,
+        "approach": -10.51,
+        "putting": -5.4,
+        "short_game": null,
+        "total": -17.26,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "14981655021",
@@ -2662,7 +3830,16 @@
         "fairways_possible": 14,
         "fairway_pct": 21.4
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -2.43,
+        "approach": -9.52,
+        "putting": -6.0,
+        "short_game": null,
+        "total": -17.95,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.4
     },
     {
       "activity_id": "14919565186",
@@ -2680,7 +3857,15 @@
         "fairways_possible": 6,
         "fairway_pct": 16.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.36,
+        "approach": -4.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -9.12,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "14882181930",
@@ -2698,7 +3883,16 @@
         "fairways_possible": 14,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -9.52,
+        "putting": -4.8,
+        "short_game": null,
+        "total": -14.95,
+        "basis": "estimate"
+      },
+      "hcap_index": 20.4
     },
     {
       "activity_id": "14673183397",
@@ -2716,7 +3910,15 @@
         "fairways_possible": 6,
         "fairway_pct": 0.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.89,
+        "approach": -2.76,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -5.85,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "14612967443",
@@ -2734,7 +3936,15 @@
         "fairways_possible": 9,
         "fairway_pct": 33.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.12,
+        "approach": -7.68,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -13.0,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "14457742995",
@@ -2752,7 +3962,15 @@
         "fairways_possible": 14,
         "fairway_pct": 28.6
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.98,
+        "approach": -8.51,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -12.89,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "14316977785",
@@ -2770,7 +3988,15 @@
         "fairways_possible": 8,
         "fairway_pct": 12.5
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.5,
+        "approach": -5.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -9.66,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "13041723646",
@@ -2788,7 +4014,15 @@
         "fairways_possible": 6,
         "fairway_pct": 0.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.89,
+        "approach": -5.76,
+        "putting": null,
+        "short_game": null,
+        "total": -7.65,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12808952364",
@@ -2806,7 +4040,15 @@
         "fairways_possible": 6,
         "fairway_pct": 66.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.21,
+        "approach": -2.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -4.95,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12767995779",
@@ -2824,7 +4066,15 @@
         "fairways_possible": 5,
         "fairway_pct": 40.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -3.51,
+        "putting": 5.4,
+        "short_game": null,
+        "total": 1.26,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12586273977",
@@ -2842,7 +4092,15 @@
         "fairways_possible": 6,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -1.76,
+        "putting": -0.6,
+        "short_game": null,
+        "total": -2.68,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12506689991",
@@ -2860,7 +4118,15 @@
         "fairways_possible": 9,
         "fairway_pct": 66.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": 0.42,
+        "approach": -11.52,
+        "putting": null,
+        "short_game": null,
+        "total": -11.1,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12387699470",
@@ -2878,7 +4144,15 @@
         "fairways_possible": 5,
         "fairway_pct": 20.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.26,
+        "approach": -4.76,
+        "putting": 0.6,
+        "short_game": null,
+        "total": -5.42,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12243955435",
@@ -2896,7 +4170,15 @@
         "fairways_possible": 5,
         "fairway_pct": 40.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -0.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -3.79,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12203383011",
@@ -2914,7 +4196,15 @@
         "fairways_possible": 5,
         "fairway_pct": 40.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -2.76,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -4.59,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12148472956",
@@ -2932,7 +4222,15 @@
         "fairways_possible": 6,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -4.76,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -9.28,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12126945925",
@@ -2950,7 +4248,15 @@
         "fairways_possible": 6,
         "fairway_pct": 33.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.84,
+        "approach": -3.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -7.0,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12083427226",
@@ -2968,7 +4274,15 @@
         "fairways_possible": 6,
         "fairway_pct": 16.7
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.36,
+        "approach": -4.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -9.12,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12045038883",
@@ -2986,7 +4300,15 @@
         "fairways_possible": 6,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -1.26,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -2.78,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "12031681057",
@@ -3004,7 +4326,15 @@
         "fairways_possible": 6,
         "fairway_pct": 33.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.84,
+        "approach": -2.76,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -7.2,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11971899232",
@@ -3022,7 +4352,15 @@
         "fairways_possible": 3,
         "fairway_pct": 0.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.89,
+        "approach": -3.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -8.05,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11940641326",
@@ -3040,7 +4378,15 @@
         "fairways_possible": 6,
         "fairway_pct": 33.3
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.84,
+        "approach": -3.76,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -5.8,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11918274635",
@@ -3058,7 +4404,15 @@
         "fairways_possible": 4,
         "fairway_pct": 25.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.1,
+        "approach": -3.76,
+        "putting": -4.8,
+        "short_game": null,
+        "total": -9.66,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11888189762",
@@ -3076,7 +4430,15 @@
         "fairways_possible": 6,
         "fairway_pct": 50.0
       },
-      "_raw_available": true
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -4.76,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -6.88,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11867117571",
@@ -3109,7 +4471,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": null,
+        "approach": -4.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -7.16,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11835749954",
@@ -3143,7 +4513,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -3.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -6.79,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11814064245",
@@ -3177,7 +4555,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "front_nine": null
+      "front_nine": null,
+      "strokes_gained": {
+        "off_tee": 1.26,
+        "approach": -4.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -5.9,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11803962253",
@@ -3211,7 +4597,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": 0.21,
+        "approach": -5.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -8.55,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11787693939",
@@ -3245,7 +4639,15 @@
         "eagles": 0
       },
       "course_id": 1891,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.09,
+        "approach": -5.76,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -7.65,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11759927775",
@@ -3279,7 +4681,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -2.76,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -6.68,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11714346458",
@@ -3323,7 +4733,15 @@
         "doubles_plus": 6,
         "eagles": 0
       },
-      "course_id": 13840
+      "course_id": 13840,
+      "strokes_gained": {
+        "off_tee": -0.11,
+        "approach": -8.51,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -12.82,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11708714997",
@@ -3357,7 +4775,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "front_nine": null
+      "front_nine": null,
+      "strokes_gained": {
+        "off_tee": -1.1,
+        "approach": -5.76,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -8.66,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11682402388",
@@ -3391,7 +4817,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -3.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -7.08,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11660845070",
@@ -3425,7 +4859,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.84,
+        "approach": -4.76,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -7.4,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11646607590",
@@ -3459,7 +4901,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -4.76,
+        "putting": -0.6,
+        "short_game": null,
+        "total": -5.68,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11631487820",
@@ -3493,7 +4943,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -4.76,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -6.28,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11609928197",
@@ -3527,7 +4985,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": 0.21,
+        "approach": -1.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -3.95,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11606728291",
@@ -3561,7 +5027,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "front_nine": null
+      "front_nine": null,
+      "strokes_gained": {
+        "off_tee": -1.1,
+        "approach": -4.76,
+        "putting": -0.6,
+        "short_game": null,
+        "total": -6.46,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11566533603",
@@ -3595,7 +5069,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -1.36,
+        "approach": -4.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -8.52,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11555008719",
@@ -3629,7 +5111,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -5.76,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -7.28,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11522811214",
@@ -3663,7 +5153,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -4.76,
+        "putting": -1.8,
+        "short_game": null,
+        "total": -6.88,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11503787254",
@@ -3697,7 +5195,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "front_nine": null
+      "front_nine": null,
+      "strokes_gained": {
+        "off_tee": -1.1,
+        "approach": -4.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -8.86,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11478257171",
@@ -3731,7 +5237,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": 0.21,
+        "approach": -3.76,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -7.15,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11464689743",
@@ -3765,7 +5279,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.84,
+        "approach": -2.76,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -7.2,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11453628141",
@@ -3799,7 +5321,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": 0.19,
+        "approach": -2.12,
+        "putting": -2.8,
+        "short_game": null,
+        "total": -4.73,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11438958647",
@@ -3833,7 +5363,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.84,
+        "approach": -2.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -6.6,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11423829595",
@@ -3867,7 +5405,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -3.76,
+        "putting": -4.8,
+        "short_game": null,
+        "total": -8.88,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11403360247",
@@ -3901,7 +5447,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "front_nine": null
+      "front_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.98,
+        "approach": -5.12,
+        "putting": -4.0,
+        "short_game": null,
+        "total": -10.1,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11381265560",
@@ -3935,7 +5489,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": 0.73,
+        "approach": -4.76,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -8.23,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11352846695",
@@ -3969,7 +5531,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -1.89,
+        "approach": -3.76,
+        "putting": -1.2,
+        "short_game": null,
+        "total": -6.85,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11330159952",
@@ -4003,7 +5573,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": 0.21,
+        "approach": -2.76,
+        "putting": -5.4,
+        "short_game": null,
+        "total": -7.95,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11314315432",
@@ -4037,7 +5615,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.84,
+        "approach": -4.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -8.6,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11301274335",
@@ -4071,7 +5657,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "front_nine": null
+      "front_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -2.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -5.79,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11249389707",
@@ -4105,7 +5699,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -1.89,
+        "approach": -3.76,
+        "putting": -6.0,
+        "short_game": null,
+        "total": -11.65,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11224055934",
@@ -4139,7 +5741,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.32,
+        "approach": -4.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -7.48,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11210413257",
@@ -4173,7 +5783,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -1.26,
+        "approach": -4.76,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -10.22,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11197622173",
@@ -4207,7 +5825,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "front_nine": null
+      "front_nine": null,
+      "strokes_gained": {
+        "off_tee": 0.0,
+        "approach": -3.76,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -7.96,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11182325791",
@@ -4241,7 +5867,15 @@
         "eagles": 0
       },
       "course_id": 1891,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": 0.21,
+        "approach": -4.76,
+        "putting": -4.8,
+        "short_game": null,
+        "total": -9.35,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11173995068",
@@ -4275,7 +5909,15 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -1.36,
+        "approach": -5.76,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -10.72,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11146729180",
@@ -4309,7 +5951,15 @@
         "eagles": 0
       },
       "course_id": 14091,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -4.76,
+        "putting": -3.0,
+        "short_game": null,
+        "total": -8.39,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11123763515",
@@ -4343,7 +5993,15 @@
         "eagles": 0
       },
       "course_id": 13840,
-      "front_nine": null
+      "front_nine": null,
+      "strokes_gained": {
+        "off_tee": 0.63,
+        "approach": -5.76,
+        "putting": -2.4,
+        "short_game": null,
+        "total": -7.53,
+        "basis": "estimate"
+      }
     },
     {
       "activity_id": "11116409622",
@@ -4377,8 +6035,16 @@
       "tee_box": null,
       "tee_box_rating": null,
       "tee_box_slope": null,
-      "back_nine": null
+      "back_nine": null,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -3.51,
+        "putting": -4.2,
+        "short_game": null,
+        "total": -8.34,
+        "basis": "estimate"
+      }
     }
   ],
-  "last_updated": "2026-06-15T13:33:26.232783"
+  "last_updated": "2026-06-15T19:03:40.808866"
 }

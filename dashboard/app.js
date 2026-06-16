@@ -39,7 +39,7 @@ let rawCoursesData = [];      // original courses array from file, used by expor
 let lastUpdated = null;
 let shotsLoaded = false;
 let shotsLoading = null;
-let mode = 'course';
+let mode = 'overall';
 let selectedCourse = null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -186,6 +186,8 @@ async function loadData() {
       fairways_possible: t.fairways_possible?? null,
       fairway_pct:       t.fairway_pct      ?? null,
       holes_played:      t.holes_played     ?? null,
+      sg:                r.strokes_gained   ?? null,
+      hcap_index:        r.hcap_index       ?? null,
     });
 
     for (const h of holesById[r.activity_id] || []) {
@@ -444,6 +446,7 @@ function renderCourseView() {
   renderFairwayMissDirection(holes, 'chart-c-fwy-miss', 'summary-c-fwy-miss');
   renderScramblingTrend(rounds, holes, 'chart-c-scramble-trend', 'summary-c-scramble-trend');
   renderPenaltyTrend(rounds, holes, 'chart-c-penalty-trend', 'summary-c-penalty-trend');
+  renderStrokesGained(rounds, 'chart-c-sg', 'summary-c-sg');
   renderCourseVsOverall(rounds, holes, base);
   renderCourseScorecards(rounds, holes, shots);
 }
@@ -734,9 +737,14 @@ function renderOverallView() {
   document.getElementById('ok-putts').textContent   = fmt(agg.putts);
   document.getElementById('ok-gir').textContent     = fmt(agg.girPct, '%');
   document.getElementById('ok-fwy').textContent     = fmt(agg.fwyPct, '%');
-  document.getElementById('ok-1putt').textContent   = fmt(agg.onePct, '%');
+  const latestHcap = rounds.filter(r => r.hcap_index != null).at(-1)?.hcap_index;
+  document.getElementById('ok-hcap').textContent    = latestHcap != null ? fmt(latestHcap) : '—';
 
+  renderGoals(rounds);
+  renderFocus(rounds, 'focus-overall');
   renderInsights(rounds, holes, 'insights-overall');
+  renderStrokesGained(rounds, 'chart-o-sg', 'summary-o-sg');
+  renderSGTrend(rounds, 'chart-o-sg-trend', 'summary-o-sg-trend');
 
   const dates = rounds.map(r => r.date);
   trendLine('chart-o-score-trend', 'summary-o-score', dates, rounds.map(r => r.score), 'Score', C_GREEN);
@@ -973,6 +981,254 @@ function renderHandicapDiffTrend(rounds, chartId = 'chart-o-hcap-trend', summary
   }
 
   trendLine(chartId, summaryId, pts.map(p => p.date), pts.map(p => p.diff), 'Handicap Diff', C_NAVY);
+}
+
+// ── Strokes Gained (estimated, by category) ─────────────────────────────────────
+const SG_CATS = [
+  ['off_tee',    'Off the Tee'],
+  ['approach',   'Approach'],
+  ['short_game', 'Short Game'],
+  ['putting',    'Putting'],
+];
+
+// Average each SG category across rounds that carry an estimate. Returns null
+// when no round in the set has SG data.
+function aggregateSG(rounds) {
+  const out = {}; let any = false;
+  for (const [k] of SG_CATS) {
+    const vals = rounds.map(r => r.sg?.[k]).filter(v => v != null);
+    out[k] = vals.length ? avg(vals) : null;
+    if (vals.length) any = true;
+  }
+  const totals = rounds.map(r => r.sg?.total).filter(v => v != null);
+  out.total = totals.length ? avg(totals) : null;
+  out.n = rounds.filter(r => r.sg).length;
+  return any ? out : null;
+}
+
+function renderStrokesGained(rounds, chartId, summaryId) {
+  const agg = aggregateSG(rounds);
+  if (!agg) { noData(chartId, 'No strokes-gained estimate yet'); setSummary(summaryId, ''); return; }
+  const cats = SG_CATS.filter(([k]) => agg[k] != null);
+  const labels = cats.map(([, l]) => l);
+  const vals   = cats.map(([k]) => r1(agg[k]));
+  plotClear(chartId, [{
+    type: 'bar', orientation: 'h', y: labels, x: vals,
+    marker: { color: vals.map(v => v >= 0 ? C_GREEN : C_RED) },
+    hovertemplate: '%{y}: %{x:+.2f} strokes/round<extra></extra>',
+  }], L({
+    showlegend: false,
+    margin: { ...BASE_LAYOUT.margin, l: 92 },
+    xaxis: { ...AX, zeroline: true, zerolinecolor: '#94a3b8', zerolinewidth: 1,
+      title: { text: 'Avg strokes gained / round (vs scratch)', standoff: 6 } },
+    yaxis: { ...AX, type: 'category', automargin: true, autorange: 'reversed' },
+  }), CFG);
+  const losses = cats.map(([k, l]) => ({ l, v: agg[k] })).filter(o => o.v < 0).sort((a, b) => a.v - b.v);
+  const worst = losses[0];
+  setSummary(summaryId, worst
+    ? `Biggest leak: ${worst.l} (${fmtSigned(worst.v)}/round). Total est. ${fmtSigned(agg.total)}/round vs scratch.`
+    : `Gaining across the board — total est. ${fmtSigned(agg.total)}/round vs scratch.`);
+}
+
+function renderSGTrend(rounds, chartId, summaryId) {
+  const pts = rounds.filter(r => r.sg?.total != null);
+  if (!pts.length) { noData(chartId, 'No strokes-gained estimate yet'); setSummary(summaryId, ''); return; }
+  const vals = pts.map(r => r1(r.sg.total));
+  // trendLine draws the chart; pass no summaryId so it doesn't write the
+  // lower-is-better "Best/Worst" line (for SG, higher is better).
+  trendLine(chartId, null, pts.map(r => r.date), vals, 'Total SG', C_TEAL);
+  const a = avg(vals), best = Math.max(...vals), worst = Math.min(...vals);
+  const dir = vals.length >= 2 ? (vals.at(-1) > vals[0] ? '↑ improving' : '↓ slipping') : '';
+  setSummary(summaryId, `Avg ${fmtSigned(a)} · Best ${fmtSigned(best)} · Worst ${fmtSigned(worst)}`
+    + (dir ? ` · ${dir} ${Math.abs(vals.at(-1) - vals[0]).toFixed(1)} first to last` : ''));
+}
+
+// ── Focus This Week (prescriptive card driven by the worst SG category) ─────────
+const SG_FOCUS = {
+  off_tee: {
+    title: 'Off the Tee',
+    body: 'You\'re leaking the most strokes from the tee — usually a mix of missed fairways and the recoveries they force. Getting the ball in play more often is the fastest fix.',
+    drills: [
+      'Hit a "fairway finder" club (3-wood/hybrid) on the 3 tightest holes instead of driver.',
+      'On the range, play 9 imaginary tee shots to a 30-yard-wide fairway; score each in/out.',
+      'Pick one start line and one shot shape for the round — commit to it on every tee.',
+    ],
+  },
+  approach: {
+    title: 'Approach Play',
+    body: 'Approach is your single biggest opportunity — more greens in regulation is the highest-leverage change you can make to your scores. Prioritise solid contact and realistic targets over distance.',
+    drills: [
+      'Aim for the center of the green, never the pin — this alone raises GIR fast.',
+      'Ladder drill: hit 5 balls each to 100/125/150 yds, note your real carry numbers.',
+      'Club up one and swing at 80% on mid-irons to improve strike consistency.',
+    ],
+  },
+  short_game: {
+    title: 'Short Game',
+    body: 'You\'re losing strokes around the green — converting more up-and-downs turns bogeys into pars without changing your ball-striking at all.',
+    drills: [
+      'Up-and-down game: 10 chips from 20–30 yds, get each within a putter-length.',
+      'Practice one reliable "go-to" chip (same club, same motion) for normal lies.',
+      'Spend half your short-game time on the 3–6 ft putts you\'ll have left.',
+    ],
+  },
+  putting: {
+    title: 'Putting',
+    body: 'Putting is where you can save the most right now. Most lost strokes on the green come from lag distance control leading to 3-putts, not missed short putts.',
+    drills: [
+      'Lag ladder: roll putts to 20/30/40 ft, finishing within a 3-ft circle.',
+      'Make 25 straight 3-footers before you leave — builds the tap-in habit.',
+      'On the course, read every first putt for speed first, line second.',
+    ],
+  },
+};
+
+function renderFocus(rounds, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const agg = aggregateSG(rounds);
+  if (!agg) {
+    el.innerHTML = `<div class="insights-empty">⛳ Play a few more tracked rounds to unlock your focus area.</div>`;
+    return;
+  }
+  const cats = SG_CATS.map(([k, l]) => ({ k, l, v: agg[k] })).filter(o => o.v != null);
+  const worst = cats.filter(o => o.v < 0).sort((a, b) => a.v - b.v)[0];
+  if (!worst) {
+    el.innerHTML = `<div class="focus-card focus-good">
+      <div class="focus-title">No weak link 🎉</div>
+      <div class="focus-body">You're gaining strokes across every category vs scratch. Keep doing what you're doing — the next gains come from consistency.</div>
+    </div>`;
+    return;
+  }
+  const f = SG_FOCUS[worst.k];
+  el.innerHTML = `<div class="focus-card">
+    <div class="focus-head">
+      <span class="focus-eyebrow">Your #1 opportunity</span>
+      <span class="focus-stat">${fmtSigned(worst.v)}<span class="focus-stat-label">est. strokes/round</span></span>
+    </div>
+    <div class="focus-title">${f.title}</div>
+    <div class="focus-body">${f.body}</div>
+    <div class="focus-drills-label">Practice this week</div>
+    <ul class="focus-drills">${f.drills.map(d => `<li>${d}</li>`).join('')}</ul>
+  </div>`;
+}
+
+// ── Goals & projection ──────────────────────────────────────────────────────────
+const GOALS_KEY = 'golfstats.goals';
+const loadGoal = () => { try { return JSON.parse(localStorage.getItem(GOALS_KEY)) || null; } catch { return null; } };
+const saveGoal = g => localStorage.setItem(GOALS_KEY, JSON.stringify(g));
+
+const daysBetweenISO = (a, b) => (new Date(b) - new Date(a)) / 86400000;
+function addDaysISO(iso, days) {
+  const d = new Date(iso); d.setDate(d.getDate() + Math.round(days));
+  return d.toISOString().slice(0, 10);
+}
+
+// Linear projection of a goal. Lower is better for both score and handicap.
+function projectGoal(rounds, type, target) {
+  const pts = (type === 'handicap'
+    ? rounds.filter(r => r.hcap_index != null).map(r => ({ d: r.date, v: r.hcap_index }))
+    : rounds.filter(r => r.score != null).map(r => ({ d: r.date, v: r.score })));
+  if (pts.length < 3) return null;
+  const current = type === 'handicap' ? pts.at(-1).v : avg(pts.slice(-5).map(p => p.v));
+  const start = type === 'handicap' ? pts[0].v : avg(pts.slice(0, 5).map(p => p.v));
+  // least-squares slope (per round)
+  const n = pts.length, xs = pts.map((_, i) => i), ys = pts.map(p => p.v);
+  const mx = avg(xs), my = avg(ys);
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) { num += (xs[i] - mx) * (ys[i] - my); den += (xs[i] - mx) ** 2; }
+  const slope = den ? num / den : 0;
+  const intercept = my - slope * mx;
+  const fittedStart = intercept;                  // line value at first round
+  const fittedNow   = intercept + slope * (n - 1); // line value at latest round
+  const reached = current <= target;
+  let eta = null, direction = 'toward';
+  if (reached) direction = 'reached';
+  else if (slope >= -0.002) direction = 'away';   // not improving
+  else {
+    const roundsNeeded = (current - target) / (-slope);
+    const span = daysBetweenISO(pts[0].d, pts.at(-1).d);
+    const cadence = span > 0 ? span / (n - 1) : 7;  // avg days between rounds
+    eta = addDaysISO(pts.at(-1).d, roundsNeeded * cadence);
+  }
+  // progress along the fitted trend from its start toward the target, so the bar
+  // and the projection always agree in direction.
+  const denom = fittedStart - target;
+  const progress = reached ? 1
+    : denom > 0 ? Math.max(0, Math.min(1, (fittedStart - fittedNow) / denom)) : 0;
+  return { current, start, slope, eta, direction, reached, progress, n };
+}
+
+function goalSetterHtml(goal, rounds) {
+  const hasHcap = rounds.some(r => r.hcap_index != null);
+  const scores  = rounds.map(r => r.score).filter(v => v != null);
+  const curScore = scores.length ? Math.round(avg(scores.slice(-5))) : 90;
+  const curHcap  = hasHcap ? rounds.filter(r => r.hcap_index != null).at(-1).hcap_index : null;
+  const type = goal?.type || (hasHcap ? 'handicap' : 'score');
+  const target = goal?.target ?? (type === 'handicap' ? Math.max(0, Math.floor((curHcap ?? 20) - 3)) : Math.max(70, curScore - 5));
+  return `<div class="goal-setter chart-card">
+    <div class="goal-setter-title">Set a goal</div>
+    <div class="goal-setter-row">
+      <select id="goal-type" class="form-input">
+        <option value="handicap"${type === 'handicap' ? ' selected' : ''}${hasHcap ? '' : ' disabled'}>Handicap index</option>
+        <option value="score"${type === 'score' ? ' selected' : ''}>Round score (18h)</option>
+      </select>
+      <input id="goal-target" class="form-input" type="number" step="0.1" value="${target}" placeholder="Target">
+      <button id="goal-save" class="btn btn-primary">Save goal</button>
+      ${goal ? '<button id="goal-clear" class="btn btn-secondary">Clear</button>' : ''}
+    </div>
+  </div>`;
+}
+
+function wireGoalSetter(rounds) {
+  const save = document.getElementById('goal-save');
+  if (save) save.addEventListener('click', () => {
+    const type = document.getElementById('goal-type').value;
+    const target = parseFloat(document.getElementById('goal-target').value);
+    if (isNaN(target)) { alert('Enter a numeric target.'); return; }
+    saveGoal({ type, target });
+    renderGoals(rounds);
+  });
+  const clear = document.getElementById('goal-clear');
+  if (clear) clear.addEventListener('click', () => { localStorage.removeItem(GOALS_KEY); renderGoals(rounds); });
+}
+
+function renderGoals(rounds) {
+  const el = document.getElementById('goals-overall');
+  if (!el) return;
+  const goal = loadGoal();
+  if (!goal) { el.innerHTML = goalSetterHtml(null, rounds); wireGoalSetter(rounds); return; }
+
+  const proj = projectGoal(rounds, goal.type, goal.target);
+  const unit = goal.type === 'handicap' ? '' : '';
+  const label = goal.type === 'handicap' ? 'Handicap index' : 'Avg score (last 5)';
+  if (!proj) {
+    el.innerHTML = `<div class="goal-card chart-card">
+      <div class="goal-line"><span class="goal-label">${label} → target ${goal.target}</span></div>
+      <div class="goal-sub">Not enough ${goal.type === 'handicap' ? 'rated rounds' : 'rounds'} in the current filter to project yet.</div>
+      </div>${goalSetterHtml(goal, rounds)}`;
+    wireGoalSetter(rounds);
+    return;
+  }
+
+  const pct = Math.round(proj.progress * 100);
+  let projText;
+  if (proj.direction === 'reached')
+    projText = `🎉 Goal reached — current ${fmt(proj.current)} is at or under ${goal.target}.`;
+  else if (proj.direction === 'away')
+    projText = `Trending the wrong way — no improvement slope in the current filter. ${fmt(proj.current)} vs target ${goal.target}.`;
+  else
+    projText = `On current trend, projected to hit ${goal.target} around <strong>${proj.eta}</strong>.`;
+
+  el.innerHTML = `<div class="goal-card chart-card">
+      <div class="goal-line">
+        <span class="goal-label">${label}</span>
+        <span class="goal-values"><strong>${fmt(proj.current)}</strong> <span class="goal-arrow">→</span> ${goal.target}${unit}</span>
+      </div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${pct}%"></div></div>
+      <div class="goal-sub">${projText}</div>
+    </div>${goalSetterHtml(goal, rounds)}`;
+  wireGoalSetter(rounds);
 }
 
 // ── Insights engine ─────────────────────────────────────────────────────────────
@@ -1297,6 +1553,8 @@ function switchMode(newMode) {
   document.getElementById('view-course').classList.toggle('active', mode === 'course');
   document.getElementById('view-overall').classList.toggle('active', mode === 'overall');
   document.getElementById('view-manage').classList.toggle('active', mode === 'manage');
+  // Course selector only shown on the By Course tab.
+  document.body.classList.toggle('filters-hidden', mode !== 'course');
   render();
 }
 
@@ -1344,6 +1602,8 @@ function setupChrome() {
   document.querySelectorAll('.mode-tabs .tab-btn').forEach(btn =>
     btn.addEventListener('click', () => switchMode(btn.dataset.mode)));
   document.getElementById('btn-export-courses').addEventListener('click', exportCoursesJson);
+  // Sidebar filters only apply to the By Course view; hide elsewhere.
+  document.body.classList.toggle('filters-hidden', mode !== 'course');
 }
 
 // ── Course Manager ────────────────────────────────────────────────────────────
@@ -1513,8 +1773,22 @@ function renderManageView() {
 }
 
 // ── Init ────────────────────────────────────────────────────────────────────────
+const HERO_IMAGES = [
+  'IMG_4552.gif', 'IMG_4555.gif', 'IMG_4690.gif', 'IMG_4873.gif', 'IMG_4967.gif',
+  'IMG_6071.gif', 'IMG_6654.gif', 'IMG_6611.gif', 'IMG_6615.gif', 'IMG_6701.gif',
+];
+
+function setupHero() {
+  const img = document.getElementById('hero-img');
+  if (!img) return;
+  const pick = HERO_IMAGES[Math.floor(Math.random() * HERO_IMAGES.length)];
+  img.addEventListener('load', () => img.classList.add('loaded'), { once: true });
+  img.src = `../images/${pick}`;
+}
+
 async function init() {
   try {
+    setupHero();
     await loadData();
     setupChrome();
     if (lastUpdated) document.getElementById('last-updated').textContent = `Last synced: ${lastUpdated.slice(0, 10)}`;

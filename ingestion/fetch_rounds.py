@@ -2,7 +2,8 @@
 """
 fetch_rounds.py
 Pulls golf round data from Garmin Connect and stores it in rounds.json.
-Always saves a raw API dump and runs backfill_shots + backfill_enrichment automatically.
+Always saves a raw API dump and runs backfill_shots + backfill_enrichment +
+strokes_gained automatically.
 
 Usage:
     python fetch_rounds.py                    # fetch last 30 days
@@ -938,6 +939,10 @@ def main():
     print("\nRunning backfill_enrichment...")
     subprocess.run(
         [sys.executable, str(ingestion_dir / "backfill_enrichment.py")], check=True
+    )
+    print("\nRunning strokes_gained...")
+    subprocess.run(
+        [sys.executable, str(ingestion_dir / "strokes_gained.py")], check=True
     )
 
 

@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
   <title>Golf Stats Dashboard</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛳</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,41 +23,52 @@
     </header>
 
     <div class="layout">
-      <aside class="sidebar">
-        <p class="sidebar-title">Filters</p>
-        <div class="filter-group">
-          <label for="course-select">Course</label>
-          <select id="course-select"></select>
-        </div>
-        <div class="filter-group">
-          <label for="filter-holes">Round Length</label>
-          <select id="filter-holes">
-            <option value="18">18 holes</option>
-            <option value="9">9 holes</option>
-            <option value="">All</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="filter-date-from">From</label>
-          <input type="date" id="filter-date-from">
-        </div>
-        <div class="filter-group">
-          <label for="filter-date-to">To</label>
-          <input type="date" id="filter-date-to">
-        </div>
-        <div id="round-count" class="round-count"></div>
-      </aside>
-
       <main class="main">
-        <!-- Mode tabs -->
-        <div class="tabs mode-tabs">
-          <button class="tab-btn active" data-mode="course">By Course</button>
-          <button class="tab-btn" data-mode="overall">Overall</button>
-          <button class="tab-btn" data-mode="manage">Manage <span id="manage-badge" class="badge" style="display:none"></span></button>
+        <!-- Hero banner -->
+        <section class="hero">
+          <img id="hero-img" class="hero-img" alt="" aria-hidden="true">
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <p class="hero-eyebrow">Your Golf Journey</p>
+            <h2 class="hero-title">Track every swing, every round.</h2>
+            <p class="hero-sub">Trends, strokes gained &amp; course breakdowns — all in one place.</p>
+          </div>
+        </section>
+
+        <!-- Mode tabs + inline filter bar -->
+        <div class="tabs-filter-row">
+          <div class="tabs mode-tabs">
+            <button class="tab-btn active" data-mode="overall">Overall</button>
+            <button class="tab-btn" data-mode="course">By Course</button>
+            <button class="tab-btn" data-mode="manage" style="display:none">Manage <span id="manage-badge" class="badge" style="display:none"></span></button>
+          </div>
+          <div class="filter-bar">
+            <div class="filter-bar-item filter-course-only">
+              <label for="course-select">Course</label>
+              <select id="course-select"></select>
+            </div>
+            <div class="filter-bar-item">
+              <label for="filter-holes">Round Length</label>
+              <select id="filter-holes">
+                <option value="18">18 holes</option>
+                <option value="9">9 holes</option>
+                <option value="">All</option>
+              </select>
+            </div>
+            <div class="filter-bar-item">
+              <label for="filter-date-from">From</label>
+              <input type="date" id="filter-date-from">
+            </div>
+            <div class="filter-bar-item">
+              <label for="filter-date-to">To</label>
+              <input type="date" id="filter-date-to">
+            </div>
+            <div id="round-count" class="round-count"></div>
+          </div>
         </div>
 
         <!-- ═══════════════ COURSE VIEW ═══════════════ -->
-        <div id="view-course" class="mode-view active">
+        <div id="view-course" class="mode-view">
           <div class="course-head">
             <h2 id="course-name" class="course-name">—</h2>
             <div id="course-meta" class="course-meta"></div>
@@ -150,6 +162,12 @@
               <div id="chart-c-penalty-trend"></div>
               <div id="summary-c-penalty-trend" class="chart-summary"></div>
             </div>
+            <div class="chart-card">
+              <div class="chart-title">Strokes Gained by Category <span class="est-tag">est</span></div>
+              <div class="chart-desc">Estimated strokes gained vs a scratch baseline at this course, by part of the game. Compare with your overall pattern to see if this layout punishes a specific area.</div>
+              <div id="chart-c-sg"></div>
+              <div id="summary-c-sg" class="chart-summary"></div>
+            </div>
           </div>
           <!-- ── vs Overall ── -->
           <h3 class="section-title">This Course vs Your Overall</h3>
@@ -181,7 +199,7 @@
         </div>
 
         <!-- ═══════════════ OVERALL VIEW ═══════════════ -->
-        <div id="view-overall" class="mode-view">
+        <div id="view-overall" class="mode-view active">
           <div class="kpi-row">
             <div class="kpi-card"><div class="kpi-label">Rounds</div><div class="kpi-value" id="ok-rounds">—</div></div>
             <div class="kpi-card"><div class="kpi-label">Courses</div><div class="kpi-value" id="ok-courses">—</div></div>
@@ -189,11 +207,33 @@
             <div class="kpi-card"><div class="kpi-label">Avg Putts</div><div class="kpi-value" id="ok-putts">—</div></div>
             <div class="kpi-card"><div class="kpi-label">GIR %</div><div class="kpi-value" id="ok-gir">—</div></div>
             <div class="kpi-card"><div class="kpi-label">Fairway %</div><div class="kpi-value" id="ok-fwy">—</div></div>
-            <div class="kpi-card"><div class="kpi-label">1-Putt %</div><div class="kpi-value" id="ok-1putt">—</div></div>
+            <div class="kpi-card"><div class="kpi-label">Handicap Idx</div><div class="kpi-value" id="ok-hcap">—</div></div>
           </div>
+
+          <h3 class="section-title">Your Goal</h3>
+          <div id="goals-overall"></div>
+
+          <h3 class="section-title">Focus This Week</h3>
+          <div id="focus-overall"></div>
 
           <h3 class="section-title">Insights</h3>
           <div id="insights-overall"></div>
+
+          <h3 class="section-title">Strokes Gained <span class="est-tag">estimate</span></h3>
+          <div class="chart-grid-2">
+            <div class="chart-card">
+              <div class="chart-title">Strokes Gained by Category</div>
+              <div class="chart-desc">Estimated strokes gained vs a scratch-golfer baseline, split by part of the game. Bars below zero are strokes you're losing there; the longest red bar is your biggest opportunity. Estimated from round stats (fairways, GIR, putts, scrambling) — not shot-by-shot.</div>
+              <div id="chart-o-sg"></div>
+              <div id="summary-o-sg" class="chart-summary"></div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-title">Total Strokes Gained per Round</div>
+              <div class="chart-desc">Estimated total strokes gained vs scratch each round. An upward trend means you're closing the gap to scratch over time.</div>
+              <div id="chart-o-sg-trend"></div>
+              <div id="summary-o-sg-trend" class="chart-summary"></div>
+            </div>
+          </div>
 
           <h3 class="section-title">Trends</h3>
           <div class="chart-grid-2">
