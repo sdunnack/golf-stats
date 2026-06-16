@@ -40,6 +40,7 @@ let lastUpdated = null;
 let shotsLoaded = false;
 let shotsLoading = null;
 let mode = 'overall';
+let currentPanel = 'stats';
 let selectedCourse = null;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -1503,15 +1504,34 @@ function renderInsights(rounds, holes, containerId) {
   if (!el) return;
 
   const insights = generateInsights(rounds, holes);
-
-  // Preserve open/closed state across re-renders
-  const wasOpen = el.querySelector('details')?.open ?? false;
+  const expanded = el.dataset.expanded === 'true';
 
   if (!insights.length) {
     el.innerHTML = `<div class="insights-empty">⛳ Not enough data yet — play a few more rounds to unlock personalised insights.</div>`;
     return;
   }
 
+  const cardsHtml = insights.map(i => `
+    <div class="insight-card ${i.severity === 'good' ? 'insight-good' : `severity-${i.severity}`}">
+      <div class="insight-header">
+        <span class="insight-category">${i.category}</span>
+        <span class="insight-badge ${i.severity === 'good' ? 'insight-good' : `severity-${i.severity}`}">${
+          i.severity === 'high' ? 'Priority' : i.severity === 'med' ? 'Watch' : i.severity === 'low' ? 'Minor' : 'Strength'
+        }</span>
+      </div>
+      <div class="insight-title">${i.title}</div>
+      <div class="insight-stat">${i.stat}<span class="insight-stat-label">${i.statLabel}</span></div>
+      <div class="insight-body">${i.body}</div>
+      <div class="insight-tip">💡 ${i.tip}</div>
+    </div>`).join('');
+
+  if (expanded) {
+    el.innerHTML = `<div class="insights-grid">${cardsHtml}</div>`;
+    return;
+  }
+
+  // Preserve open/closed state across re-renders
+  const wasOpen = el.querySelector('details')?.open ?? false;
   const priorities = insights.filter(i => i.severity !== 'good');
   const highCount  = priorities.filter(i => i.severity === 'high').length;
   const label = priorities.length
@@ -1529,21 +1549,19 @@ function renderInsights(rounds, holes, containerId) {
           `<span class="insight-pill severity-${i.severity}">${i.title}</span>`
         ).join('')}</span>
       </summary>
-      <div class="insights-grid">${insights.map(i => `
-        <div class="insight-card ${i.severity === 'good' ? 'insight-good' : `severity-${i.severity}`}">
-          <div class="insight-header">
-            <span class="insight-category">${i.category}</span>
-            <span class="insight-badge ${i.severity === 'good' ? 'insight-good' : `severity-${i.severity}`}">${
-              i.severity === 'high' ? 'Priority' : i.severity === 'med' ? 'Watch' : i.severity === 'low' ? 'Minor' : 'Strength'
-            }</span>
-          </div>
-          <div class="insight-title">${i.title}</div>
-          <div class="insight-stat">${i.stat}<span class="insight-stat-label">${i.statLabel}</span></div>
-          <div class="insight-body">${i.body}</div>
-          <div class="insight-tip">💡 ${i.tip}</div>
-        </div>`).join('')}
-      </div>
+      <div class="insights-grid">${cardsHtml}</div>
     </details>`;
+}
+
+function switchPanel(panel) {
+  currentPanel = panel;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.panel === panel));
+  const activeView = document.querySelector('.mode-view.active');
+  if (!activeView) return;
+  activeView.querySelectorAll('.sub-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === panel));
+  // Tabs and filters only make sense on the Stats panel
+  document.querySelector('.filter-bar')?.classList.toggle('filter-bar--hidden', panel !== 'stats');
+  document.querySelector('.tabs-filter-row')?.classList.toggle('tabs-filter-row--hidden', panel !== 'stats');
 }
 
 // ── Mode + setup ────────────────────────────────────────────────────────────────
@@ -1555,6 +1573,10 @@ function switchMode(newMode) {
   document.getElementById('view-manage').classList.toggle('active', mode === 'manage');
   // Course selector only shown on the By Course tab.
   document.body.classList.toggle('filters-hidden', mode !== 'course');
+  // Hide left nav for manage view (no sub-panels); reset to stats otherwise.
+  const leftNav = document.getElementById('left-nav');
+  if (leftNav) leftNav.style.display = mode === 'manage' ? 'none' : '';
+  switchPanel('stats');
   render();
 }
 
@@ -1604,6 +1626,11 @@ function setupChrome() {
   document.getElementById('btn-export-courses').addEventListener('click', exportCoursesJson);
   // Sidebar filters only apply to the By Course view; hide elsewhere.
   document.body.classList.toggle('filters-hidden', mode !== 'course');
+  // Wire left nav buttons.
+  document.querySelectorAll('.nav-btn').forEach(btn =>
+    btn.addEventListener('click', () => switchPanel(btn.dataset.panel)));
+  // Set initial sub-panel state.
+  switchPanel('stats');
 }
 
 // ── Course Manager ────────────────────────────────────────────────────────────
