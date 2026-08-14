@@ -503,6 +503,96 @@ body.filters-hidden .filter-course-only {
   font-style: italic;
 }
 
+/* ── Fairway miss diverging bar ──────────────────────────── */
+.fwy-bar {
+  display: flex;
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.fwy-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 0;
+  white-space: nowrap;
+  transition: width .3s;
+}
+.fwy-bar-legend {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  flex-wrap: wrap;
+}
+.fwy-bar-legend span { display: flex; align-items: center; gap: 6px; }
+.fwy-bar-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+
+/* ── Hole heatmap strip ──────────────────────────────────── */
+.hole-heatmap-strip {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.hole-cell {
+  flex: 1 0 40px;
+  min-width: 40px;
+  border-radius: 8px;
+  padding: 8px 4px;
+  text-align: center;
+}
+.hole-cell-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  opacity: .75;
+}
+.hole-cell-value {
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* ── Horizontal lollipop chart ───────────────────────────── */
+.lollipop-chart { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+.lollipop-row { display: grid; grid-template-columns: 48px 1fr 56px; align-items: center; gap: 10px; font-size: 12px; }
+.lollipop-label { font-weight: 700; color: var(--text-muted); }
+.lollipop-track { position: relative; height: 6px; background: var(--border-light); border-radius: 3px; }
+.lollipop-track::before {
+  content: '';
+  position: absolute; left: 50%; top: -4px; bottom: -4px; width: 1px;
+  background: var(--border);
+}
+.lollipop-bar { position: absolute; top: 0; bottom: 0; border-radius: 3px; }
+.lollipop-dot {
+  position: absolute; top: 50%; width: 12px; height: 12px; border-radius: 50%;
+  transform: translate(-50%, -50%); border: 2px solid var(--card); box-shadow: 0 0 0 1px rgba(0,0,0,.08);
+}
+.lollipop-value { text-align: right; font-weight: 700; }
+
+/* ── Trends tabbed container ─────────────────────────────── */
+.trend-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.trend-tab {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.trend-tab:hover { border-color: var(--primary); color: var(--primary); }
+.trend-tab.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
 /* ── Scorecard table ─────────────────────────────────────── */
 .scorecard-wrap { overflow-x: auto; margin-top: 4px; }
 .scorecard-table {
@@ -595,6 +685,132 @@ body.filters-hidden .filter-course-only {
   color: #dc2626;
 }
 
+.scorecard-insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.sc-insight-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+.sc-insight-card h4 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-subtle);
+  margin-bottom: 10px;
+}
+
+.sc-mini-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--border-light);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.sc-mini-row:last-child {
+  border-bottom: none;
+}
+
+.sc-mini-row strong {
+  color: var(--text);
+  font-weight: 700;
+  text-align: right;
+}
+
+.sc-split-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+.sc-mini-card {
+  background: var(--border-light);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.sc-mini-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.sc-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sc-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, var(--chip), #ffffff 55%);
+  background: color-mix(in srgb, var(--chip), #ffffff 90%);
+  color: color-mix(in srgb, var(--chip), #111827 20%);
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sc-muted {
+  color: var(--text-subtle);
+  font-size: 12px;
+}
+
+.sc-sg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.sc-sg-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--border-light);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.sc-sg-item span {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--text-subtle);
+}
+
+.sc-sg-item strong {
+  font-size: 16px;
+  color: var(--text);
+}
+
+.sc-sg-item.good strong {
+  color: #0f766e;
+}
+
+.sc-sg-item.bad strong {
+  color: #b91c1c;
+}
+
+.sc-sg-item.neutral strong {
+  color: var(--text-muted);
+}
 /* ── Club avg table ──────────────────────────────────────── */
 .club-table {
   width: 100%;
@@ -653,6 +869,13 @@ body.filters-hidden .filter-course-only {
   margin-top: 22px;
 }
 
+.panel-intro {
+  font-size: 13.5px;
+  color: var(--text-subtle);
+  line-height: 1.6;
+  margin: 6px 0 20px;
+  max-width: 680px;
+}
 /* ── Course header ───────────────────────────────────────── */
 .course-head {
   margin-bottom: 20px;
@@ -754,6 +977,107 @@ body.filters-hidden .filter-course-only {
   vertical-align: middle;
 }
 
+/* ── Manchester ringer card ─────────────────────────────── */
+.ringer-card {
+  margin-bottom: 18px;
+}
+
+.ringer-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.ringer-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.ringer-table {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.ringer-table th,
+.ringer-table td {
+  border: 1px solid var(--border);
+  padding: 6px 7px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ringer-table th {
+  background: var(--border-light);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+
+.ringer-table td:first-child,
+.ringer-table th:first-child {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #f8fafc;
+}
+
+.ringer-table th:first-child {
+  z-index: 2;
+}
+
+.ringer-label {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.ringer-date {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ringer-total {
+  font-weight: 700;
+}
+
+.ringer-score.ringer-better {
+  background: #dcefe0;
+  color: #2f5f3b;
+}
+
+.ringer-score.ringer-worse {
+  background: #f4dddd;
+  color: #7a3939;
+}
+
+.ringer-score.ringer-match {
+  background: #fef08a;
+  color: #713f12;
+  font-weight: 700;
+}
+
+.ringer-score.ringer-birdie {
+  background: #dbeafe;
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.ringer-best-row td {
+  font-weight: 700;
+  background: #eef6ff;
+}
+
+.ringer-par-row td {
+  font-weight: 700;
+  background: #f8fbff;
+}
 /* ── Insight cards ───────────────────────────────────────── */
 .insights-details {
   margin-bottom: 14px;
@@ -1248,6 +1572,9 @@ body.filters-hidden .filter-course-only {
   .hero-content { padding: 0 20px 18px; }
   .training-hero-card { padding: 24px 22px; }
   .training-title { font-size: 22px; }
+    .ringer-head {
+      align-items: stretch;
+    }
 }
 
 @media (max-width: 520px) {

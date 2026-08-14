@@ -97,6 +97,8 @@
         
           <!-- ── Stats sub-panel ── -->
           <div class="sub-panel active" data-panel="stats">
+            <p class="panel-intro">Charts and trends across all your rounds. Use the <strong>Overall</strong> / <strong>By
+                Course</strong> tabs to switch views, and the filters above to narrow by round length or date range.</p>
             <div class="kpi-row">
               <div class="kpi-card">
                 <div class="kpi-label">Rounds</div>
@@ -147,47 +149,11 @@
             </div>
         
             <h3 class="section-title">Trends</h3>
-            <div class="chart-grid-2">
-              <div class="chart-card">
-                <div class="chart-title">Score per Round</div>
-                <div id="chart-o-score-trend"></div>
-                <div id="summary-o-score" class="chart-summary"></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Total Putts per Round</div>
-                <div id="chart-o-putts-trend"></div>
-                <div id="summary-o-putts" class="chart-summary"></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Greens in Regulation %</div>
-                <div id="chart-o-gir-trend"></div>
-                <div id="summary-o-gir" class="chart-summary"></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Fairways Hit %</div>
-                <div id="chart-o-fwy-trend"></div>
-                <div id="summary-o-fwy" class="chart-summary"></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Scrambling %</div>
-                <div class="chart-desc">How often you make par or better after missing the green in regulation.</div>
-                <div id="chart-o-scramble-trend"></div>
-                <div id="summary-o-scramble-trend" class="chart-summary"></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Penalty Strokes per Round</div>
-                <div class="chart-desc">Total penalty strokes taken each round. A downward trend means fewer costly mistakes.
-                </div>
-                <div id="chart-o-penalty-trend"></div>
-                <div id="summary-o-penalty-trend" class="chart-summary"></div>
-              </div>
-            </div>
             <div class="chart-card">
-              <div class="chart-title">Handicap Differential Trend</div>
-              <div class="chart-desc">Calculated as (Score − Course Rating) / Course Slope × 113. Normalizes each round for
-                course difficulty — a lower value is better.</div>
-              <div id="chart-o-hcap-trend"></div>
-              <div id="summary-o-hcap-trend" class="chart-summary"></div>
+              <div id="trend-tabs" class="trend-tabs"></div>
+              <div id="trend-tab-desc" class="chart-desc"></div>
+              <div id="chart-o-trends"></div>
+              <div id="summary-o-trends" class="chart-summary"></div>
             </div>
         
             <h3 class="section-title">Scoring &amp; Putting</h3>
@@ -226,6 +192,12 @@
               <div id="chart-o-club-box"></div>
               <div id="summary-o-club-box" class="chart-summary"></div>
             </div>
+            <div class="chart-card">
+              <div class="chart-title">Distance Lost from the Rough, by Club</div>
+              <div class="chart-desc">Fairway vs. rough average distance per club (tee/approach/layup shots only). Requires CT10
+                sensor data.</div>
+              <div id="club-lie-table"></div>
+            </div>
             <div class="chart-grid-2">
               <div class="chart-card">
                 <div class="chart-title">Shot Distance by Lie</div>
@@ -259,6 +231,9 @@
         
           <!-- ── Insights sub-panel ── -->
           <div class="sub-panel" data-panel="insights">
+            <p class="panel-intro">Personalised insights generated from the rounds currently in the filter. Switch between
+              <strong>Overall</strong> and <strong>By Course</strong> — or adjust the Round Length and date range — to change what's
+              analysed.</p>
             <h3 class="section-title" style="margin-top:0">Your Goal</h3>
             <div id="goals-overall"></div>
         
@@ -330,9 +305,26 @@
         <div id="view-course" class="mode-view">
 <!-- ── Stats sub-panel ── -->
 <div class="sub-panel active" data-panel="stats">
+            <p class="panel-intro">Detailed stats and charts for a single course. Select a course from the dropdown above, and use
+              the Round Length and date filters to refine which visits are included.</p>
             <div class="course-head">
               <h2 id="course-name" class="course-name">—</h2>
               <div id="course-meta" class="course-meta"></div>
+            </div>
+
+            <div id="ringer-card" class="chart-card ringer-card" style="display:none">
+              <div class="ringer-head">
+                <div>
+                  <div class="chart-title">Manchester Division Days Ringer</div>
+                  <div class="chart-desc">Rounds played on Thursday, Saturday, and Sunday. Set a start date to track across seasons.
+                  </div>
+                </div>
+                <div class="filter-bar-item">
+                  <label for="ringer-start-date">Track From</label>
+                  <input type="date" id="ringer-start-date">
+                </div>
+              </div>
+              <div id="ringer-table-wrap"></div>
             </div>
 
             <div class="kpi-row kpi-row-course">
@@ -470,6 +462,8 @@
 
           <!-- ── Insights sub-panel ── -->
           <div class="sub-panel" data-panel="insights">
+            <p class="panel-intro">Insights specific to the selected course, based on your rounds there. Use the Course dropdown and
+              filters above to change which data is shown.</p>
             <h3 class="section-title" style="margin-top:0">Course Insights</h3>
             <div id="insights-course" data-expanded="true"></div>
           </div><!-- /insights -->

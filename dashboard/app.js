@@ -13,6 +13,8 @@ const C_LIME    = '#84cc16';
 const CHART_H   = 240;
 const HOME_COURSE = 'Manchester Country Club';
 const LS_KEY = 'golfstats.course';
+const RINGER_START_KEY = 'golfstats.ringer_start_date';
+const DIVISION_DAYS = new Set([0, 4, 6]);
 
 const AX = { gridcolor: '#f1f5f9', linecolor: '#e2e8f0', zerolinecolor: '#e2e8f0' };
 const BASE_LAYOUT = {
@@ -76,7 +78,19 @@ function setSummary(id, text) {
   const el = document.getElementById(id);
   if (el) el.textContent = text;
 }
-function catAxis(overrides = {}) { return { ...AX, type: 'category', ...overrides }; }
+function catAxis(overrides = {}) { return { ...AX, type: 'category', showgrid: false, ...overrides }; }
+
+function isoWeekday(isoDate) {
+  const parts = (isoDate || '').split('-').map(Number);
+  if (parts.length !== 3 || parts.some(n => Number.isNaN(n))) return null;
+  const [y, m, d] = parts;
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+}
+
+function isDivisionDay(isoDate) {
+  const wd = isoWeekday(isoDate);
+  return wd != null && DIVISION_DAYS.has(wd);
+}
 
 // Resolve a course string to its metadata using the module-level alias index.
 function getCourseMeta(courseStr) {
@@ -188,6 +202,10 @@ async function loadData() {
       fairway_pct:       t.fairway_pct      ?? null,
       holes_played:      t.holes_played     ?? null,
       sg:                r.strokes_gained   ?? null,
+      duration_seconds:  r.duration_seconds ?? null,
+      distance_meters:   r.distance_meters  ?? null,
+      front_nine:        r.front_nine       ?? null,
+      back_nine:         r.back_nine        ?? null,
       hcap_index:        r.hcap_index       ?? null,
     });
 
@@ -338,12 +356,59 @@ function trendLine(chartId, summaryId, dates, vals, label, color, yRange = null)
       name: `${MA_WINDOW}-rd avg`, line: { color: C_ORANGE, width: 2, dash: 'dot' } });
   }
   const yax = yRange ? { ...AX, type: 'linear', range: yRange } : { ...AX, type: 'linear' };
-  plotClear(chartId, traces, L({ xaxis: { ...AX, type: 'category', tickvals: dates, ticktext: dateTicks(dates) }, yaxis: yax }), CFG);
+  const heightOverride = chartId === 'chart-o-trends' ? { height: 320 } : {};
+  plotClear(chartId, traces, L({ ...heightOverride, xaxis: { ...AX, type: 'category', showgrid: false, tickvals: dates, ticktext: dateTicks(dates) }, yaxis: yax }), CFG);
   if (summaryId) {
     const mn = Math.min(...valid), mx = Math.max(...valid), a = avg(valid);
-    setSummary(summaryId, `Avg ${fmt(a)} · Best ${mn} · Worst ${mx}`
+    setSummary(summaryId, `Avg ${fmt(a)} · Best ${fmt(mn)} · Worst ${fmt(mx)}`
       + (valid.length >= 2 ? ` · ${vals.filter(v=>v!=null).at(-1) < valid[0] ? '↓ improving' : '↑ up'} ${Math.abs(valid.at(-1)-valid[0]).toFixed(1)} first to last` : ''));
   }
+}
+
+// ── Overall "Trends" tabbed container ───────────────────────────────────────────
+let trendTabDefs = [];
+let trendActiveKey = 'score';
+
+function renderOverallTrends(rounds, holes) {
+  const dates = rounds.map(r => r.date);
+  const pr = rounds.filter(r => r.putts != null && r.putts > 0);
+  trendTabDefs = [
+    { key: 'score', label: 'Score', desc: 'Total strokes per round.',
+      run: () => trendLine('chart-o-trends', 'summary-o-trends', dates, rounds.map(r => r.score), 'Score', C_GREEN) },
+    { key: 'putts', label: 'Putts', desc: 'Total putts per round.',
+      run: () => trendLine('chart-o-trends', 'summary-o-trends', pr.map(r => r.date), pr.map(r => r.putts), 'Putts', C_BLUE) },
+    { key: 'gir', label: 'GIR %', desc: 'Greens hit in regulation, per round.',
+      run: () => trendLine('chart-o-trends', 'summary-o-trends', dates, rounds.map(r => r.gir_pct), 'GIR %', C_TEAL, [0, 100]) },
+    { key: 'fwy', label: 'Fairways', desc: 'Fairways hit off the tee, per round.',
+      run: () => trendLine('chart-o-trends', 'summary-o-trends', dates, rounds.map(r => r.fairway_pct), 'FWY %', C_PURPLE, [0, 100]) },
+    { key: 'scramble', label: 'Scrambling', desc: 'How often you make par or better after missing the green in regulation.',
+      run: () => renderScramblingTrend(rounds, holes, 'chart-o-trends', 'summary-o-trends') },
+    { key: 'penalty', label: 'Penalties', desc: 'Total penalty strokes taken each round. A downward trend means fewer costly mistakes.',
+      run: () => renderPenaltyTrend(rounds, holes, 'chart-o-trends', 'summary-o-trends') },
+    { key: 'hcap', label: 'Handicap Diff', desc: 'Calculated as (Score − Course Rating) / Course Slope × 113. Normalizes each round for course difficulty — lower is better.',
+      run: () => renderHandicapDiffTrend(rounds, 'chart-o-trends', 'summary-o-trends') },
+  ];
+  if (!trendTabDefs.some(d => d.key === trendActiveKey)) trendActiveKey = trendTabDefs[0].key;
+  renderTrendTabs();
+}
+
+function renderTrendTabs() {
+  const tabsEl = document.getElementById('trend-tabs');
+  if (!tabsEl || !trendTabDefs.length) return;
+  tabsEl.innerHTML = trendTabDefs.map(d =>
+    `<button type="button" class="trend-tab${d.key === trendActiveKey ? ' active' : ''}" data-key="${d.key}">${d.label}</button>`
+  ).join('');
+  tabsEl.querySelectorAll('.trend-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (trendActiveKey === btn.dataset.key) return;
+      trendActiveKey = btn.dataset.key;
+      renderTrendTabs();
+    });
+  });
+  const active = trendTabDefs.find(d => d.key === trendActiveKey);
+  const descEl = document.getElementById('trend-tab-desc');
+  if (descEl) descEl.textContent = active?.desc || '';
+  active?.run();
 }
 
 const RESULT_ORDER  = ['Eagle or better', 'Birdie', 'Par', 'Bogey', 'Double', 'Triple+'];
@@ -363,6 +428,8 @@ function renderCourseView() {
   const rounds = base.filter(r => r.course === selectedCourse);
   const { holes, shots } = bundle(rounds);
   const meta = courseMeta[selectedCourse];
+
+  renderManchesterRinger(rounds, holes, meta);
 
   // Header + meta line
   document.getElementById('course-name').textContent = selectedCourse;
@@ -431,7 +498,7 @@ function renderCourseView() {
     });
     plotClear('chart-c-score-trend', traces, layout, CFG);
     const mn = Math.min(...validScores), mx = Math.max(...validScores), a = avg(validScores);
-    let summary = `Avg ${fmt(a)} · Best ${mn} · Worst ${mx}`
+    let summary = `Avg ${fmt(a)} · Best ${fmt(mn)} · Worst ${fmt(mx)}`
       + (validScores.length >= 2 ? ` · ${scoreVals.filter(v=>v!=null).at(-1) < validScores[0] ? '↓ improving' : '↑ up'} ${Math.abs(scoreVals.filter(v=>v!=null).at(-1)-validScores[0]).toFixed(1)} first to last` : '');
     if (hasVsPar) {
       const vpVals = vsParPts.map(s => s.vsPar);
@@ -450,6 +517,121 @@ function renderCourseView() {
   renderStrokesGained(rounds, 'chart-c-sg', 'summary-c-sg');
   renderCourseVsOverall(rounds, holes, base);
   renderCourseScorecards(rounds, holes, shots);
+}
+
+function renderManchesterRinger(rounds, holes, meta) {
+  const card = document.getElementById('ringer-card');
+  const input = document.getElementById('ringer-start-date');
+  const wrap = document.getElementById('ringer-table-wrap');
+  if (!card || !input || !wrap) return;
+
+  if (selectedCourse !== HOME_COURSE) {
+    card.style.display = 'none';
+    return;
+  }
+  card.style.display = '';
+
+  const byId = {};
+  for (const h of holes) (byId[h.activity_id] ||= []).push(h);
+
+  const allDates = rounds.map(r => r.date).filter(Boolean).sort();
+  if (!input.value) {
+    const saved = localStorage.getItem(RINGER_START_KEY);
+    const defaultStart = saved || `${new Date().getFullYear()}-01-01`;
+    input.value = defaultStart;
+  }
+  if (allDates.length) {
+    input.min = allDates[0];
+    input.max = allDates.at(-1);
+  }
+  const startDate = input.value;
+
+  const divRounds = rounds
+    .filter(r => isDivisionDay(r.date))
+    .filter(r => !startDate || r.date >= startDate)
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  const parByHole = {};
+  for (let h = 1; h <= 18; h++) {
+    parByHole[h] = meta?.holePar?.[h] ?? null;
+  }
+
+  const bestByHole = {};
+  for (let h = 1; h <= 18; h++) {
+    const vals = divRounds.map(r => {
+      const hole = (byId[r.activity_id] || []).find(x => x.hole === h);
+      return hole?.score ?? null;
+    }).filter(v => v != null);
+    bestByHole[h] = vals.length ? Math.min(...vals) : null;
+  }
+
+  if (!divRounds.length) {
+    wrap.innerHTML = '<div class="no-data">No Manchester division-day rounds in the selected date range.</div>';
+    return;
+  }
+
+  const header = ['<th>Date</th>'];
+  for (let h = 1; h <= 18; h++) header.push(`<th>H${h}</th>`);
+  header.push('<th>Total</th>');
+
+  const bestRow = ['<td class="ringer-label">Best</td>'];
+  let bestTotal = 0;
+  let bestCount = 0;
+  for (let h = 1; h <= 18; h++) {
+    const sc = bestByHole[h];
+    const cls = scoreCellClass(sc, parByHole[h]);
+    bestRow.push(`<td class="${cls}">${sc ?? '—'}</td>`);
+    if (sc != null) { bestTotal += sc; bestCount++; }
+  }
+  bestRow.push(`<td class="ringer-total">${bestCount ? bestTotal : '—'}</td>`);
+
+  const parRow = ['<td class="ringer-label">Par</td>'];
+  for (let h = 1; h <= 18; h++) parRow.push(`<td>${parByHole[h] ?? '—'}</td>`);
+  const totalPar = Object.values(parByHole).every(p => p != null) ? sum(Object.values(parByHole)) : null;
+  parRow.push(`<td class="ringer-total">${totalPar ?? '—'}</td>`);
+
+  const bodyRows = divRounds.map(r => {
+    const hs = byId[r.activity_id] || [];
+    const map = {};
+    for (const h of hs) map[h.hole] = h;
+    const cells = [`<td class="ringer-date">${r.date}</td>`];
+    let total = 0;
+    let count = 0;
+    for (let n = 1; n <= 18; n++) {
+      const sc = map[n]?.score ?? null;
+      const cls = ringerBodyCellClass(sc, parByHole[n], bestByHole[n]);
+      cells.push(`<td class="${cls}">${sc ?? ''}</td>`);
+      if (sc != null) { total += sc; count++; }
+    }
+    cells.push(`<td class="ringer-total">${count ? total : '—'}</td>`);
+    return `<tr>${cells.join('')}</tr>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    <div class="ringer-table-wrap">
+      <table class="ringer-table">
+        <thead><tr>${header.join('')}</tr></thead>
+        <tbody>
+          <tr class="ringer-best-row">${bestRow.join('')}</tr>
+          <tr class="ringer-par-row">${parRow.join('')}</tr>
+          ${bodyRows}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function scoreCellClass(score, par) {
+  if (score == null || par == null) return 'ringer-score';
+  if (score < par) return 'ringer-score ringer-better';
+  if (score > par) return 'ringer-score ringer-worse';
+  return 'ringer-score';
+}
+
+function ringerBodyCellClass(score, par, best) {
+  if (score == null) return 'ringer-score';
+  if (best != null && score === best) return 'ringer-score ringer-match';
+  if (par != null && score < par) return 'ringer-score ringer-birdie';
+  return 'ringer-score';
 }
 
 function recordCard(label, value, sub) {
@@ -494,12 +676,41 @@ function renderCourseRecords(rounds, stats) {
   el.innerHTML = cards.join('');
 }
 
+// t: 0 = best (green), 1 = worst (red)
+function heatStops(t) {
+  t = Math.max(0, Math.min(1, t));
+  const stops = [
+    { t: 0,    bg: [187, 247, 208], fg: '#14532d' }, // green-200
+    { t: 0.5,  bg: [241, 245, 249], fg: '#475569' }, // slate-100 (neutral)
+    { t: 1,    bg: [252, 165, 165], fg: '#7f1d1d' }, // red-300
+  ];
+  let lo = stops[0], hi = stops[stops.length - 1];
+  for (let i = 0; i < stops.length - 1; i++) {
+    if (t >= stops[i].t && t <= stops[i + 1].t) { lo = stops[i]; hi = stops[i + 1]; break; }
+  }
+  const span = hi.t - lo.t || 1;
+  const k = (t - lo.t) / span;
+  const bg = lo.bg.map((c, i) => Math.round(c + (hi.bg[i] - c) * k));
+  return { bg: `rgb(${bg[0]},${bg[1]},${bg[2]})`, fg: k < 0.5 ? lo.fg : hi.fg };
+}
+
+function renderHoleHeatmapStrip(containerId, cells) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (!cells.length) { noData(containerId, 'No hole-level data'); return; }
+  el.innerHTML = `<div class="hole-heatmap-strip">${cells.map(c => `
+    <div class="hole-cell" style="background:${c.bg};color:${c.fg}" title="${c.title}">
+      <div class="hole-cell-label">H${c.hole}</div>
+      <div class="hole-cell-value">${c.display}</div>
+    </div>`).join('')}</div>`;
+}
+
 function renderCourseHoles(holes) {
   const ids = ['chart-c-hole-score','chart-c-hole-gir','chart-c-hole-putts','chart-c-hole-pen'];
   if (!holes.length) { ids.forEach(id => noData(id, 'No hole-level data')); return; }
   const holeNums = [...new Set(holes.map(h => h.hole))].sort((a,b) => a-b);
 
-  // Best / Avg / Worst score per hole
+  // Score by hole — heat color from strokes vs par
   const hs = holeNums.map(n => {
     const hh = holes.filter(h => h.hole === n);
     const scores = hh.map(h => h.score).filter(s => s != null);
@@ -514,27 +725,14 @@ function renderCourseHoles(holes) {
   });
   const d = hs.filter(d => d.avg_score != null);
   if (d.length) {
-    const xLabels = d.map(d => `H${d.hole}`);
-    const traces = [
-      { x: xLabels, y: d.map(d => d.worst_score), mode: 'lines+markers', name: 'Worst',
-        line: { color: C_RED, width: 2 }, marker: { color: C_RED, size: 6 },
-        hovertemplate: 'Hole %{x} — Worst: %{y}<extra></extra>' },
-      { x: xLabels, y: d.map(d => d.avg_score), mode: 'lines+markers', name: 'Avg',
-        line: { color: C_ORANGE, width: 2 }, marker: { color: C_ORANGE, size: 6 },
-        hovertemplate: 'Hole %{x} — Avg: %{y:.2f}<extra></extra>' },
-      { x: xLabels, y: d.map(d => d.best_score), mode: 'lines+markers', name: 'Best',
-        line: { color: C_BLUE, width: 2 }, marker: { color: C_BLUE, size: 6 },
-        hovertemplate: 'Hole %{x} — Best: %{y}<extra></extra>' },
-    ];
-    if (d.some(d => d.avg_par != null)) {
-      traces.push({ x: xLabels, y: d.map(d => d.avg_par), mode: 'lines', name: 'Par',
-        line: { color: C_GREEN, width: 2, dash: 'dot' },
-        hovertemplate: 'Hole %{x} — Par: %{y}<extra></extra>' });
-    }
-    plotClear('chart-c-hole-score', traces, L({
-      xaxis: catAxis(),
-      yaxis: { ...AX, type: 'linear' },
-    }), CFG);
+    const cells = d.map(x => {
+      const delta = x.avg_par != null ? x.avg_score - x.avg_par : 0;
+      const t = (delta + 0.5) / 2; // -0.5 (birdie) .. 1.5 (double) mapped to 0..1
+      const { bg, fg } = heatStops(t);
+      return { hole: x.hole, bg, fg, display: fmt(x.avg_score),
+        title: `Hole ${x.hole}: avg ${fmt(x.avg_score)}, best ${x.best_score}, worst ${x.worst_score}${x.avg_par != null ? `, par ${fmt(x.avg_par)}` : ''}` };
+    });
+    renderHoleHeatmapStrip('chart-c-hole-score', cells);
     const hardest = d.reduce((a,b) => (b.avg_score ?? -Infinity) > (a.avg_score ?? -Infinity) ? b : a);
     const easiest = d.reduce((a,b) => (b.avg_score ?? Infinity) < (a.avg_score ?? Infinity) ? b : a);
     setSummary('summary-c-hole-score',
@@ -544,22 +742,23 @@ function renderCourseHoles(holes) {
     setSummary('summary-c-hole-score', '');
   }
 
-  // GIR % by hole
+  // GIR % by hole — higher is better
   const girData = holeNums.map(n => {
     const hh = holes.filter(h => h.hole === n && h.gir != null);
     return hh.length ? { hole: n, gir_pct: hh.filter(h => h.gir).length / hh.length * 100 } : null;
   }).filter(Boolean);
   if (girData.length) {
-    plotClear('chart-c-hole-gir', [{
-      x: girData.map(d => `H${d.hole}`), y: girData.map(d => d.gir_pct), type: 'bar',
-      marker: { color: C_TEAL }, hovertemplate: 'H%{x}: %{y:.1f}%<extra></extra>',
-    }], L({ showlegend: false, xaxis: catAxis(), yaxis: { ...AX, type: 'linear', range: [0, 100] } }), CFG);
+    const cells = girData.map(x => {
+      const { bg, fg } = heatStops(1 - x.gir_pct / 100);
+      return { hole: x.hole, bg, fg, display: fmt(x.gir_pct, '%'), title: `Hole ${x.hole}: ${fmt(x.gir_pct, '%')} GIR` };
+    });
+    renderHoleHeatmapStrip('chart-c-hole-gir', cells);
     const best = girData.reduce((a,b) => b.gir_pct > a.gir_pct ? b : a);
     const worst = girData.reduce((a,b) => b.gir_pct < a.gir_pct ? b : a);
-    setSummary('summary-c-hole-gir', `Best GIR: H${best.hole} (${best.gir_pct.toFixed(1)}%). Lowest: H${worst.hole} (${worst.gir_pct.toFixed(1)}%).`);
+    setSummary('summary-c-hole-gir', `Best GIR: H${best.hole} (${fmt(best.gir_pct, '%')}). Lowest: H${worst.hole} (${fmt(worst.gir_pct, '%')}).`);
   } else { noData('chart-c-hole-gir', 'No GIR data'); }
 
-  // Best / Avg / Worst putts by hole
+  // Putts by hole — lower is better, baseline ~2
   const puttData = holeNums.map(n => {
     const hh = holes.filter(h => h.hole === n && h.putts != null);
     if (!hh.length) return null;
@@ -567,34 +766,31 @@ function renderCourseHoles(holes) {
     return { hole: n, avg_putts: avg(putts), best_putts: Math.min(...putts), worst_putts: Math.max(...putts) };
   }).filter(Boolean);
   if (puttData.length) {
-    const xLabels = puttData.map(d => `H${d.hole}`);
-    const yMax = Math.max(4, Math.ceil(Math.max(...puttData.map(d => d.worst_putts)) + 0.5));
-    plotClear('chart-c-hole-putts', [
-      { x: xLabels, y: puttData.map(d => d.worst_putts), mode: 'lines+markers', name: 'Worst',
-        line: { color: C_RED, width: 2 }, marker: { color: C_RED, size: 6 },
-        hovertemplate: 'Hole %{x} — Worst: %{y}<extra></extra>' },
-      { x: xLabels, y: puttData.map(d => d.avg_putts), mode: 'lines+markers', name: 'Avg',
-        line: { color: C_ORANGE, width: 2 }, marker: { color: C_ORANGE, size: 6 },
-        hovertemplate: 'Hole %{x} — Avg: %{y:.2f}<extra></extra>' },
-      { x: xLabels, y: puttData.map(d => d.best_putts), mode: 'lines+markers', name: 'Best',
-        line: { color: C_BLUE, width: 2 }, marker: { color: C_BLUE, size: 6 },
-        hovertemplate: 'Hole %{x} — Best: %{y}<extra></extra>' },
-    ], L({ xaxis: catAxis(), yaxis: { ...AX, type: 'linear', range: [0, yMax] } }), CFG);
+    const cells = puttData.map(x => {
+      const t = (x.avg_putts - 1.3) / 1.6; // ~1.3 (great) .. ~2.9 (rough) mapped to 0..1
+      const { bg, fg } = heatStops(t);
+      return { hole: x.hole, bg, fg, display: x.avg_putts.toFixed(2),
+        title: `Hole ${x.hole}: avg ${x.avg_putts.toFixed(2)} putts, best ${x.best_putts}, worst ${x.worst_putts}` };
+    });
+    renderHoleHeatmapStrip('chart-c-hole-putts', cells);
     const worst = puttData.reduce((a,b) => b.avg_putts > a.avg_putts ? b : a);
     setSummary('summary-c-hole-putts', `Toughest green: H${worst.hole} (${worst.avg_putts.toFixed(2)} avg putts). Baseline ~2/hole.`);
   } else { noData('chart-c-hole-putts', 'No putt data'); }
 
-  // Penalties by hole
-  const penData = holeNums.map(n => ({
-    hole: n, penalties: sum(holes.filter(h => h.hole === n).map(h => h.penalties || 0)),
-  })).filter(d => d.penalties > 0);
+  // Penalties by hole — lower is better
+  const penData = holeNums.map(n => {
+    const hh = holes.filter(h => h.hole === n);
+    return { hole: n, avg_pen: avg(hh.map(h => h.penalties || 0)), total_pen: sum(hh.map(h => h.penalties || 0)) };
+  }).filter(d => d.total_pen > 0);
   if (penData.length) {
-    plotClear('chart-c-hole-pen', [{
-      x: penData.map(d => `H${d.hole}`), y: penData.map(d => d.penalties), type: 'bar',
-      marker: { color: C_ORANGE }, hovertemplate: 'H%{x}: %{y} penalties<extra></extra>',
-    }], L({ showlegend: false, xaxis: catAxis() }), CFG);
-    const worst = penData.reduce((a,b) => b.penalties > a.penalties ? b : a);
-    setSummary('summary-c-hole-pen', `Most penalties: H${worst.hole} (${worst.penalties} total).`);
+    const maxAvg = Math.max(...penData.map(d => d.avg_pen), 0.1);
+    const cells = penData.map(x => {
+      const { bg, fg } = heatStops(x.avg_pen / maxAvg);
+      return { hole: x.hole, bg, fg, display: x.total_pen, title: `Hole ${x.hole}: ${x.total_pen} penalty stroke${x.total_pen !== 1 ? 's' : ''} total` };
+    });
+    renderHoleHeatmapStrip('chart-c-hole-pen', cells);
+    const worst = penData.reduce((a,b) => b.total_pen > a.total_pen ? b : a);
+    setSummary('summary-c-hole-pen', `Most penalties: H${worst.hole} (${worst.total_pen} total).`);
   } else { noData('chart-c-hole-pen', 'No penalty data'); setSummary('summary-c-hole-pen', ''); }
 }
 
@@ -669,6 +865,8 @@ function renderScorecard(actId, holesAll, shotsAll) {
   const holes = (holesAll || allHoles).filter(h => h.activity_id === actId).sort((a,b)=>a.hole-b.hole);
   const target = document.getElementById('c-scorecard-table');
   if (!holes.length) { target.innerHTML = '<div class="no-data">No hole detail for this round.</div>'; return; }
+
+  const round = allRounds.find(r => r.activity_id === actId) || null;
   const totalScore = sum(holes.map(h => h.score || 0));
   const allHavePar = holes.every(h => h.par != null);
   const totalPar   = allHavePar ? sum(holes.map(h => h.par || 0)) : null;
@@ -678,8 +876,6 @@ function renderScorecard(actId, holesAll, shotsAll) {
   const fwyHit   = holes.filter(h => h.fairway_hit === true).length;
   const fwyTotal = holes.filter(h => h.fairway_hit != null).length;
   const totalPen = sum(holes.map(h => h.penalties || 0));
-  const allHaveYd = holes.every(h => h.yardage != null);
-  const totalYards = allHaveYd ? sum(holes.map(h => h.yardage)) : null;
 
   const vsPar = totalPar != null ? totalScore - totalPar : null;
   const vsParStr = vsPar != null ? (vsPar > 0 ? `+${vsPar}` : `${vsPar}`) : null;
@@ -696,11 +892,88 @@ function renderScorecard(actId, holesAll, shotsAll) {
   const girRow   = holes.map(h => `<td>${fmtBool(h.gir)}</td>`).join('');
   const fwyRow   = holes.map(h => `<td>${fmtBool(h.fairway_hit)}</td>`).join('');
   const penRow   = holes.map(h => `<td>${h.penalties ?? 0}</td>`).join('');
-  const ydRow    = holes.map(h => `<td>${h.yardage ?? '—'}</td>`).join('');
 
   const roundShots = (shotsAll || allShots).filter(s => s.activity_id === actId);
   const teeShots = roundShots.filter(s => s.shot_type === 'TEE' || s.lie === 'TeeBox');
   const longestDrive = teeShots.length ? Math.round(Math.max(...teeShots.map(s => s.distance_yards ?? 0))) : null;
+
+  const parKnown = holes.filter(h => h.par != null && h.score != null);
+  const bestHole = parKnown.length ? parKnown.reduce((a, b) => ((b.score - b.par) < (a.score - a.par) ? b : a)) : null;
+  const worstHole = parKnown.length ? parKnown.reduce((a, b) => ((b.score - b.par) > (a.score - a.par) ? b : a)) : null;
+  const bestDiff = bestHole ? bestHole.score - bestHole.par : null;
+  const worstDiff = worstHole ? worstHole.score - worstHole.par : null;
+
+  const onePutts = holes.filter(h => h.putts != null && h.putts <= 1).length;
+  const threePutts = holes.filter(h => h.putts != null && h.putts >= 3).length;
+  const penaltyHoles = holes.filter(h => (h.penalties || 0) > 0).length;
+
+  const leftMiss = holes.filter(h => (h.fairway_missed || '').toString().toUpperCase().includes('LEFT')).length;
+  const rightMiss = holes.filter(h => (h.fairway_missed || '').toString().toUpperCase().includes('RIGHT')).length;
+  const missBias = leftMiss === 0 && rightMiss === 0 ? 'No directional misses recorded'
+    : leftMiss > rightMiss ? `Left bias (${leftMiss}L/${rightMiss}R)`
+    : rightMiss > leftMiss ? `Right bias (${rightMiss}R/${leftMiss}L)`
+    : `Balanced misses (${leftMiss}L/${rightMiss}R)`;
+
+  const front = holes.filter(h => h.hole <= 9);
+  const back = holes.filter(h => h.hole >= 10 && h.hole <= 18);
+  const splitBlock = (label, hs) => {
+    if (!hs.length) return '';
+    const sideScore = sum(hs.map(h => h.score || 0));
+    const sideParKnown = hs.filter(h => h.par != null && h.score != null);
+    const sideVsPar = sideParKnown.length === hs.length ? sum(sideParKnown.map(h => h.score - h.par)) : null;
+    const sidePutts = sum(hs.map(h => h.putts || 0));
+    const sideGirCount = hs.filter(h => h.gir === true).length;
+    const sideGirTotal = hs.filter(h => h.gir != null).length;
+    const sideFwyHit = hs.filter(h => h.fairway_hit === true).length;
+    const sideFwyTotal = hs.filter(h => h.fairway_hit != null).length;
+    return `
+      <div class="sc-mini-card">
+        <div class="sc-mini-title">${label}</div>
+        <div class="sc-mini-row"><span>Score</span><strong>${sideScore}${sideVsPar != null ? ` (${fmtSigned(sideVsPar)})` : ''}</strong></div>
+        <div class="sc-mini-row"><span>Putts</span><strong>${sidePutts}</strong></div>
+        ${sideGirTotal > 0 ? `<div class="sc-mini-row"><span>GIR</span><strong>${sideGirCount}/${sideGirTotal}</strong></div>` : ''}
+        ${sideFwyTotal > 0 ? `<div class="sc-mini-row"><span>Fairways</span><strong>${sideFwyHit}/${sideFwyTotal}</strong></div>` : ''}
+      </div>`;
+  };
+
+  const { counts: scoringMix, total: scoringTotal } = scoringCounts(holes);
+  const scoringMixHtml = scoringTotal ? RESULT_ORDER.filter(k => scoringMix[k] > 0).map(k =>
+    `<span class="sc-chip" style="--chip:${RESULT_COLORS[k]};">${k}: ${scoringMix[k]}</span>`).join('')
+    : '<span class="sc-muted">Par data needed</span>';
+
+  const sg = round && typeof round.sg === 'object' ? round.sg : null;
+  const sgItems = [
+    { k: 'off_tee', label: 'Off Tee' },
+    { k: 'approach', label: 'Approach' },
+    { k: 'short_game', label: 'Short Game' },
+    { k: 'putting', label: 'Putting' },
+    { k: 'total', label: 'Total' },
+  ];
+  const sgHtml = sg ? sgItems.map(({ k, label }) => {
+    const v = sg[k];
+    const cls = v == null ? '' : (v > 0 ? 'good' : v < 0 ? 'bad' : 'neutral');
+    return `<div class="sc-sg-item ${cls}"><span>${label}</span><strong>${fmtSigned(v)}</strong></div>`;
+  }).join('') : '<div class="sc-muted">No strokes gained data</div>';
+
+  const missedGir = holes.filter(h => h.gir === false && h.par != null && h.score != null);
+  const scrambled = missedGir.filter(h => h.score <= h.par).length;
+  const scramblePct = missedGir.length ? (scrambled / missedGir.length * 100) : null;
+
+  const girParKnown = holes.filter(h => h.gir === true && h.par != null && h.score != null);
+  const nonGirParKnown = holes.filter(h => h.gir === false && h.par != null && h.score != null);
+  const girToPar = girParKnown.length ? avg(girParKnown.map(h => h.score - h.par)) : null;
+  const nonGirToPar = nonGirParKnown.length ? avg(nonGirParKnown.map(h => h.score - h.par)) : null;
+
+  const parTypeRows = [3, 4, 5].map(p => {
+    const hs = holes.filter(h => h.par === p && h.score != null);
+    if (!hs.length) return null;
+    const rel = avg(hs.map(h => h.score - h.par));
+    return `<div class="sc-mini-row"><span>Par ${p}</span><strong>${fmtSigned(rel)} avg (${hs.length} holes)</strong></div>`;
+  }).filter(Boolean).join('') || '<div class="sc-muted">No par-type breakdown</div>';
+
+  const durationMin = round?.duration_seconds != null ? (round.duration_seconds / 60) : null;
+  const minPerHole = durationMin != null && holes.length ? durationMin / holes.length : null;
+  const distanceMi = round?.distance_meters != null ? (round.distance_meters * 0.000621371) : null;
 
   target.innerHTML = `
     <div class="scorecard-wrap">
@@ -723,6 +996,51 @@ function renderScorecard(actId, holesAll, shotsAll) {
       ${fwyTotal > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Fairways</span><span class="sc-sum-value">${fwyHit}/${fwyTotal}</span></div>` : ''}
       ${totalPen > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Penalties</span><span class="sc-sum-value">${totalPen}</span></div>` : ''}
       ${longestDrive != null && longestDrive > 0 ? `<div class="sc-sum-item"><span class="sc-sum-label">Longest Drive</span><span class="sc-sum-value">${longestDrive} yds</span></div>` : ''}
+    </div>
+
+    <div class="scorecard-insights-grid">
+      <div class="sc-insight-card">
+        <h4>Strengths and Leaks</h4>
+        <div class="sc-mini-row"><span>Best Hole</span><strong>${bestHole ? `#${bestHole.hole} (${fmtSigned(bestDiff)})` : '—'}</strong></div>
+        <div class="sc-mini-row"><span>Worst Hole</span><strong>${worstHole ? `#${worstHole.hole} (${fmtSigned(worstDiff)})` : '—'}</strong></div>
+        <div class="sc-mini-row"><span>One Putts</span><strong>${onePutts}</strong></div>
+        <div class="sc-mini-row"><span>Three Putts</span><strong>${threePutts}</strong></div>
+        <div class="sc-mini-row"><span>Penalty Holes</span><strong>${penaltyHoles}</strong></div>
+        <div class="sc-mini-row"><span>Fairway Miss Pattern</span><strong>${missBias}</strong></div>
+      </div>
+
+      <div class="sc-insight-card">
+        <h4>Front and Back Split</h4>
+        <div class="sc-split-grid">
+          ${splitBlock('Front 9', front)}
+          ${splitBlock('Back 9', back)}
+        </div>
+      </div>
+
+      <div class="sc-insight-card">
+        <h4>Scoring Composition</h4>
+        <div class="sc-chip-row">${scoringMixHtml}</div>
+      </div>
+
+      <div class="sc-insight-card">
+        <h4>Strokes Gained Fingerprint</h4>
+        <div class="sc-sg-grid">${sgHtml}</div>
+      </div>
+
+      <div class="sc-insight-card">
+        <h4>Round Efficiency</h4>
+        <div class="sc-mini-row"><span>Scrambling</span><strong>${scramblePct != null ? `${fmt(scramblePct, '%')} (${scrambled}/${missedGir.length})` : '—'}</strong></div>
+        <div class="sc-mini-row"><span>GIR Hole Scoring</span><strong>${girToPar != null ? fmtSigned(girToPar) : '—'}</strong></div>
+        <div class="sc-mini-row"><span>Missed GIR Scoring</span><strong>${nonGirToPar != null ? fmtSigned(nonGirToPar) : '—'}</strong></div>
+        ${parTypeRows}
+      </div>
+
+      <div class="sc-insight-card">
+        <h4>Round Context</h4>
+        <div class="sc-mini-row"><span>Duration</span><strong>${durationMin != null ? `${Math.round(durationMin)} min` : '—'}</strong></div>
+        <div class="sc-mini-row"><span>Minutes per Hole</span><strong>${minPerHole != null ? `${fmt(minPerHole)}` : '—'}</strong></div>
+        <div class="sc-mini-row"><span>Distance Walked</span><strong>${distanceMi != null ? `${fmt(distanceMi)} mi` : '—'}</strong></div>
+      </div>
     </div>`;
 }
 
@@ -747,20 +1065,12 @@ function renderOverallView() {
   renderStrokesGained(rounds, 'chart-o-sg', 'summary-o-sg');
   renderSGTrend(rounds, 'chart-o-sg-trend', 'summary-o-sg-trend');
 
-  const dates = rounds.map(r => r.date);
-  trendLine('chart-o-score-trend', 'summary-o-score', dates, rounds.map(r => r.score), 'Score', C_GREEN);
-  const pr = rounds.filter(r => r.putts != null && r.putts > 0);
-  trendLine('chart-o-putts-trend', 'summary-o-putts', pr.map(r => r.date), pr.map(r => r.putts), 'Putts', C_BLUE);
-  trendLine('chart-o-gir-trend', 'summary-o-gir', dates, rounds.map(r => r.gir_pct), 'GIR %', C_TEAL, [0, 100]);
-  trendLine('chart-o-fwy-trend', 'summary-o-fwy', dates, rounds.map(r => r.fairway_pct), 'FWY %', C_PURPLE, [0, 100]);
+  renderOverallTrends(rounds, holes);
 
   renderScoringDonut(holes);
   renderPuttingDonut(holes);
   renderParTypeBreakdown(holes);
   renderFairwayMissDirection(holes);
-  renderScramblingTrend(rounds, holes);
-  renderPenaltyTrend(rounds, holes);
-  renderHandicapDiffTrend(rounds);
   renderOverallClubs(shots);
   renderComparisonTable(rounds, holes);
 }
@@ -796,6 +1106,8 @@ function renderPuttingDonut(holes) {
     `Avg ${fmt(avg(hp.map(h=>h.putts)))} putts/hole. 1-putt: ${(one/total*100).toFixed(1)}% · 3-putt: ${(three/total*100).toFixed(1)}%.`);
 }
 
+const FULL_SWING_TYPES = new Set(['TEE', 'APPROACH', 'LAYUP']);
+
 function renderOverallClubs(shots) {
   const ids = ['chart-o-club-box','chart-o-lie-distance','chart-o-club-usage','chart-o-drive-trend'];
   const valid = shots.filter(s => s.distance_yards != null && s.distance_yards > 0);
@@ -804,15 +1116,19 @@ function renderOverallClubs(shots) {
     return;
   }
   const clubs = [...new Set(valid.map(s => s.club_name))].filter(Boolean);
+  const fullSwing = valid.filter(s => FULL_SWING_TYPES.has(s.shot_type));
+  const fullSwingClubs = [...new Set(fullSwing.map(s => s.club_name))].filter(Boolean);
 
-  plotClear('chart-o-club-box', clubs.map(club => {
-    const d = valid.filter(s => s.club_name === club).map(s => s.distance_yards);
+  plotClear('chart-o-club-box', fullSwingClubs.map(club => {
+    const d = fullSwing.filter(s => s.club_name === club).map(s => s.distance_yards);
     return { x: d.map(()=>club), y: d, type: 'box', name: club, boxpoints: 'outliers',
       hovertemplate: `<b>%{x}</b><br>Median: ${median(d)?.toFixed(1)} yds<br>Avg: ${avg(d)?.toFixed(1)} yds<br>Shots: ${d.length}<extra></extra>` };
   }), L({ height: 320, showlegend: false, xaxis: { ...AX, type: 'category' },
     yaxis: { ...AX, type: 'linear', title: { text: 'Yards', standoff: 6 } } }), CFG);
-  const clubStats = clubs.map(c => ({ c, med: median(valid.filter(s => s.club_name === c).map(s => s.distance_yards)) })).sort((a,b)=>(b.med??0)-(a.med??0));
-  setSummary('summary-o-club-box', `Longest median club: ${clubStats[0].c} at ${clubStats[0].med?.toFixed(1)} yds.`);
+  const clubStats = fullSwingClubs.map(c => ({ c, med: median(fullSwing.filter(s => s.club_name === c).map(s => s.distance_yards)) })).sort((a,b)=>(b.med??0)-(a.med??0));
+  setSummary('summary-o-club-box', clubStats.length
+    ? `Longest median club: ${clubStats[0].c} at ${clubStats[0].med?.toFixed(1)} yds. Tee/approach/layup shots only — chips, putts and recovery shots excluded.`
+    : '');
 
   const lies = [...new Set(valid.map(s => s.lie))].filter(l => l && l !== 'Unknown');
   if (lies.length) {
@@ -824,6 +1140,8 @@ function renderOverallClubs(shots) {
     const lieAvgs = lies.map(lie => ({ lie, avg: avg(valid.filter(s => s.lie === lie).map(s => s.distance_yards)) })).sort((a,b)=>(b.avg??0)-(a.avg??0));
     setSummary('summary-o-lie-distance', lieAvgs.map(l => `${l.lie}: ${l.avg?.toFixed(1)} yds`).join(' · '));
   } else { noData('chart-o-lie-distance', 'No lie data'); }
+
+  renderClubLieTable(fullSwing, fullSwingClubs);
 
   const usage = clubs.map(c => ({ c, n: valid.filter(s => s.club_name === c).length })).sort((a,b)=>b.n-a.n);
   plotClear('chart-o-club-usage', [{ x: usage.map(u=>u.c), y: usage.map(u=>u.n), type: 'bar',
@@ -840,6 +1158,35 @@ function renderOverallClubs(shots) {
     }).filter(d => d.date).sort((a,b) => a.date.localeCompare(b.date));
     trendLine('chart-o-drive-trend', 'summary-o-drive-trend', byDate.map(d => d.date), byDate.map(d => d.avg), 'Avg Drive (yds)', C_ORANGE);
   } else { noData('chart-o-drive-trend', 'No tee shot data'); setSummary('summary-o-drive-trend', ''); }
+}
+
+function renderClubLieTable(fullSwing, clubs) {
+  const el = document.getElementById('club-lie-table');
+  if (!el) return;
+  const rows = clubs.map(club => {
+    const cs = fullSwing.filter(s => s.club_name === club);
+    const fwy = cs.filter(s => s.lie === 'Fairway').map(s => s.distance_yards);
+    const rough = cs.filter(s => s.lie === 'Rough').map(s => s.distance_yards);
+    const fwyAvg = avg(fwy), roughAvg = avg(rough);
+    const loss = fwyAvg != null && roughAvg != null ? fwyAvg - roughAvg : null;
+    return { club, fwyAvg, fwyN: fwy.length, roughAvg, roughN: rough.length, loss };
+  }).filter(r => r.fwyN || r.roughN)
+    .sort((a, b) => (b.loss ?? -Infinity) - (a.loss ?? -Infinity));
+
+  if (!rows.length) { noData('club-lie-table', 'No fairway/rough shot data'); return; }
+
+  const body = rows.map(r => `
+    <tr>
+      <td class="metric-label">${r.club}</td>
+      <td>${r.fwyAvg != null ? `${fmt(r.fwyAvg)} yds (${r.fwyN})` : '—'}</td>
+      <td>${r.roughAvg != null ? `${fmt(r.roughAvg)} yds (${r.roughN})` : '—'}</td>
+      <td>${r.loss != null ? fmt(r.loss, ' yds') : '—'}</td>
+    </tr>`).join('');
+  el.innerHTML = `
+    <table class="compare-table">
+      <thead><tr><th>Club</th><th>Fairway Avg</th><th>Rough Avg</th><th>Distance Lost</th></tr></thead>
+      <tbody>${body}</tbody>
+    </table>`;
 }
 
 function renderComparisonTable(rounds, holes) {
@@ -889,25 +1236,32 @@ function renderParTypeBreakdown(holes, chartId = 'chart-o-par-type', summaryId =
 
   if (!data.length) { noData(chartId, 'Par data required'); setSummary(summaryId, ''); return; }
 
-  plotClear(chartId, [{
-    x: data.map(d => `Par ${d.par}`),
-    y: data.map(d => d.avgVsPar),
-    type: 'bar',
-    marker: { color: data.map(d => d.avgVsPar > 0 ? C_RED : C_GREEN) },
-    customdata: data.map(d => d.n),
-    hovertemplate: 'Par %{x}: avg %{y:.2f} vs par (%{customdata} holes)<extra></extra>',
-  }], L({
-    showlegend: false,
-    xaxis: catAxis(),
-    yaxis: { ...AX, zeroline: true, zerolinecolor: '#94a3b8', zerolinewidth: 1,
-      title: { text: 'Avg vs Par', standoff: 6 } },
-  }), CFG);
+  const maxAbs = Math.max(1, ...data.map(d => Math.abs(d.avgVsPar)));
+  const rows = data.map(d => {
+    const pct = (d.avgVsPar / maxAbs) * 50; // signed offset from center, -50..50
+    const color = d.avgVsPar > 0.05 ? C_RED : d.avgVsPar < -0.05 ? C_GREEN : C_GRAY;
+    const barLeft = pct >= 0 ? 50 : 50 + pct;
+    return `
+      <div class="lollipop-row">
+        <div class="lollipop-label">Par ${d.par}</div>
+        <div class="lollipop-track">
+          <div class="lollipop-bar" style="left:${barLeft}%;width:${Math.abs(pct)}%;background:${color}25"></div>
+          <div class="lollipop-dot" style="left:${50 + pct}%;background:${color}"></div>
+        </div>
+        <div class="lollipop-value" style="color:${color}">${fmtSigned(d.avgVsPar)}</div>
+      </div>`;
+  }).join('');
+  document.getElementById(chartId).innerHTML = `<div class="lollipop-chart">${rows}</div>`;
 
   const worst = data.reduce((a, b) => b.avgVsPar > a.avgVsPar ? b : a);
   const best  = data.reduce((a, b) => b.avgVsPar < a.avgVsPar ? b : a);
   setSummary(summaryId,
     `Strongest: Par ${best.par} (avg ${fmtSigned(best.avgVsPar)}). Weakest: Par ${worst.par} (avg ${fmtSigned(worst.avgVsPar)}).`);
 }
+
+const FWY_LEFT_COLOR  = '#3B82F6';
+const FWY_HIT_COLOR   = '#10B981';
+const FWY_RIGHT_COLOR = '#EF4444';
 
 function renderFairwayMissDirection(holes, chartId = 'chart-o-fwy-miss', summaryId = 'summary-o-fwy-miss') {
   const hit   = holes.filter(h => h.fairway_hit === true).length;
@@ -917,18 +1271,22 @@ function renderFairwayMissDirection(holes, chartId = 'chart-o-fwy-miss', summary
 
   if (!total) { noData(chartId, 'No fairway direction data'); setSummary(summaryId, ''); return; }
 
-  plotClear(chartId, [{
-    labels: ['Hit', 'Miss Left', 'Miss Right'],
-    values: [hit, left, right],
-    type: 'pie', hole: 0.55,
-    marker: { colors: [C_GREEN, C_BLUE, C_RED] },
-    hovertemplate: '%{label}: %{value} holes (%{percent})<extra></extra>',
-  }], L({
-    height: 300, showlegend: true,
-    legend: { orientation: 'v', x: 1.02, y: 0.5 },
-    annotations: [{ text: `<b>${(hit / total * 100).toFixed(0)}%</b><br>Hit`,
-      x: 0.5, y: 0.5, font: { size: 14, color: C_NAVY }, showarrow: false }],
-  }), CFG);
+  const leftPct = left / total * 100, hitPct = hit / total * 100, rightPct = right / total * 100;
+  const seg = (pct, cls, bg, label) => pct > 0
+    ? `<div class="fwy-seg ${cls}" style="width:${pct}%;background:${bg}" title="${label}: ${fmt(pct, '%')}">${pct >= 8 ? fmt(pct, '%') : ''}</div>`
+    : '';
+  const el = document.getElementById(chartId);
+  el.innerHTML = `
+    <div class="fwy-bar">
+      ${seg(leftPct, 'fwy-seg-left', FWY_LEFT_COLOR, 'Miss Left')}
+      ${seg(hitPct, 'fwy-seg-hit', FWY_HIT_COLOR, 'Hit')}
+      ${seg(rightPct, 'fwy-seg-right', FWY_RIGHT_COLOR, 'Miss Right')}
+    </div>
+    <div class="fwy-bar-legend">
+      <span><i style="background:${FWY_LEFT_COLOR}"></i>Miss Left ${fmt(leftPct, '%')}</span>
+      <span><i style="background:${FWY_HIT_COLOR}"></i>Hit ${fmt(hitPct, '%')}</span>
+      <span><i style="background:${FWY_RIGHT_COLOR}"></i>Miss Right ${fmt(rightPct, '%')}</span>
+    </div>`;
 
   const misses = left + right;
   const bias = misses === 0 ? 'No misses recorded'
@@ -1007,22 +1365,43 @@ function aggregateSG(rounds) {
   return any ? out : null;
 }
 
+// Approximate, commonly-cited per-category strokes-lost-vs-scratch for a
+// ~15-handicap golfer (rounded ballpark figures based on published strokes-
+// gained research, e.g. Broadie's "Every Shot Counts") — shown only as a
+// rough reference marker, not precise user data.
+const SG_BENCHMARK_15 = { off_tee: -2.5, approach: -5.5, short_game: -2.5, putting: -2.5 };
+const SG_NEG_COLOR = '#b91c1c'; // muted crimson
+const SG_POS_COLOR = '#10b981'; // emerald
+
 function renderStrokesGained(rounds, chartId, summaryId) {
   const agg = aggregateSG(rounds);
   if (!agg) { noData(chartId, 'No strokes-gained estimate yet'); setSummary(summaryId, ''); return; }
   const cats = SG_CATS.filter(([k]) => agg[k] != null);
+  const keys   = cats.map(([k]) => k);
   const labels = cats.map(([, l]) => l);
   const vals   = cats.map(([k]) => r1(agg[k]));
-  plotClear(chartId, [{
-    type: 'bar', orientation: 'h', y: labels, x: vals,
-    marker: { color: vals.map(v => v >= 0 ? C_GREEN : C_RED) },
-    hovertemplate: '%{y}: %{x:+.2f} strokes/round<extra></extra>',
-  }], L({
-    showlegend: false,
+  const benchmarks = keys.map(k => SG_BENCHMARK_15[k]);
+
+  plotClear(chartId, [
+    {
+      type: 'bar', orientation: 'h', y: labels, x: vals, name: 'You',
+      marker: { color: vals.map(v => v >= 0 ? SG_POS_COLOR : SG_NEG_COLOR) },
+      hovertemplate: '%{y}: %{x:+.1f} strokes/round<extra>You</extra>',
+    },
+    {
+      type: 'scatter', mode: 'markers', y: labels, x: benchmarks, name: '~15-cap avg (approx.)',
+      marker: { symbol: 'diamond', size: 9, color: '#94a3b8', line: { color: '#64748b', width: 1 } },
+      hovertemplate: '%{y}: %{x:+.1f} strokes/round<extra>~15-cap avg</extra>',
+    },
+  ], L({
+    showlegend: true,
+    legend: { orientation: 'h', y: -0.18 },
     margin: { ...BASE_LAYOUT.margin, l: 92 },
-    xaxis: { ...AX, zeroline: true, zerolinecolor: '#94a3b8', zerolinewidth: 1,
+    xaxis: { ...AX, zeroline: true, zerolinecolor: '#94a3b8', zerolinewidth: 1.5,
       title: { text: 'Avg strokes gained / round (vs scratch)', standoff: 6 } },
-    yaxis: { ...AX, type: 'category', automargin: true, autorange: 'reversed' },
+    yaxis: { ...AX, type: 'category', automargin: true, autorange: 'reversed', showgrid: false },
+    annotations: [{ x: 0, y: 1, yref: 'paper', yshift: 14, text: 'Scratch', showarrow: false,
+      font: { size: 10, color: '#94a3b8' } }],
   }), CFG);
   const losses = cats.map(([k, l]) => ({ l, v: agg[k] })).filter(o => o.v < 0).sort((a, b) => a.v - b.v);
   const worst = losses[0];
@@ -1559,9 +1938,10 @@ function switchPanel(panel) {
   const activeView = document.querySelector('.mode-view.active');
   if (!activeView) return;
   activeView.querySelectorAll('.sub-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === panel));
-  // Tabs and filters only make sense on the Stats panel
-  document.querySelector('.filter-bar')?.classList.toggle('filter-bar--hidden', panel !== 'stats');
-  document.querySelector('.tabs-filter-row')?.classList.toggle('tabs-filter-row--hidden', panel !== 'stats');
+  // Tabs and filters apply to both Stats and Insights panels
+  const showFilters = panel === 'stats' || panel === 'insights';
+  document.querySelector('.filter-bar')?.classList.toggle('filter-bar--hidden', !showFilters);
+  document.querySelector('.tabs-filter-row')?.classList.toggle('tabs-filter-row--hidden', !showFilters);
 }
 
 // ── Mode + setup ────────────────────────────────────────────────────────────────
@@ -1616,6 +1996,13 @@ function setupChrome() {
   });
   ['filter-holes','filter-date-from','filter-date-to'].forEach(id =>
     document.getElementById(id).addEventListener('change', render));
+  const ringerStart = document.getElementById('ringer-start-date');
+  if (ringerStart) {
+    ringerStart.addEventListener('change', () => {
+      localStorage.setItem(RINGER_START_KEY, ringerStart.value || '');
+      if (mode === 'course') renderCourseView();
+    });
+  }
   document.getElementById('c-scorecard-selector').addEventListener('change', e => {
     const base = baseFilteredRounds().filter(r => r.course === selectedCourse);
     const { holes, shots } = bundle(base);

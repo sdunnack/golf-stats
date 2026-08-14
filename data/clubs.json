@@ -195,6 +195,13 @@
       "retired": false
     },
     {
+      "id": 658645958,
+      "club_type_id": 2,
+      "name": "BRNR Mini",
+      "model": "Taylormade BRNR mini",
+      "retired": false
+    },
+    {
       "id": 718201792,
       "club_type_id": 3,
       "name": "Q10 5",
@@ -212,6 +219,13 @@
       "id": 813076272,
       "club_type_id": 26,
       "name": "Heavenwood",
+      "model": null,
+      "retired": false
+    },
+    {
+      "id": 813076273,
+      "club_type_id": 27,
+      "name": "Woody",
       "model": null,
       "retired": false
     },

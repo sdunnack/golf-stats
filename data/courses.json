@@ -845,7 +845,7 @@
       "garmin_course_id": 8938,
       "aliases": ["Glastonbury"],
       "tee_box": null,
-      "par": 35,
+      "par": 34,
       "rating": 64.2,
       "slope": 106,
       "yards": 2068,
@@ -858,7 +858,7 @@
         },
         {
           "hole": 2,
-          "par": 4,
+          "par": 3,
           "yardage": 122,
           "handicap": 6
         },
