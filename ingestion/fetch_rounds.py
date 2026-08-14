@@ -352,7 +352,7 @@ def fetch_scorecard_detail(client, activity, debug=None):
 
     if scorecard_id is None and hasattr(client, "get_golf_summary"):
         try:
-            summaries = client.get_golf_summary(limit=200)
+            summaries = client.get_golf_summary(limit=500)
             if isinstance(summaries, dict):
                 summaries = (
                     summaries.get("scorecardSummaries")
@@ -411,8 +411,8 @@ def fetch_scorecard_detail(client, activity, debug=None):
 
     try:
         detail = _normalize_scorecard_detail(client.get_golf_scorecard(scorecard_id))
-        if isinstance(detail, dict) and not detail and summary_entry:
-            # Fallback: summary still has hole-level strokes even when detail is empty.
+        # Fall back to summary entry if scorecard detail is missing or empty.
+        if not detail and summary_entry:
             detail = summary_entry
             if debug is not None:
                 debug["lookup"]["detail_fallback"] = "summary_entry"
@@ -426,6 +426,11 @@ def fetch_scorecard_detail(client, activity, debug=None):
     except Exception as e:
         if debug is not None:
             debug["lookup"]["detail_error"] = str(e)
+        # Still use summary entry if the API call itself threw.
+        if summary_entry:
+            if debug is not None:
+                debug["lookup"]["detail_fallback"] = "summary_entry_after_exception"
+            return summary_entry
         print(f"  Warning: could not fetch scorecard detail for {activity_id}: {e}")
         return None
 
@@ -617,6 +622,20 @@ def parse_activity(activity, scorecard_detail):
             if isinstance(value, list):
                 flattened.extend(value)
         shots_raw = flattened
+
+    # If the detail came from a summary item it carries a compact holePars string
+    # (e.g. "445534434443455443") — pre-populate par on each hole dict so that
+    # parse_hole can read it normally.
+    hole_pars_str = scorecard_detail.get("holePars") or ""
+    if hole_pars_str:
+        par_by_hole = {}
+        for i, ch in enumerate(hole_pars_str):
+            if ch.isdigit():
+                par_by_hole[i + 1] = int(ch)  # 1-indexed
+        for h in holes_raw:
+            num = h.get("holeNumber") or h.get("number")
+            if isinstance(num, int) and h.get("par") is None and num in par_by_hole:
+                h["par"] = par_by_hole[num]
 
     # Parse holes
     course_handicap_map = parse_course_handicap_str(
@@ -833,19 +852,71 @@ def merge_rounds(existing_data, new_rounds):
 # ---------------------------------------------------------------------------
 
 
+def fetch_and_parse_activity_by_id(client, activity_id, existing_round, summary_entry=None):
+    """
+    Re-fetch a single activity by ID for rounds that have a score but no holes.
+    If summary_entry is provided (pre-fetched Garmin summary item with holes/holePars),
+    it is used directly as the scorecard detail — no extra API calls needed.
+    Otherwise tries client.get_activity() and fetch_scorecard_detail as normal.
+    Returns (round_record, debug_entry); round_record is None if no score found.
+    """
+    activity = {
+        "activityId": activity_id,
+        "startTimeLocal": existing_round.get("date", ""),
+        "locationName": existing_round.get("course", ""),
+        "duration": existing_round.get("duration_seconds"),
+        "distance": existing_round.get("distance_meters"),
+    }
+
+    debug_entry = {"activity_id": activity_id, "activity_meta": activity}
+
+    if summary_entry is not None:
+        # Use the pre-fetched summary directly — avoids repeated get_golf_summary calls.
+        scorecard = summary_entry
+        debug_entry["scorecard_detail"] = scorecard
+        debug_entry["lookup"] = {"source": "pre_fetched_summary"}
+    else:
+        scorecard = fetch_scorecard_detail(client, activity, debug=debug_entry)
+        debug_entry["scorecard_detail"] = scorecard
+
+    round_record = parse_activity(activity, scorecard)
+
+    # Preserve fields the activity stub may not carry
+    for field in ("course", "date", "duration_seconds", "distance_meters",
+                  "hcap_index", "front_nine", "back_nine"):
+        if round_record.get(field) is None and existing_round.get(field) is not None:
+            round_record[field] = existing_round[field]
+
+    if not has_recorded_score(round_record):
+        return None, debug_entry
+
+    shot_raw = None
+    if scorecard:
+        scorecard_id = extract_scorecard_id_from_detail(scorecard)
+        if scorecard_id:
+            shots, shot_raw = fetch_shot_data(client, scorecard_id)
+            round_record["shots"] = shots
+            print(f"    → Shot/club data: {len(shots)} shots")
+        else:
+            print("    → No scorecard ID; skipping shot data")
+    debug_entry["shot_data_raw"] = shot_raw
+    return round_record, debug_entry
+
+
 def main():
     parser = argparse.ArgumentParser(description="Fetch Garmin golf data")
     parser.add_argument(
         "--days", type=int, default=30, help="Days of history to fetch (default: 30)"
     )
+    parser.add_argument(
+        "--fix-incomplete", action="store_true",
+        help="Re-fetch any stored round that has a score but no hole-by-hole data, "
+             "regardless of date range."
+    )
     args = parser.parse_args()
 
     client = get_garmin_client()
     activities = fetch_golf_activities(client, days=args.days)
-
-    if not activities:
-        print("No golf activities found in that range.")
-        sys.exit(0)
 
     existing_data = load_existing_rounds()
     existing_data, pruned_count = prune_rounds_without_scores(existing_data)
@@ -855,6 +926,71 @@ def main():
 
     new_rounds = []
     raw_dump = []
+
+    if not activities and not args.fix_incomplete:
+        print("No golf activities found in that range.")
+        sys.exit(0)
+
+    # ── Pass 1: fix stored rounds with score but no hole detail ──────────────
+    if args.fix_incomplete:
+        incomplete = [
+            r for r in existing_data["rounds"]
+            if safe_get(r, "totals", "score") is not None
+            and not r.get("holes")
+        ]
+        if not incomplete:
+            print("No incomplete rounds found.")
+        else:
+            print(f"\nFound {len(incomplete)} round(s) with score but no hole data — re-fetching...")
+
+            # Fetch all summaries ONCE to avoid rate-limiting from repeated calls.
+            summary_by_date_course = {}  # (date, course_lower) -> summary item
+            try:
+                raw_summaries = client.get_golf_summary(limit=500)
+                if isinstance(raw_summaries, dict):
+                    raw_summaries = raw_summaries.get("scorecardSummaries") or []
+                for item in (raw_summaries or []):
+                    d = (item.get("startTime") or "")[:10]
+                    c = (item.get("courseName") or "").strip().lower()
+                    if d and c:
+                        # Keep highest-strokes (18-hole) entry when multiple exist for same day.
+                        key = (d, c)
+                        existing_item = summary_by_date_course.get(key)
+                        if existing_item is None or \
+                                (item.get("holesCompleted") or 0) > (existing_item.get("holesCompleted") or 0):
+                            summary_by_date_course[key] = item
+                print(f"  Loaded {len(summary_by_date_course)} unique date/course summary entries.")
+            except Exception as e:
+                print(f"  Warning: could not pre-fetch summaries: {e}")
+
+            for existing_round in incomplete:
+                aid = existing_round["activity_id"]
+                date = existing_round.get("date", "?")
+                course = existing_round.get("course", "?")
+                score = safe_get(existing_round, "totals", "score")
+                print(f"  Fixing: {date} {course} (id={aid}, score={score})")
+
+                # Look up pre-fetched summary entry for this round.
+                key = (date, course.strip().lower())
+                summary_entry = summary_by_date_course.get(key)
+                if summary_entry:
+                    print(f"    → Found summary entry (scorecard id={summary_entry.get('id')})")
+                else:
+                    print(f"    → No summary entry found for {date} / {course}; will try API")
+
+                round_record, debug_entry = fetch_and_parse_activity_by_id(
+                    client, aid, existing_round, summary_entry=summary_entry
+                )
+                raw_dump.append(debug_entry)
+                if round_record is None:
+                    print(f"    → Still no score after re-fetch; skipping")
+                    continue
+                holes = round_record.get("holes") or []
+                if holes:
+                    print(f"    → Recovered {len(holes)} holes")
+                else:
+                    print(f"    → No hole detail returned by API")
+                new_rounds.append(round_record)
 
     for activity in activities:
         activity_id = str(activity.get("activityId", ""))
