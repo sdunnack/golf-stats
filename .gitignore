@@ -3,3 +3,4 @@ data/raw_garmin_dump.json
 .venv/
 __pycache__/
 .DS_Store
+data/raw_cache/

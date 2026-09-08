@@ -93,6 +93,18 @@ Focuses on a single course selected from the Course dropdown in the filter bar. 
 
 The fetch script upserts by `activity_id`: new rounds are added, existing rounds with full detail are skipped, and rounds missing detail or newer schema fields are refreshed automatically.
 
+## Refreshing incomplete rounds
+
+If rounds show a score but no putts, fairways, penalties, or shots, the stored copy only has summary-level data. Pull the full scorecard detail and CT10 shots for those rounds:
+
+```bash
+./.venv/bin/python ingestion/refresh_details.py            # only rounds missing detail
+./.venv/bin/python ingestion/refresh_details.py --dry-run  # show what would be refreshed
+./.venv/bin/python ingestion/refresh_details.py --all      # re-fetch every round
+```
+
+Each stored round is matched to its Garmin scorecard by date and strokes. When Garmin has no putts on the scorecard but the putter sensor was on, putts are derived from the shot list (holes get `putts_source: "shots"`). Raw responses are cached in `data/raw_cache/` so re-runs are free; `backfill_enrichment.py` and `strokes_gained.py` run afterwards.
+
 ## Backfilling shot data
 
 If you have a `raw_garmin_dump.json` from a previous `--dump-raw` run, you can re-parse shot/club data without making any API calls:
@@ -147,6 +159,7 @@ Each hole record in `data/holes.json` includes:
 | File | Purpose |
 |---|---|
 | `ingestion/fetch_rounds.py` | Pulls data from Garmin Connect API, writes to `data/` |
+| `ingestion/refresh_details.py` | Re-fetches full scorecard detail + shots for rounds that only have summary data |
 | `ingestion/backfill_shots.py` | Re-parses shot data from `data/raw_garmin_dump.json` without API calls |
 | `ingestion/backfill_enrichment.py` | Enriches existing records from `data/courses.json` |
 | `ingestion/strokes_gained.py` | Estimates per-round strokes gained by category + WHS handicap index |

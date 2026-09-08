@@ -29,6 +29,7 @@ COURSES_FILE = BASE_DIR / "courses.json"
 CLUBS_FILE = BASE_DIR / "clubs.json"
 CREDS_FILE = Path(__file__).parent.parent / ".garmin_creds.json"
 TOKENSTORE_DIR = Path.home() / ".garminconnect"
+MIN_GIR_HOLES = 5  # holes with a known GIR outcome before a round-level GIR % is stored
 
 
 # ---------------------------------------------------------------------------
@@ -660,17 +661,22 @@ def parse_activity(activity, scorecard_detail):
     # Compute totals from hole data
     valid_holes = [h for h in parsed_holes if h["score"] is not None]
     if valid_holes:
+        # Putts / GIR are null (not zero) when Garmin recorded nothing for the
+        # round, so the dashboard can tell "no data" from "zero greens hit".
+        # A partial putt sum (e.g. 1 hole of 18) would look like a record round,
+        # so only total putts when every played hole has a count; GIR % needs a
+        # handful of holes before it is worth storing at round level.
+        holes_with_putts = [h for h in valid_holes if h["putts"] is not None]
+        putts_complete = len(holes_with_putts) == len(valid_holes)
+        holes_with_gir = [h for h in valid_holes if h["gir"] is not None]
+        gir_hits = sum(1 for h in holes_with_gir if h["gir"] is True)
+        gir_ok = len(holes_with_gir) >= MIN_GIR_HOLES
         round_record["totals"] = {
             "holes_played": len(valid_holes),
             "score": sum(h["score"] for h in valid_holes),
-            "putts": sum(h["putts"] or 0 for h in valid_holes),
-            "gir_count": sum(1 for h in valid_holes if h["gir"] is True),
-            "gir_pct": round(
-                sum(1 for h in valid_holes if h["gir"] is True)
-                / len(valid_holes)
-                * 100,
-                1,
-            ),
+            "putts": sum(h["putts"] for h in holes_with_putts) if putts_complete else None,
+            "gir_count": gir_hits if gir_ok else None,
+            "gir_pct": round(gir_hits / len(holes_with_gir) * 100, 1) if gir_ok else None,
             "fairways_hit": sum(1 for h in valid_holes if h["fairway_hit"] is True),
             "fairways_possible": sum(
                 1
@@ -698,12 +704,14 @@ def parse_activity(activity, scorecard_detail):
         fairways_recorded = stats_round.get("fairwaysRecorded")
         fairways_hit = stats_round.get("fairwaysHit")
 
-        if greens_in_reg is not None:
-            totals["gir_count"] = greens_in_reg
+        # Garmin reports greensInRegulation=0 with greensRecorded=0 when no
+        # greens data exists; only trust it when greens were actually recorded.
         if greens_recorded is not None and greens_recorded > 0:
+            if greens_in_reg is not None:
+                totals["gir_count"] = greens_in_reg
             totals["holes_played"] = totals.get("holes_played") or greens_recorded
             totals["gir_pct"] = round(
-                (totals.get("gir_count", 0) / greens_recorded) * 100, 1
+                ((totals.get("gir_count") or 0) / greens_recorded) * 100, 1
             )
 
         if fairways_recorded is not None:
@@ -871,10 +879,20 @@ def fetch_and_parse_activity_by_id(client, activity_id, existing_round, summary_
     debug_entry = {"activity_id": activity_id, "activity_meta": activity}
 
     if summary_entry is not None:
-        # Use the pre-fetched summary directly — avoids repeated get_golf_summary calls.
-        scorecard = summary_entry
+        # The summary only carries strokes per hole. Use it for the scorecard ID
+        # and fetch the real detail (putts, fairways, penalties, tee box, ...).
+        scorecard_id = summary_entry.get("scorecardId") or summary_entry.get("id")
+        debug_entry["lookup"] = {"source": "pre_fetched_summary", "scorecard_id": scorecard_id}
+        scorecard = None
+        try:
+            scorecard = _normalize_scorecard_detail(client.get_golf_scorecard(scorecard_id))
+        except Exception as e:
+            debug_entry["lookup"]["detail_error"] = str(e)
+            print(f"    Warning: scorecard detail failed for {scorecard_id}: {e}")
+        if not scorecard:
+            scorecard = summary_entry
+            debug_entry["lookup"]["detail_fallback"] = "summary_entry"
         debug_entry["scorecard_detail"] = scorecard
-        debug_entry["lookup"] = {"source": "pre_fetched_summary"}
     else:
         scorecard = fetch_scorecard_detail(client, activity, debug=debug_entry)
         debug_entry["scorecard_detail"] = scorecard

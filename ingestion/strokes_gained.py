@@ -62,6 +62,7 @@ W_FWY = 0.45        # strokes per fairway vs baseline
 W_GIR = 1.00        # strokes per green vs baseline
 W_PUTT = 0.60       # strokes per putt vs baseline
 W_SCR = 0.50        # strokes per successful scramble vs baseline
+MIN_PUTT_HOLES = 5  # holes with a putt count needed before estimating putting SG
 
 
 def _g(round_rec, key):
@@ -107,9 +108,14 @@ def compute_simplified_sg(round_rec, holes):
     if gir is not None:
         block["approach"] = round((gir - BASE_GIR) / 100.0 * GREEN_HOLES * scale * W_GIR, 2)
 
-    putts = _g(round_rec, "putts")
-    if putts:  # treat 0/None as missing
-        block["putting"] = round((BASE_PUTTS * scale - putts) * W_PUTT, 2)
+    # Putting: use the holes that actually have a putt count so a round with
+    # partial putt data (e.g. sensor dropouts) is scaled by its own coverage
+    # instead of by holes played. Needs a handful of holes to be meaningful.
+    putt_holes = [h for h in holes if h.get("putts") is not None and h.get("score") is not None]
+    if len(putt_holes) >= MIN_PUTT_HOLES:
+        putts = sum(h["putts"] for h in putt_holes)
+        putt_scale = len(putt_holes) / 18.0
+        block["putting"] = round((BASE_PUTTS * putt_scale - putts) * W_PUTT, 2)
 
     scr, missed = scrambling_pct(holes)
     if scr is not None:
