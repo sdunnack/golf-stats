@@ -43,6 +43,17 @@ body {
   justify-content: space-between;
   padding-top: env(safe-area-inset-top, 0px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, .35);
+  transition: height .22s ease;
+}
+
+/* Collapsed on scroll: slim bar with just the logo + last-updated */
+body.header-collapsed { --header-h: var(--topbar-h); }
+body.header-collapsed .hero-content,
+body.header-collapsed .hero-img,
+body.header-collapsed .hero-overlay {
+  opacity: 0;
+  transition: opacity .18s ease;
+  pointer-events: none;
 }
 .header-top {
   position: relative;
@@ -482,6 +493,33 @@ body.filters-hidden .filter-course-only {
   color: var(--text-subtle);
     line-height: 1.55;
     margin-bottom: 14px;
+}
+/* Descriptions tucked behind an (i) toggle to cut text per card */
+.chart-desc.tucked { display: none; margin-top: -2px; }
+.chart-desc.tucked.open { display: block; }
+.chart-title-row { display: flex; align-items: baseline; gap: 6px; }
+.chart-title-row .chart-title { margin-bottom: 4px; }
+.chart-info-btn {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-subtle);
+  font-size: 10px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.chart-info-btn:hover,
+.chart-info-btn[aria-expanded="true"] {
+  background: var(--primary-muted);
+  color: var(--primary-dark);
+  border-color: var(--primary-light);
 }
 .chart-summary {
   font-size: 12px;

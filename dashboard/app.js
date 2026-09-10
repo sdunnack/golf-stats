@@ -108,13 +108,22 @@ function getCourseMeta(courseStr) {
 // Appends ''YY the first time a new year appears.
 const MONTH_ABB = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 function dateTicks(dates) {
-  let lastMonthKey = null, lastYear = null;
+  if (!dates.length) return [];
+  // Choose granularity by span so a 3-year "All time" view isn't labelled monthly.
+  const first = dates[0], last = dates[dates.length - 1];
+  const spanMonths = (+last.slice(0, 4) - +first.slice(0, 4)) * 12
+    + (+last.slice(5, 7) - +first.slice(5, 7));
+  const mode = spanMonths > 48 ? 'year' : spanMonths > 18 ? 'quarter' : 'month';
+
+  let lastBucket = null, lastYear = null;
   return dates.map(d => {
     const [y, m] = d.split('-');
-    const key = `${y}-${m}`;
-    if (key === lastMonthKey) return '';
-    lastMonthKey = key;
-    const label = MONTH_ABB[+m - 1];
+    const q = Math.floor((+m - 1) / 3);
+    const bucket = mode === 'year' ? y : mode === 'quarter' ? `${y}-q${q}` : `${y}-${m}`;
+    if (bucket === lastBucket) return '';
+    lastBucket = bucket;
+    if (mode === 'year') return `'${y.slice(2)}`;
+    const label = mode === 'quarter' ? MONTH_ABB[q * 3] : MONTH_ABB[+m - 1];
     if (y !== lastYear) { lastYear = y; return `${label} '${y.slice(2)}`; }
     return label;
   });
@@ -272,9 +281,12 @@ async function loadShots() {
 // Base filter = round-length + date range + valid score (course-agnostic).
 function baseFilteredRounds() {
   const holes    = document.getElementById('filter-holes').value;
-  const dateFrom = document.getElementById('filter-date-from').value;
-  const dateTo   = document.getElementById('filter-date-to').value;
-  return allRounds.filter(r => {
+  const range    = document.getElementById('filter-range')?.value || 'custom';
+  const useDates = range === 'custom';
+  const dateFrom = range === 'thisyear' ? `${new Date().getFullYear()}-01-01`
+    : useDates ? document.getElementById('filter-date-from').value : '';
+  const dateTo   = useDates ? document.getElementById('filter-date-to').value : '';
+  const rounds = allRounds.filter(r => {
     if (holes === '18' && r.holes_played !== 18) return false;
     if (holes === '9'  && r.holes_played !== 9)  return false;
     if (dateFrom && r.date < dateFrom) return false;
@@ -283,6 +295,9 @@ function baseFilteredRounds() {
     if (!r.holes_played || r.holes_played <= 0) return false;
     return true;
   }).sort((a, b) => a.date.localeCompare(b.date));
+  // "Last N rounds" presets keep the WHS-style rolling window.
+  const n = range === 'last20' ? 20 : range === 'last50' ? 50 : null;
+  return n ? rounds.slice(-n) : rounds;
 }
 
 // Bundle a set of rounds with their holes/shots subsets.
@@ -343,8 +358,24 @@ function aggregateMetrics(rounds, holes) {
   };
 }
 
+// ── Shared trend-direction helper ──────────────────────────────────────────────
+// Compares the first-N vs last-N average (N up to 5) instead of two single
+// rounds, and phrases the direction using higherIsBetter so "improving" always
+// means the metric moved the good way.
+function trendTail(valid, higherIsBetter = false, toFixed = 1) {
+  if (!valid || valid.length < 4) return '';
+  const n = Math.min(5, Math.floor(valid.length / 2));
+  const firstAvg = avg(valid.slice(0, n));
+  const lastAvg = avg(valid.slice(-n));
+  const delta = lastAvg - firstAvg;
+  if (Math.abs(delta) < 0.05) return ` · flat (first ${n} vs last ${n})`;
+  const arrow = delta < 0 ? '↓' : '↑';
+  const better = higherIsBetter ? delta > 0 : delta < 0;
+  return ` · ${arrow} ${better ? 'improving' : 'declining'} ${Math.abs(delta).toFixed(toFixed)} (first ${n} vs last ${n})`;
+}
+
 // ── Shared trend-line helper ────────────────────────────────────────────────────
-function trendLine(chartId, summaryId, dates, vals, label, color, yRange = null) {
+function trendLine(chartId, summaryId, dates, vals, label, color, yRange = null, higherIsBetter = false) {
   const valid = vals.filter(v => v != null);
   if (!valid.length) { noData(chartId, `No ${label} data`); setSummary(summaryId || '', ''); return; }
   const traces = [
@@ -361,7 +392,7 @@ function trendLine(chartId, summaryId, dates, vals, label, color, yRange = null)
   if (summaryId) {
     const mn = Math.min(...valid), mx = Math.max(...valid), a = avg(valid);
     setSummary(summaryId, `Avg ${fmt(a)} · Best ${fmt(mn)} · Worst ${fmt(mx)}`
-      + (valid.length >= 2 ? ` · ${vals.filter(v=>v!=null).at(-1) < valid[0] ? '↓ improving' : '↑ up'} ${Math.abs(valid.at(-1)-valid[0]).toFixed(1)} first to last` : ''));
+      + trendTail(valid, higherIsBetter));
   }
 }
 
@@ -378,9 +409,9 @@ function renderOverallTrends(rounds, holes) {
     { key: 'putts', label: 'Putts', desc: 'Total putts per round.',
       run: () => trendLine('chart-o-trends', 'summary-o-trends', pr.map(r => r.date), pr.map(r => r.putts), 'Putts', C_BLUE) },
     { key: 'gir', label: 'GIR %', desc: 'Greens hit in regulation, per round.',
-      run: () => trendLine('chart-o-trends', 'summary-o-trends', dates, rounds.map(r => r.gir_pct), 'GIR %', C_TEAL, [0, 100]) },
+      run: () => trendLine('chart-o-trends', 'summary-o-trends', dates, rounds.map(r => r.gir_pct), 'GIR %', C_TEAL, [0, 100], true) },
     { key: 'fwy', label: 'Fairways', desc: 'Fairways hit off the tee, per round.',
-      run: () => trendLine('chart-o-trends', 'summary-o-trends', dates, rounds.map(r => r.fairway_pct), 'FWY %', C_PURPLE, [0, 100]) },
+      run: () => trendLine('chart-o-trends', 'summary-o-trends', dates, rounds.map(r => r.fairway_pct), 'FWY %', C_PURPLE, [0, 100], true) },
     { key: 'scramble', label: 'Scrambling', desc: 'How often you make par or better after missing the green in regulation.',
       run: () => renderScramblingTrend(rounds, holes, 'chart-o-trends', 'summary-o-trends') },
     { key: 'penalty', label: 'Penalties', desc: 'Total penalty strokes taken each round. A downward trend means fewer costly mistakes.',
@@ -499,7 +530,7 @@ function renderCourseView() {
     plotClear('chart-c-score-trend', traces, layout, CFG);
     const mn = Math.min(...validScores), mx = Math.max(...validScores), a = avg(validScores);
     let summary = `Avg ${fmt(a)} · Best ${fmt(mn)} · Worst ${fmt(mx)}`
-      + (validScores.length >= 2 ? ` · ${scoreVals.filter(v=>v!=null).at(-1) < validScores[0] ? '↓ improving' : '↑ up'} ${Math.abs(scoreVals.filter(v=>v!=null).at(-1)-validScores[0]).toFixed(1)} first to last` : '');
+      + trendTail(validScores, false);
     if (hasVsPar) {
       const vpVals = vsParPts.map(s => s.vsPar);
       summary += `  ·  Avg vs Par: ${fmtSigned(avg(vpVals))}`;
@@ -1117,15 +1148,20 @@ function renderOverallClubs(shots) {
   }
   const clubs = [...new Set(valid.map(s => s.club_name))].filter(Boolean);
   const fullSwing = valid.filter(s => FULL_SWING_TYPES.has(s.shot_type));
-  const fullSwingClubs = [...new Set(fullSwing.map(s => s.club_name))].filter(Boolean);
+
+  // Order clubs longest → shortest by median full-swing distance so every
+  // club chart/table reads the same way instead of shot-data insertion order.
+  const clubStats = [...new Set(fullSwing.map(s => s.club_name))].filter(Boolean)
+    .map(c => ({ c, med: median(fullSwing.filter(s => s.club_name === c).map(s => s.distance_yards)) }))
+    .sort((a, b) => (b.med ?? -Infinity) - (a.med ?? -Infinity));
+  const fullSwingClubs = clubStats.map(o => o.c);
 
   plotClear('chart-o-club-box', fullSwingClubs.map(club => {
     const d = fullSwing.filter(s => s.club_name === club).map(s => s.distance_yards);
     return { x: d.map(()=>club), y: d, type: 'box', name: club, boxpoints: 'outliers',
       hovertemplate: `<b>%{x}</b><br>Median: ${median(d)?.toFixed(1)} yds<br>Avg: ${avg(d)?.toFixed(1)} yds<br>Shots: ${d.length}<extra></extra>` };
-  }), L({ height: 320, showlegend: false, xaxis: { ...AX, type: 'category' },
+  }), L({ height: 320, showlegend: false, xaxis: { ...AX, type: 'category', categoryorder: 'array', categoryarray: fullSwingClubs },
     yaxis: { ...AX, type: 'linear', title: { text: 'Yards', standoff: 6 } } }), CFG);
-  const clubStats = fullSwingClubs.map(c => ({ c, med: median(fullSwing.filter(s => s.club_name === c).map(s => s.distance_yards)) })).sort((a,b)=>(b.med??0)-(a.med??0));
   setSummary('summary-o-club-box', clubStats.length
     ? `Longest median club: ${clubStats[0].c} at ${clubStats[0].med?.toFixed(1)} yds. Tee/approach/layup shots only — chips, putts and recovery shots excluded.`
     : '');
@@ -1156,7 +1192,7 @@ function renderOverallClubs(shots) {
       const ss = teeShots.filter(s => s.activity_id === id);
       return { date: ss[0].date, avg: avg(ss.map(s => s.distance_yards)) };
     }).filter(d => d.date).sort((a,b) => a.date.localeCompare(b.date));
-    trendLine('chart-o-drive-trend', 'summary-o-drive-trend', byDate.map(d => d.date), byDate.map(d => d.avg), 'Avg Drive (yds)', C_ORANGE);
+    trendLine('chart-o-drive-trend', 'summary-o-drive-trend', byDate.map(d => d.date), byDate.map(d => d.avg), 'Avg Drive (yds)', C_ORANGE, null, true);
   } else { noData('chart-o-drive-trend', 'No tee shot data'); setSummary('summary-o-drive-trend', ''); }
 }
 
@@ -1170,8 +1206,8 @@ function renderClubLieTable(fullSwing, clubs) {
     const fwyAvg = avg(fwy), roughAvg = avg(rough);
     const loss = fwyAvg != null && roughAvg != null ? fwyAvg - roughAvg : null;
     return { club, fwyAvg, fwyN: fwy.length, roughAvg, roughN: rough.length, loss };
-  }).filter(r => r.fwyN || r.roughN)
-    .sort((a, b) => (b.loss ?? -Infinity) - (a.loss ?? -Infinity));
+  }).filter(r => r.fwyN || r.roughN);
+  // `clubs` arrives pre-sorted longest → shortest; keep that order here too.
 
   if (!rows.length) { noData('club-lie-table', 'No fairway/rough shot data'); return; }
 
@@ -1309,7 +1345,7 @@ function renderScramblingTrend(rounds, holes, chartId = 'chart-o-scramble-trend'
   }).filter(Boolean);
 
   if (!pts.length) { noData(chartId, 'No scrambling data (requires GIR + par + score)'); setSummary(summaryId, ''); return; }
-  trendLine(chartId, summaryId, pts.map(p => p.date), pts.map(p => p.pct), 'Scrambling %', C_TEAL, [0, 100]);
+  trendLine(chartId, summaryId, pts.map(p => p.date), pts.map(p => p.pct), 'Scrambling %', C_TEAL, [0, 100], true);
 }
 
 function renderPenaltyTrend(rounds, holes, chartId = 'chart-o-penalty-trend', summaryId = 'summary-o-penalty-trend') {
@@ -1418,9 +1454,8 @@ function renderSGTrend(rounds, chartId, summaryId) {
   // lower-is-better "Best/Worst" line (for SG, higher is better).
   trendLine(chartId, null, pts.map(r => r.date), vals, 'Total SG', C_TEAL);
   const a = avg(vals), best = Math.max(...vals), worst = Math.min(...vals);
-  const dir = vals.length >= 2 ? (vals.at(-1) > vals[0] ? '↑ improving' : '↓ slipping') : '';
   setSummary(summaryId, `Avg ${fmtSigned(a)} · Best ${fmtSigned(best)} · Worst ${fmtSigned(worst)}`
-    + (dir ? ` · ${dir} ${Math.abs(vals.at(-1) - vals[0]).toFixed(1)} first to last` : ''));
+    + trendTail(vals, true));
 }
 
 // ── Focus This Week (prescriptive card driven by the worst SG category) ─────────
@@ -1989,13 +2024,30 @@ function setupChrome() {
     document.getElementById('filter-date-to').value   = dates.at(-1);
   }
 
+  // Default to the last 20 rounds (WHS handicap window); date pickers only
+  // apply under "Custom dates".
+  const rangeSel = document.getElementById('filter-range');
+  const syncRangeInputs = () => {
+    const custom = rangeSel.value === 'custom';
+    document.getElementById('filter-date-from').disabled = !custom;
+    document.getElementById('filter-date-to').disabled = !custom;
+  };
+  rangeSel.value = 'last20';
+  syncRangeInputs();
+  rangeSel.addEventListener('change', () => { syncRangeInputs(); render(); });
+
   sel.addEventListener('change', () => {
     selectedCourse = sel.value;
     localStorage.setItem(LS_KEY, selectedCourse);
     render();
   });
-  ['filter-holes','filter-date-from','filter-date-to'].forEach(id =>
-    document.getElementById(id).addEventListener('change', render));
+  document.getElementById('filter-holes').addEventListener('change', render);
+  ['filter-date-from','filter-date-to'].forEach(id =>
+    document.getElementById(id).addEventListener('change', () => {
+      rangeSel.value = 'custom';
+      syncRangeInputs();
+      render();
+    }));
   const ringerStart = document.getElementById('ringer-start-date');
   if (ringerStart) {
     ringerStart.addEventListener('change', () => {
@@ -2210,9 +2262,11 @@ async function init() {
     const _badge = document.getElementById('manage-badge');
     if (_badge) { const _n = getUnmatchedCourseStrings().length; _badge.textContent = _n; _badge.style.display = _n ? 'inline-flex' : 'none'; }
     render();
+    tidyCardText();
     // Lazy-load shot data, then refresh shot-dependent sections.
     loadShots().then(() => render());
   } catch (err) {
+    console.error(err);
     document.body.innerHTML = `
       <div style="padding:40px;font-family:sans-serif;color:#dc2626">
         <h2>Failed to load data</h2><p>${err.message}</p>
@@ -2220,5 +2274,51 @@ async function init() {
       </div>`;
   }
 }
+
+// Tuck each card's verbose description behind an (i) toggle, and drop the
+// per-panel intro paragraphs. Keeps the one-line .chart-summary visible.
+function tidyCardText() {
+  document.querySelectorAll('.panel-intro').forEach(el => el.remove());
+
+  document.querySelectorAll('.chart-card > .chart-desc')
+    .forEach((desc, i) => {
+      const title = desc.parentElement.querySelector('.chart-title');
+      if (!title || !desc.textContent.trim() || desc.dataset.tucked) return;
+      desc.dataset.tucked = '1';
+      desc.classList.add('tucked');
+      const id = desc.id || (desc.id = `chart-desc-${i}`);
+
+      const row = document.createElement('div');
+      row.className = 'chart-title-row';
+      title.replaceWith(row);
+      row.appendChild(title);
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'chart-info-btn';
+      btn.textContent = 'i';
+      btn.setAttribute('aria-label', 'About this chart');
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-controls', id);
+      btn.addEventListener('click', () => {
+        const open = desc.classList.toggle('open');
+        btn.setAttribute('aria-expanded', String(open));
+      });
+      row.appendChild(btn);
+    });
+}
+
+// Collapse the hero header to a slim bar once the user scrolls (hysteresis so it
+// doesn't flicker at the threshold when the page height changes).
+(function stickyHeader() {
+  let collapsed = false;
+  const onScroll = () => {
+    const y = window.scrollY;
+    if (!collapsed && y > 120) { collapsed = true; document.body.classList.add('header-collapsed'); }
+    else if (collapsed && y < 40) { collapsed = false; document.body.classList.remove('header-collapsed'); }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
 
 init();

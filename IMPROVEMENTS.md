@@ -42,18 +42,22 @@ putter sensor was off and no putts were entered.
       would need a synthetic activity ID (e.g. `sc<scorecard_id>`) and the date taken from the
       UTC `startTime`.
 
-## 2. Sticky hero header
+## 2. Sticky hero header — DONE 2026-09-07
 
-- [ ] Header is `position: sticky` and 200px tall; it eats ~20% of a 900px viewport on every
-      scroll. Collapse to a slim bar (logo + last updated) once scrolled, or make it
-      non-sticky.
+- [x] Header collapses to a slim 56px bar (logo + last synced) once scrolled past 120px, with
+      hysteresis so it doesn't flicker at the threshold. `body.header-collapsed` overrides
+      `--header-h`; hero content/image fade out.
 
-## 3. Default filter
+## 3. Default filter — DONE 2026-09-07
 
-- [ ] Default to the **last 20 rounds** (matches the WHS handicap window) instead of all-time.
-      Keep "All time" and the date pickers as options.
-- [ ] Date axis: quarterly or yearly tick labels when the span is > 12 months (currently every
-      month across 3 years).
+- [x] New **Range** selector in the filter bar: Last 20 rounds (default, WHS window) /
+      Last 50 / This year / All time / Custom dates. `baseFilteredRounds()` slices the last N
+      or (This year) filters from Jan 1 of the current year; the date
+      pickers are disabled unless "Custom dates" (editing one flips the selector to Custom).
+      Note: in By Course view "Last N" still means the last N rounds *overall* then filtered to
+      the course — fine for the home course, use "All time" for rarely-played courses.
+- [x] `dateTicks()` is now span-aware: monthly labels ≤ 18 months, quarterly ≤ 48 months,
+      yearly beyond that.
 
 ## 4. Split Club Data into its own panel
 
@@ -64,6 +68,9 @@ putter sensor was off and no putts were entered.
       axis labels or hover.
 - [ ] Filter club distance box plots for outliers: drop shots < 15th percentile per club for
       full-swing clubs, and any shot with distance 0.
+- [x] Club box plot, rough-loss table and (existing) median summary are now ordered
+      longest → shortest by median full-swing distance instead of shot-data insertion order.
+      Club Usage stays sorted by shot count — that's its metric.
 
 ## 5. Small-sample noise
 
@@ -73,11 +80,14 @@ putter sensor was off and no putts were entered.
       group, or sort them to the bottom with a muted style.
 - [ ] Records & Milestones: show n rounds behind the record.
 
-## 6. Trend summary lines (`trendLine()` in app.js, and the course score chart)
+## 6. Trend summary lines (`trendLine()` in app.js, and the course score chart) — DONE 2026-09-07
 
-- [ ] Replace "first to last" (two single rounds) with first-5 avg vs last-5 avg.
-- [ ] Add a per-metric `higherIsBetter` flag. Driving Distance currently says
-      "Best 118 · Worst 164.7 · ↓ improving" when distance went down.
+- [x] New `trendTail(valid, higherIsBetter)` helper compares first-N vs last-N average
+      (N up to 5) instead of two single rounds. Used by `trendLine()`, the course score
+      trend, and the SG trend (the three places that had inline "first to last" logic).
+- [x] `higherIsBetter` flag threaded through `trendLine()`; GIR %, Fairways, Scrambling and
+      Avg Drive pass `true`. Direction word ("improving"/"declining") now reflects whether the
+      metric moved the good way; arrow reflects the raw direction. "flat" when |delta| < 0.05.
 
 ## 7. Strokes Gained framing
 
@@ -87,11 +97,12 @@ putter sensor was off and no putts were entered.
 - [ ] Remove or retune the "~15-cap avg" reference marker (user is a 21 index; benchmark
       should match).
 
-## 8. Reduce text per card
+## 8. Reduce text per card — DONE 2026-09-07
 
-- [ ] Move the `.chart-desc` paragraph behind an (i) icon / tooltip on every card. Keep the
-      one-line `.chart-summary`, which is the actual insight.
-- [ ] Remove the `.panel-intro` paragraphs (they explain the tabs on every panel).
+- [x] `tidyCardText()` in app.js tucks every card's `.chart-desc` behind a small (i) toggle
+      next to the title (aria-expanded/controls wired up). The one-line `.chart-summary` stays
+      visible. `#trend-tab-desc` is left alone — it's a live one-liner, not a static blurb.
+- [x] `.panel-intro` paragraphs removed at load.
 
 ## 9. Duplicate / redundant cards (candidates to cut or merge)
 
