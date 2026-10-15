@@ -1,6 +1,154 @@
 {
   "rounds": [
     {
+      "activity_id": "24594674544",
+      "date": "2026-10-03",
+      "course": "Manchester Country Club",
+      "duration_seconds": 16937.20703125,
+      "distance_meters": 11121.8203125,
+      "course_id": 8401,
+      "tee_box": "Red",
+      "tee_box_rating": 72.6,
+      "tee_box_slope": 120,
+      "front_nine": {
+        "holes_played": 9,
+        "strokes": 49,
+        "putts": 18,
+        "gir": 1,
+        "birdies": 1,
+        "pars": 1,
+        "bogeys": 3,
+        "doubles_plus": 4,
+        "eagles": 0
+      },
+      "back_nine": {
+        "holes_played": 9,
+        "strokes": 48,
+        "putts": 16,
+        "gir": 0,
+        "birdies": 0,
+        "pars": 2,
+        "bogeys": 3,
+        "doubles_plus": 4,
+        "eagles": 0
+      },
+      "totals": {
+        "holes_played": 18,
+        "score": 97,
+        "putts": 34,
+        "gir_count": 1,
+        "gir_pct": 5.6,
+        "fairways_hit": 7,
+        "fairways_possible": 14,
+        "fairway_pct": 50.0
+      },
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -10.51,
+        "putting": -2.4,
+        "short_game": -3.43,
+        "total": -16.97,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.4
+    },
+    {
+      "activity_id": "24571810488",
+      "date": "2026-10-01",
+      "course": "Minnechaug Golf Club",
+      "duration_seconds": 6507.98095703125,
+      "distance_meters": 5269.81005859375,
+      "course_id": 8938,
+      "tee_box": "Red",
+      "tee_box_rating": 32.1,
+      "tee_box_slope": 106,
+      "front_nine": {
+        "holes_played": 9,
+        "strokes": 47,
+        "putts": 21,
+        "gir": 5,
+        "birdies": 0,
+        "pars": 2,
+        "bogeys": 3,
+        "doubles_plus": 4,
+        "eagles": 0
+      },
+      "back_nine": null,
+      "totals": {
+        "holes_played": 9,
+        "score": 47,
+        "putts": 21,
+        "gir_count": 5,
+        "gir_pct": 55.6,
+        "fairways_hit": 2,
+        "fairways_possible": 5,
+        "fairway_pct": 40.0
+      },
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.63,
+        "approach": -0.76,
+        "putting": -3.6,
+        "short_game": -1.16,
+        "total": -6.15,
+        "basis": "estimate"
+      }
+    },
+    {
+      "activity_id": "24474685932",
+      "date": "2026-09-23",
+      "course": "Rolling Meadows Country Club",
+      "duration_seconds": 19875.208984375,
+      "distance_meters": 11761.9501953125,
+      "course_id": 4646,
+      "tee_box": "Green",
+      "tee_box_rating": 70.8,
+      "tee_box_slope": 119,
+      "front_nine": {
+        "holes_played": 9,
+        "strokes": 53,
+        "putts": 19,
+        "gir": 0,
+        "birdies": 0,
+        "pars": 0,
+        "bogeys": 2,
+        "doubles_plus": 7,
+        "eagles": 0
+      },
+      "back_nine": {
+        "holes_played": 9,
+        "strokes": 48,
+        "putts": 17,
+        "gir": 2,
+        "birdies": 0,
+        "pars": 3,
+        "bogeys": 1,
+        "doubles_plus": 5,
+        "eagles": 0
+      },
+      "totals": {
+        "holes_played": 18,
+        "score": 101,
+        "putts": 36,
+        "gir_count": 2,
+        "gir_pct": 11.1,
+        "fairways_hit": 6,
+        "fairways_possible": 14,
+        "fairway_pct": 42.9
+      },
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -1.08,
+        "approach": -9.52,
+        "putting": -3.6,
+        "short_game": null,
+        "total": -14.2,
+        "basis": "estimate"
+      },
+      "hcap_index": 21.3
+    },
+    {
       "activity_id": "24423077979",
       "date": "2026-09-19",
       "course": "Manchester Country Club",
@@ -10711,5 +10859,5 @@
       }
     }
   ],
-  "last_updated": "2026-09-22T21:35:46.210459"
+  "last_updated": "2026-10-15T19:13:58.924727"
 }
