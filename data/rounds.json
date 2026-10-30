@@ -1,6 +1,132 @@
 {
   "rounds": [
     {
+      "activity_id": "24862585830",
+      "date": "2026-10-26",
+      "course": "Manchester Country Club",
+      "duration_seconds": 5164.240234375,
+      "distance_meters": 3452.260009765625,
+      "course_id": 8401,
+      "tee_box": "Red",
+      "tee_box_rating": 72.6,
+      "tee_box_slope": 120,
+      "front_nine": null,
+      "back_nine": {
+        "holes_played": 9,
+        "strokes": 44,
+        "putts": 19,
+        "gir": 4,
+        "birdies": 0,
+        "pars": 3,
+        "bogeys": 4,
+        "doubles_plus": 2,
+        "eagles": 0
+      },
+      "totals": {
+        "holes_played": 9,
+        "score": 44,
+        "putts": 19,
+        "gir_count": 4,
+        "gir_pct": 44.4,
+        "fairways_hit": 3,
+        "fairways_possible": 7,
+        "fairway_pct": 42.9
+      },
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.54,
+        "approach": -1.76,
+        "putting": -2.4,
+        "short_game": -1.45,
+        "total": -6.15,
+        "basis": "estimate"
+      }
+    },
+    {
+      "activity_id": "24862585370",
+      "date": "2026-10-26",
+      "course": "Manchester Country Club",
+      "duration_seconds": 1195.8399658203125,
+      "distance_meters": 797.52001953125,
+      "course_id": 8401,
+      "tee_box": "Red",
+      "tee_box_rating": 72.6,
+      "tee_box_slope": 120,
+      "front_nine": null,
+      "back_nine": {
+        "holes_played": 9,
+        "strokes": 44,
+        "putts": 19,
+        "gir": 4,
+        "birdies": 0,
+        "pars": 3,
+        "bogeys": 4,
+        "doubles_plus": 2,
+        "eagles": 0
+      },
+      "totals": {
+        "holes_played": 9,
+        "score": 44,
+        "putts": 19,
+        "gir_count": 4,
+        "gir_pct": 44.4,
+        "fairways_hit": 3,
+        "fairways_possible": 7,
+        "fairway_pct": 42.9
+      },
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.54,
+        "approach": -1.76,
+        "putting": -2.4,
+        "short_game": -1.45,
+        "total": -6.15,
+        "basis": "estimate"
+      }
+    },
+    {
+      "activity_id": "24861734873",
+      "date": "2026-10-26",
+      "course": "Manchester Country Club",
+      "duration_seconds": 4.247000217437744,
+      "distance_meters": 3.440000057220459,
+      "course_id": 8401,
+      "tee_box": "Red",
+      "tee_box_rating": 72.6,
+      "tee_box_slope": 120,
+      "front_nine": null,
+      "back_nine": {
+        "holes_played": 9,
+        "strokes": 44,
+        "putts": 19,
+        "gir": 4,
+        "birdies": 0,
+        "pars": 3,
+        "bogeys": 4,
+        "doubles_plus": 2,
+        "eagles": 0
+      },
+      "totals": {
+        "holes_played": 9,
+        "score": 44,
+        "putts": 19,
+        "gir_count": 4,
+        "gir_pct": 44.4,
+        "fairways_hit": 3,
+        "fairways_possible": 7,
+        "fairway_pct": 42.9
+      },
+      "_raw_available": true,
+      "strokes_gained": {
+        "off_tee": -0.54,
+        "approach": -1.76,
+        "putting": -2.4,
+        "short_game": -1.45,
+        "total": -6.15,
+        "basis": "estimate"
+      }
+    },
+    {
       "activity_id": "24594674544",
       "date": "2026-10-03",
       "course": "Manchester Country Club",
@@ -10859,5 +10985,5 @@
       }
     }
   ],
-  "last_updated": "2026-10-25T21:47:32.470541"
+  "last_updated": "2026-10-29T21:08:32.495268"
 }
