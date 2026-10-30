@@ -66,8 +66,8 @@
         <!-- Mode tabs + inline filter bar -->
         <div class="tabs-filter-row">
           <div class="tabs mode-tabs">
-            <button class="tab-btn active" data-mode="overall">Overall</button>
-            <button class="tab-btn" data-mode="course">By Course</button>
+            <button class="tab-btn active" data-mode="home">Home Course</button>
+            <button class="tab-btn" data-mode="other">Other Courses</button>
             <button class="tab-btn" data-mode="manage" style="display:none">Manage <span id="manage-badge" class="badge" style="display:none"></span></button>
           </div>
           <div class="filter-bar">
@@ -86,18 +86,18 @@
             <div class="filter-bar-item">
               <label for="filter-range">Range</label>
               <select id="filter-range">
+                <option value="thisyear">This year</option>
                 <option value="last20">Last 20 rounds</option>
                 <option value="last50">Last 50 rounds</option>
-                <option value="thisyear">This year</option>
                 <option value="all">All time</option>
                 <option value="custom">Custom dates</option>
               </select>
             </div>
-            <div class="filter-bar-item">
+            <div class="filter-bar-item filter-date-item">
               <label for="filter-date-from">From</label>
               <input type="date" id="filter-date-from">
             </div>
-            <div class="filter-bar-item">
+            <div class="filter-bar-item filter-date-item">
               <label for="filter-date-to">To</label>
               <input type="date" id="filter-date-to">
             </div>
@@ -105,174 +105,8 @@
           </div>
         </div>
 
-        <!-- ═══════════════ OVERALL VIEW ═══════════════ -->
-        <div id="view-overall" class="mode-view active">
-        
-          <!-- ── Stats sub-panel ── -->
-          <div class="sub-panel active" data-panel="stats">
-            <p class="panel-intro">Charts and trends across all your rounds. Use the <strong>Overall</strong> / <strong>By
-                Course</strong> tabs to switch views, and the filters above to narrow by round length or date range.</p>
-            <div id="ok-band" class="kpi-band"></div>
-        
-            <h3 class="section-title">Strokes Gained <span class="est-tag">estimate</span></h3>
-            <div class="chart-card">
-              <div class="chart-title">Strokes Gained by Category</div>
-              <div class="chart-desc">Estimated strokes gained vs a scratch-golfer baseline. Bars run left of scratch where you're losing
-                strokes; the black tick is a typical ~15 handicap, and the hollow dot is the same number of rounds before this window.
-                The per-round trend is under Trends → Strokes Gained.</div>
-              <div id="chart-o-sg"></div>
-              <div id="summary-o-sg" class="chart-summary"></div>
-            </div>
-        
-            <h3 class="section-title">Trends</h3>
-            <div class="chart-card">
-              <div id="trend-tabs" class="trend-tabs"></div>
-              <div id="trend-tab-desc" class="chart-desc"></div>
-              <div id="chart-o-trends"></div>
-              <div id="summary-o-trends" class="chart-summary"></div>
-            </div>
-        
-            <h3 class="section-title">Scoring &amp; Putting</h3>
-            <div class="chart-grid-2">
-              <div class="chart-card">
-                <div class="chart-title">Scoring Mix</div>
-                <div class="chart-desc">Every hole outcome across the rounds in the current filter, plus your average score to par on par 3s, 4s and 5s.</div>
-                <div id="chart-o-scoring-donut"></div>
-                <div id="summary-o-scoring-donut" class="chart-summary"></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Putting</div>
-                <div class="chart-desc">Share of holes with 0–1, 2 and 3+ putts, and total putts in each 18-hole round against a typical 20-handicap (34).</div>
-                <div id="chart-o-putting-donut"></div>
-                <div id="summary-o-putting-donut" class="chart-summary"></div>
-              </div>
-              <div class="chart-card" style="grid-column:1 / -1">
-                <div class="chart-title">Off the Tee</div>
-                <div class="chart-desc">Par 4 and 5 tee shots: fairway hit vs. missed left vs. missed right, overall and round by round.</div>
-                <div id="chart-o-fwy-miss"></div>
-                <div id="summary-o-fwy-miss" class="chart-summary"></div>
-              </div>
-            </div>
-        
-            <h3 class="section-title">Club Data</h3>
-            <div class="chart-card">
-              <div class="chart-title">Club Gapping</div>
-              <div class="chart-desc">Full-swing distances per club, longest first. The bar is the middle half of your shots and the tick
-                is the median; the gap column shows the drop to the next club. Requires CT10 sensor data.</div>
-              <div id="chart-o-club-box"></div>
-              <div id="summary-o-club-box" class="chart-summary"></div>
-            </div>
-            <div class="chart-card">
-              <div class="chart-title">Distance Lost from the Rough, by Club</div>
-              <div class="chart-desc">Fairway vs. rough average distance per club (tee/approach/layup shots only). Requires CT10
-                sensor data.</div>
-              <div id="club-lie-table"></div>
-            </div>
-            <div class="chart-grid-2">
-              <div class="chart-card">
-                <div class="chart-title">Shot Distance by Lie</div>
-                <div class="chart-desc">Average distance grouped by starting lie. Requires CT10 sensor data.</div>
-                <div id="chart-o-lie-distance"></div>
-                <div id="summary-o-lie-distance" class="chart-summary"></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Club Usage Frequency</div>
-                <div class="chart-desc">Number of tracked shots per club. Requires CT10 sensor data.</div>
-                <div id="chart-o-club-usage"></div>
-                <div id="summary-o-club-usage" class="chart-summary"></div>
-              </div>
-            </div>
-            <div class="chart-card">
-              <div class="chart-title">Driving Distance Trend</div>
-              <div class="chart-desc">Average tee-shot distance on par-4 and par-5 holes over time. Requires CT10 sensor data.
-              </div>
-              <div id="chart-o-drive-trend"></div>
-              <div id="summary-o-drive-trend" class="chart-summary"></div>
-            </div>
-        
-            <h3 class="section-title">Course Comparison</h3>
-            <div class="chart-card">
-              <div class="chart-title">Your Courses, Ranked</div>
-              <div class="chart-desc">Every course you've played in the current filter. Click a row to jump to that course.
-              </div>
-              <div id="course-comparison-table"></div>
-            </div>
-          </div><!-- /stats -->
-        
-          <!-- ── Insights sub-panel ── -->
-          <div class="sub-panel" data-panel="insights">
-            <p class="panel-intro">Personalised insights generated from the rounds currently in the filter. Switch between
-              <strong>Overall</strong> and <strong>By Course</strong> — or adjust the Round Length and date range — to change what's
-              analysed.</p>
-            <h3 class="section-title" style="margin-top:0">Your Goal</h3>
-            <div id="goals-overall"></div>
-        
-            <h3 class="section-title">Focus This Week</h3>
-            <div id="focus-overall"></div>
-        
-            <h3 class="section-title">Insights</h3>
-            <div id="insights-overall" data-expanded="true"></div>
-          </div><!-- /insights -->
-        
-          <!-- ── Training sub-panel ── -->
-          <div class="sub-panel" data-panel="training">
-            <div class="training-panel">
-              <div class="training-hero-card">
-                <p class="training-eyebrow">Coming Soon</p>
-                <h3 class="training-title">Personalized Training Plans</h3>
-                <p class="training-body">Practice plans built directly from your Strokes Gained data — so you always know
-                  exactly where to spend your time at the range.</p>
-              </div>
-              <div class="training-teasers">
-                <div class="training-teaser">
-                  <div class="training-teaser-icon">
-                    <svg width="22" height="22" fill="none" viewBox="0 0 22 22">
-                      <rect x="3" y="12" width="4" height="7" rx="1.5" fill="currentColor" />
-                      <rect x="9" y="7" width="4" height="12" rx="1.5" fill="currentColor" />
-                      <rect x="15" y="2" width="4" height="17" rx="1.5" fill="currentColor" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="training-teaser-title">Weekly Practice Plan</div>
-                    <div class="training-teaser-body">Auto-generated each week from your weakest Strokes Gained category.</div>
-                  </div>
-                </div>
-                <div class="training-teaser">
-                  <div class="training-teaser-icon">
-                    <svg width="22" height="22" fill="none" viewBox="0 0 22 22">
-                      <rect x="3" y="4" width="16" height="2.5" rx="1.25" fill="currentColor" />
-                      <rect x="3" y="9.75" width="11" height="2.5" rx="1.25" fill="currentColor" />
-                      <rect x="3" y="15.5" width="13" height="2.5" rx="1.25" fill="currentColor" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="training-teaser-title">Drill Library</div>
-                    <div class="training-teaser-body">Targeted drills for putting, approach play, scrambling, and off-the-tee.
-                    </div>
-                  </div>
-                </div>
-                <div class="training-teaser">
-                  <div class="training-teaser-icon">
-                    <svg width="22" height="22" fill="none" viewBox="0 0 22 22">
-                      <circle cx="11" cy="11" r="8.25" stroke="currentColor" stroke-width="1.75" />
-                      <circle cx="11" cy="11" r="4.5" stroke="currentColor" stroke-width="1.75" />
-                      <circle cx="11" cy="11" r="1.5" fill="currentColor" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="training-teaser-title">Progress Tracking</div>
-                    <div class="training-teaser-body">See how range work translates to on-course improvement round by round.
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div><!-- /training -->
-        
-        </div><!-- /view-overall -->
-
         <!-- ═══════════════ COURSE VIEW ═══════════════ -->
-        <div id="view-course" class="mode-view">
+        <div id="view-course" class="mode-view active">
 <!-- ── Stats sub-panel ── -->
 <div class="sub-panel active" data-panel="stats">
             <p class="panel-intro">Detailed stats and charts for a single course. Select a course from the dropdown above, and use
