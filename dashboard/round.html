@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f2ec">
+  <title>Round Report · Golf Stats</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⛳</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Libre+Bodoni:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="round.css">
+</head>
+<body>
+  <nav class="topbar">
+    <a class="back" href="./">← Dashboard</a>
+    <div class="picker">
+      <label for="round-select">Round</label>
+      <select id="round-select"></select>
+    </div>
+  </nav>
+
+  <main id="report" class="report">
+    <p class="loading">Loading your round…</p>
+  </main>
+
+  <footer class="foot">
+    Strokes gained is estimated per shot from GPS distances to where each hole finished, against a scratch baseline,
+    then shifted by the strokes your handicap gives you on each hole. Treat single-hole numbers as a guide.
+  </footer>
+
+  <script src="round.js"></script>
+</body>
+</html>

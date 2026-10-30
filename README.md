@@ -46,21 +46,19 @@ The dashboard has two views switchable via the pill tabs at the top. Filters (ro
 
 Aggregates across all courses in the current filter.
 
-- **KPIs** — rounds played, courses, avg score, avg putts, GIR %, fairway %, handicap index
+- **KPI band** — handicap index as the headline, plus avg score, putts, GIR %, fairway % and best round; each shows its change vs the same number of rounds before the filter window, with a sparkline
 - **Your Goal** — set a target score or handicap index; shows progress and a projected date on your current trend (saved in localStorage)
 - **Focus This Week** — your single biggest Strokes Gained opportunity with concrete practice drills
 - **Insights** — auto-generated priority cards with severity badges flagging your weakest areas
-- **Strokes Gained by Category** *(estimate)* — off-the-tee / approach / short game / putting on one scale vs a scratch baseline; the longest red bar is your biggest opportunity
-- **Total Strokes Gained per Round** — how the gap to scratch has moved over time
-- **Score / Putts / GIR % / Fairway % trends** — time-series lines with 3-round moving averages
+- **Strokes Gained by Category** *(estimate)* — off-the-tee / approach / short game / putting vs a scratch baseline, with a ~15-handicap marker, your previous window, and callouts for your total, biggest gap and strongest area
+- **Trends** — score, putts, GIR %, fairways, scrambling, penalties, handicap differential and total strokes gained, each with your normal range shaded, best/worst rounds tagged and a 3-round moving average
 - **Scrambling Trend** — up-and-down rate from off the green over time
 - **Penalty Stroke Trend** — total penalties per round over time
 - **Handicap Differential Trend** — per-round WHS differentials (normalised for course difficulty)
-- **Scoring Distribution** — donut: Eagle / Birdie / Par / Bogey / Double / Triple+
-- **Putting Distribution** — donut: 1-putt / 2-putt / 3-putt+
-- **Scoring by Par Type** — avg strokes vs par for par-3 / par-4 / par-5 holes
-- **Fairway Miss Direction** — fairway hit vs. missed left vs. missed right
-- **Club Distance** — box plots of carry distance by club; distance by lie; club usage frequency
+- **Scoring Mix** — stacked bar of Eagle / Birdie / Par / Bogey / Double / Triple+ with par-3/4/5 averages to par
+- **Putting** — 0–1 / 2 / 3+ putt rates and putts per round against a 20-handicap benchmark
+- **Off the Tee** — fairway hit vs. missed left / right, overall and round by round
+- **Club Gapping** — each club's typical range and median, with the gap to the next club (overlaps flagged); distance by lie; club usage frequency
 - **Drive Distance Trend** — avg tee-shot distance per round over time *(requires CT10 data)*
 - **Course Comparison** — all played courses ranked by avg score, vs par, putts, GIR %, fairway %
 

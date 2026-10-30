@@ -22,7 +22,10 @@
           <span class="logo">⛳</span>
           <h1>Golf Stats</h1>
         </div>
-        <span id="last-updated" class="last-updated"></span>
+        <div class="header-right">
+          <a class="report-link" href="round.html">Latest round report →</a>
+          <span id="last-updated" class="last-updated"></span>
+        </div>
       </div>
       <div class="hero-content">
         <p class="hero-eyebrow">Your Golf Journey</p>
@@ -109,53 +112,16 @@
           <div class="sub-panel active" data-panel="stats">
             <p class="panel-intro">Charts and trends across all your rounds. Use the <strong>Overall</strong> / <strong>By
                 Course</strong> tabs to switch views, and the filters above to narrow by round length or date range.</p>
-            <div class="kpi-row">
-              <div class="kpi-card">
-                <div class="kpi-label">Rounds</div>
-                <div class="kpi-value" id="ok-rounds">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Courses</div>
-                <div class="kpi-value" id="ok-courses">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Avg Score</div>
-                <div class="kpi-value" id="ok-score">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Avg Putts</div>
-                <div class="kpi-value" id="ok-putts">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">GIR %</div>
-                <div class="kpi-value" id="ok-gir">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Fairway %</div>
-                <div class="kpi-value" id="ok-fwy">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Handicap Idx</div>
-                <div class="kpi-value" id="ok-hcap">—</div>
-              </div>
-            </div>
+            <div id="ok-band" class="kpi-band"></div>
         
             <h3 class="section-title">Strokes Gained <span class="est-tag">estimate</span></h3>
-            <div class="chart-grid-2">
-              <div class="chart-card">
-                <div class="chart-title">Strokes Gained by Category</div>
-                <div class="chart-desc">Estimated strokes gained vs a scratch-golfer baseline. Bars below zero are strokes
-                  you're losing there — the longest red bar is your biggest opportunity.</div>
-                <div id="chart-o-sg"></div>
-                <div id="summary-o-sg" class="chart-summary"></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Total Strokes Gained per Round</div>
-                <div class="chart-desc">Estimated total strokes gained vs scratch each round. An upward trend means you're
-                  closing the gap to scratch over time.</div>
-                <div id="chart-o-sg-trend"></div>
-                <div id="summary-o-sg-trend" class="chart-summary"></div>
-              </div>
+            <div class="chart-card">
+              <div class="chart-title">Strokes Gained by Category</div>
+              <div class="chart-desc">Estimated strokes gained vs a scratch-golfer baseline. Bars run left of scratch where you're losing
+                strokes; the black tick is a typical ~15 handicap, and the hollow dot is the same number of rounds before this window.
+                The per-round trend is under Trends → Strokes Gained.</div>
+              <div id="chart-o-sg"></div>
+              <div id="summary-o-sg" class="chart-summary"></div>
             </div>
         
             <h3 class="section-title">Trends</h3>
@@ -169,26 +135,20 @@
             <h3 class="section-title">Scoring &amp; Putting</h3>
             <div class="chart-grid-2">
               <div class="chart-card">
-                <div class="chart-title">Scoring Summary</div>
-                <div class="chart-desc">Distribution of all hole outcomes across every round in the current filter.</div>
+                <div class="chart-title">Scoring Mix</div>
+                <div class="chart-desc">Every hole outcome across the rounds in the current filter, plus your average score to par on par 3s, 4s and 5s.</div>
                 <div id="chart-o-scoring-donut"></div>
                 <div id="summary-o-scoring-donut" class="chart-summary"></div>
               </div>
               <div class="chart-card">
-                <div class="chart-title">Putting Summary</div>
-                <div class="chart-desc">Breakdown of 1-putt, 2-putt, and 3-putt-or-worse holes across all rounds.</div>
+                <div class="chart-title">Putting</div>
+                <div class="chart-desc">Share of holes with 0–1, 2 and 3+ putts, and total putts in each 18-hole round against a typical 20-handicap (34).</div>
                 <div id="chart-o-putting-donut"></div>
                 <div id="summary-o-putting-donut" class="chart-summary"></div>
               </div>
-              <div class="chart-card">
-                <div class="chart-title">Scoring by Par Type</div>
-                <div class="chart-desc">Average strokes relative to par on par-3, par-4, and par-5 holes.</div>
-                <div id="chart-o-par-type"></div>
-                <div id="summary-o-par-type" class="chart-summary"></div>
-              </div>
-              <div class="chart-card">
-                <div class="chart-title">Fairway Miss Direction</div>
-                <div class="chart-desc">Breakdown of tee shots: fairway hit vs. missed left vs. missed right.</div>
+              <div class="chart-card" style="grid-column:1 / -1">
+                <div class="chart-title">Off the Tee</div>
+                <div class="chart-desc">Par 4 and 5 tee shots: fairway hit vs. missed left vs. missed right, overall and round by round.</div>
                 <div id="chart-o-fwy-miss"></div>
                 <div id="summary-o-fwy-miss" class="chart-summary"></div>
               </div>
@@ -196,9 +156,9 @@
         
             <h3 class="section-title">Club Data</h3>
             <div class="chart-card">
-              <div class="chart-title">Distance Distribution by Club</div>
-              <div class="chart-desc">Box plot of shot distances per club. Box = middle 50%, center line = median. Requires CT10
-                sensor data.</div>
+              <div class="chart-title">Club Gapping</div>
+              <div class="chart-desc">Full-swing distances per club, longest first. The bar is the middle half of your shots and the tick
+                is the median; the gap column shows the drop to the next club. Requires CT10 sensor data.</div>
               <div id="chart-o-club-box"></div>
               <div id="summary-o-club-box" class="chart-summary"></div>
             </div>
@@ -340,42 +300,13 @@
               </details>
             </div>
 
-            <div class="kpi-row kpi-row-course">
-              <div class="kpi-card">
-                <div class="kpi-label">Rounds</div>
-                <div class="kpi-value" id="ck-rounds">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Avg Score</div>
-                <div class="kpi-value" id="ck-score">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Avg vs Par</div>
-                <div class="kpi-value" id="ck-vspar">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Best Round</div>
-                <div class="kpi-value" id="ck-best">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Avg Putts</div>
-                <div class="kpi-value" id="ck-putts">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">GIR %</div>
-                <div class="kpi-value" id="ck-gir">—</div>
-              </div>
-              <div class="kpi-card">
-                <div class="kpi-label">Fairway %</div>
-                <div class="kpi-value" id="ck-fwy">—</div>
-              </div>
-            </div>
+            <div id="ck-band" class="kpi-band"></div>
 
             <h3 class="section-title">Overview</h3>
             <div class="chart-card">
-              <div class="chart-title">Score &amp; Score vs Par Over Visits</div>
-              <div class="chart-desc">Your total score and strokes vs par each round here. The dotted line is a 3-round moving average
-                — a downward slope means you're improving.</div>
+              <div class="chart-title">Score Over Visits</div>
+              <div class="chart-desc">Your total score each round here. The shaded band is your normal range (average ± one standard
+                deviation) and the faint line is a 3-round moving average — a downward slope means you're improving.</div>
               <div id="chart-c-score-trend"></div>
               <div id="summary-c-score-trend" class="chart-summary"></div>
               </div>
@@ -386,13 +317,14 @@
               </div>
 
             <h3 class="section-title">Per-Hole Breakdown</h3>
+            <div class="chart-card">
+              <div class="chart-title">Where This Course Scores You</div>
+              <div class="chart-desc">Every result on every hole for the rounds in the filter, best at the top. The number under each
+                column is your average score to par on that hole.</div>
+              <div id="chart-c-hole-score"></div>
+              <div id="summary-c-hole-score" class="chart-summary"></div>
+            </div>
             <div class="chart-grid-2">
-              <div class="chart-card">
-                <div class="chart-title">Score by Hole</div>
-                <div class="chart-desc">Best, average, and worst score on each hole with par for reference.</div>
-                <div id="chart-c-hole-score"></div>
-                <div id="summary-c-hole-score" class="chart-summary"></div>
-                </div>
                 <div class="chart-card">
                   <div class="chart-title">GIR % by Hole</div>
                 <div class="chart-desc">How often you reach each green in regulation here.</div>
@@ -451,8 +383,8 @@
 <div class="chart-grid-2">
   <div class="chart-card">
     <div class="chart-title">How You Play Here vs Everywhere</div>
-                <div class="chart-desc">Your key stats at this course vs your averages across all courses. Green = better here than your
-                  norm.</div>
+                <div class="chart-desc">Each stat at this course (filled dot) against your average across all courses in the filter (hollow
+                  dot). The line is green where you play better here.</div>
                 <div id="course-vs-table"></div>
                 </div>
                 <div class="chart-card">
