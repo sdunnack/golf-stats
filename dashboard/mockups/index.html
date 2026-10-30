@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Polish Mock-ups</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* Mock-up only: everything below reuses the dashboard's tokens (--primary, --border, --radius…). */
+    :root {
+      --c-eagle: #eab308; --c-birdie: #16a34a; --c-par: #dcfce7; --c-bogey: #fecaca; --c-double: #ef4444; --c-triple: #991b1b;
+      --c-left: #3b82f6; --c-right: #f97316; --neg: #dc2626; --panel: #f8fafc;
+    }
+    body { background: var(--bg); }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 24px 16px 60px; }
+    .page-head h1 { font-size: 22px; font-weight: 800; letter-spacing: -.3px; }
+    .page-head p { color: var(--text-muted); margin-top: 4px; max-width: 720px; }
+    .view-label { margin: 34px 0 6px; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--primary-dark); }
+    .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
+    .mock { grid-column: span 6; display: flex; flex-direction: column; min-width: 0; }
+    .mock.wide { grid-column: 1 / -1; }
+    .mock.w7 { grid-column: span 7; } .mock.w5 { grid-column: span 5; }
+    @media (max-width: 860px) { .mock, .mock.w7, .mock.w5 { grid-column: 1 / -1; } }
+    .replaces { font-size: 11px; color: var(--text-subtle); margin: 0 0 6px 2px; }
+    .replaces b { color: var(--text-muted); font-weight: 600; }
+    .mock .chart-card { flex: 1; margin: 0; }
+    .card-title { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .card-title .hint { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--text-subtle); }
+    .pill { font-size: 9.5px; font-weight: 700; letter-spacing: .08em; padding: 3px 8px; border-radius: 999px; background: #fef9c3; color: #854d0e; }
+
+    /* Stat strip: one shaded band, dividers, big numbers */
+    .strip { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--panel); border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 4px; }
+    .strip > div { text-align: center; padding: 0 8px; border-left: 1px solid var(--border); min-width: 0; }
+    .strip > div:first-child { border-left: 0; }
+    .strip b { display: block; font-size: 24px; font-weight: 800; letter-spacing: -.5px; line-height: 1.15; }
+    .strip .big b { font-size: 32px; }
+    .strip span { font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-subtle); }
+    .strip small { display: block; font-size: 11px; font-weight: 600; margin-top: 2px; }
+    .up { color: var(--primary-dark); } .down { color: var(--neg); } .flat { color: var(--text-subtle); }
+
+    /* KPI band */
+    .kpis { display: grid; grid-template-columns: 1.3fr repeat(5, 1fr); background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+    .kpis > div { padding: 16px 16px 12px; border-left: 1px solid var(--border-light); min-width: 0; }
+    .kpis > div:first-child { border-left: 0; background: linear-gradient(135deg, #f0fdf4, #fff); }
+    .kpis .lbl { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-subtle); }
+    .kpis .val { font-size: 28px; font-weight: 800; letter-spacing: -.6px; line-height: 1.15; margin-top: 2px; }
+    .kpis div:first-child .val { font-size: 44px; color: var(--primary-dark); }
+    .kpis .delta { font-size: 11px; font-weight: 600; }
+    .kpis svg { margin-top: 6px; }
+    @media (max-width: 860px) { .kpis { grid-template-columns: repeat(3, 1fr); } .kpis > div:nth-child(4) { border-left: 0; } .kpis > div { border-top: 1px solid var(--border-light); } }
+
+    .sg-wrap { display: grid; grid-template-columns: 1fr 200px; gap: 16px; }
+    .side-cards { display: flex; flex-direction: column; gap: 8px; }
+    .side-card { border-radius: 10px; padding: 10px 12px; background: var(--primary-muted); font-size: 12px; color: var(--text-muted); }
+    .side-card.bad { background: #fef2f2; }
+    .side-card b { display: block; font-size: 24px; font-weight: 800; letter-spacing: -.5px; }
+    .side-card strong { color: var(--text); }
+    @media (max-width: 560px) { .sg-wrap { grid-template-columns: 1fr; } }
+
+    .mix-bar { display: flex; height: 30px; border-radius: 8px; overflow: hidden; font-size: 12px; font-weight: 700; }
+    .mix-bar div { display: flex; align-items: center; justify-content: center; min-width: 0; }
+    .mix-keys { display: grid; grid-template-columns: repeat(6, 1fr); text-align: center; margin: 10px 0 14px; }
+    .mix-keys i { display: block; width: 9px; height: 9px; border-radius: 50%; margin: 0 auto 4px; }
+    .mix-keys b { display: block; font-size: 17px; font-weight: 800; }
+    .mix-keys span { font-size: 10.5px; color: var(--text-muted); }
+
+    .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+    .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+    svg { display: block; overflow: visible; }
+    svg text { font-family: Inter, sans-serif; }
+
+    .m-focus { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: center; }
+    .m-focus-num { text-align: center; padding-right: 20px; border-right: 1px solid var(--border); }
+    .m-focus-num b { display: block; font-size: 40px; font-weight: 800; color: var(--neg); letter-spacing: -1px; }
+    .m-focus-num span { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-subtle); }
+    .m-focus h3 { font-size: 17px; margin-bottom: 4px; }
+    .m-focus ol { margin: 8px 0 0 18px; color: var(--text-muted); font-size: 13px; }
+    .insight-list { display: grid; gap: 8px; margin-top: 14px; }
+    .insight { display: grid; grid-template-columns: 74px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--border-light); border-radius: 10px; font-size: 12.5px; }
+    .insight .tag { font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-subtle); }
+    .insight .v { font-weight: 800; font-size: 15px; text-align: right; }
+    .insight .v small { display: block; font-size: 10px; font-weight: 500; color: var(--text-subtle); }
+    @media (max-width: 560px) { .m-focus { grid-template-columns: 1fr; } .m-focus-num { border: 0; padding: 0; } }
+
+    .heat { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .heat-nine { display: grid; grid-template-columns: repeat(9, 1fr); gap: 3px; }
+    .heat-col .hn { text-align: center; font-size: 10px; font-weight: 700; margin-bottom: 3px; }
+    .heat-col .cell { height: 9px; border-radius: 2px; margin-bottom: 1px; }
+    .heat-col .av { text-align: center; font-size: 10px; font-weight: 700; margin-top: 4px; }
+    @media (max-width: 560px) { .heat { grid-template-columns: 1fr; } }
+
+    .ringer { width: 100%; table-layout: fixed; min-width: 640px; border-collapse: separate; border-spacing: 2px; font-size: 11.5px; font-variant-numeric: tabular-nums; }
+    .ringer th { font-size: 10px; color: var(--text-subtle); font-weight: 700; padding: 2px 0; }
+    .ringer td { text-align: center; padding: 4px 0; border-radius: 4px; font-weight: 600; }
+    .ringer th:first-child, .ringer td:first-child { width: 60px; } .ringer td:first-child { text-align: left; font-weight: 700; padding-left: 4px; white-space: nowrap; font-size: 11px; }
+    .ringer tr.best td { font-weight: 800; }
+    .ringer td.tot { font-weight: 800; background: var(--panel); }
+    .ringer-wrap { overflow-x: auto; }
+
+    .records { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .records > div { padding: 0 14px; border-left: 1px solid var(--border); }
+    .records > div:first-child { padding-left: 0; border-left: 0; }
+    .records b { display: block; font-size: 30px; font-weight: 800; letter-spacing: -.6px; color: var(--primary-dark); }
+    .records span { display: block; font-size: 12px; font-weight: 600; }
+    .records small { font-size: 11px; color: var(--text-subtle); }
+    @media (max-width: 560px) { .records { grid-template-columns: 1fr 1fr; row-gap: 14px; } .records > div:nth-child(3) { padding-left: 0; border-left: 0; } }
+    .quote { margin-top: 12px; font-size: 12.5px; color: var(--text-muted); padding: 9px 12px; background: var(--panel); border-radius: 8px; border-left: 3px solid var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="page-head">
+      <h1>Dashboard polish mock-ups</h1>
+      <p>Existing dashboard sections, restyled with breakdowns in place of generic charts: stat strips, a scoring-mix bar, result heatmaps, dumbbell comparisons and annotated trends. Fonts and colours stay the dashboard's own. Built from your live data (last 20 eighteen-hole rounds), but nothing here is wired into the dashboard yet.</p>
+    </header>
+    <div id="mocks"><p class="replaces">Loading your data…</p></div>
+  </div>
+  <script src="mockups.js"></script>
+</body>
+</html>
