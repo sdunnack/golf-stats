@@ -323,18 +323,21 @@
             </div>
 
             <div id="ringer-card" class="chart-card ringer-card" style="display:none">
-              <div class="ringer-head">
-                <div>
-                  <div class="chart-title">Manchester Division Days Ringer</div>
+              <details class="ringer-details">
+                <summary class="ringer-summary">
+                  <span class="insights-toggle-icon"></span>
+                  <span class="chart-title">Manchester Division Days Ringer</span>
+                </summary>
+                <div class="ringer-head">
                   <div class="chart-desc">Rounds played on Thursday, Saturday, and Sunday. Set a start date to track across seasons.
                   </div>
+                  <div class="filter-bar-item">
+                    <label for="ringer-start-date">Track From</label>
+                    <input type="date" id="ringer-start-date">
+                  </div>
                 </div>
-                <div class="filter-bar-item">
-                  <label for="ringer-start-date">Track From</label>
-                  <input type="date" id="ringer-start-date">
-                </div>
-              </div>
-              <div id="ringer-table-wrap"></div>
+                <div id="ringer-table-wrap"></div>
+              </details>
             </div>
 
             <div class="kpi-row kpi-row-course">

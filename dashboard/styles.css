@@ -1020,6 +1020,19 @@ body.filters-hidden .filter-course-only {
   margin-bottom: 18px;
 }
 
+.ringer-summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.ringer-summary::-webkit-details-marker { display: none; }
+.ringer-summary .chart-title { margin: 0; }
+.ringer-details[open] .insights-toggle-icon::after { display: none; }
+.ringer-details[open] > .ringer-head { margin-top: 12px; }
+
 .ringer-head {
   display: flex;
   align-items: flex-end;
