@@ -333,7 +333,7 @@ function heroHtml(a) {
   </section>`;
 }
 
-function scorecardHtml(a) {
+function scorecardHtml(a, paired = true) {
   const nines = [a.holes.filter(h => h.hole <= 9), a.holes.filter(h => h.hole > 9)].filter(x => x.length);
   const chip = h => {
     const d = h.score - h.par;
@@ -350,7 +350,7 @@ function scorecardHtml(a) {
   </table>`;
   const putts = a.holes.every(h => h.putts != null) ? sum(a.holes.map(h => h.putts)) : '—';
   const legend = RESULT.slice(0, 2).concat(RESULT.slice(3)).map(x => `<span><i style="background:${x.color}"></i>${x.label.replace(/s\+?$/, '')}</span>`).join('');
-  return `<section class="card w7">
+  return `<section class="card ${paired ? 'w7' : 'wide'}">
     ${section(1, '', 'Your scorecard', `<div class="sc-legend">${legend}</div>`)}
     <div class="scorecard-wrap">${nines.map((hs, i) => table(hs, i ? 'IN' : 'OUT')).join('')}</div>
     <div class="sc-total"><div>TOTAL</div><div>PAR <b>${a.par}</b></div><div>SCORE <b class="${a.score > a.par ? 'neg' : 'pos'}">${a.score} (${toPar(a.score - a.par)})</b></div><div>PUTTS <b>${putts}</b></div></div>
@@ -1043,8 +1043,9 @@ function render(id) {
   document.getElementById('round-select').value = r.activity_id;
   const a = analyze(r);
   if (!a.holes.length) { el.innerHTML = heroHtml(a) + '<p class="empty">This round has no hole-by-hole detail.</p>'; return; }
+  const clubs = clubsHtml(a);
   el.innerHTML = [
-    heroHtml(a), scorecardHtml(a), scoringPuttingHtml(a), clubsHtml(a), sgWidgetHtml(a), shapeHtml(a),
+    heroHtml(a), scorecardHtml(a, !!clubs), clubs, scoringPuttingHtml(a), sgWidgetHtml(a), shapeHtml(a),
     teeApproachHtml(a), holeByHoleHtml(a), historyHtml(a), focusHtml(a),
   ].filter(Boolean).join('');
   el.querySelectorAll('.w-tab').forEach(btn => btn.addEventListener('click', () => {
