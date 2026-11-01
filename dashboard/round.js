@@ -22,16 +22,16 @@ const CATS = [
 // mid-handicap split vs scratch). Par 3s have no off-the-tee share.
 const HCP_SPLIT = { off_tee: 0.25, approach: 0.40, short_game: 0.15, putting: 0.20 };
 const COL = {
-  ink: '#1d2b24', muted: '#6e736d', faint: '#a3a69f', line: '#e5e0d4', panel: '#eeede6',
-  green: '#3f7a5b', greenD: '#1f4a36', sage: '#8db59a', sageL: '#d6e6d9',
-  rose: '#eec3bc', red: '#c95b4f', yellow: '#e2c46c', gold: '#b38b3d',
+  ink: '#0f172a', muted: '#64748b', faint: '#94a3b8', line: '#e8edf3', panel: '#f8fafc',
+  green: '#16a34a', greenD: '#15803d', sage: '#4ade80', sageL: '#f0fdf4',
+  rose: '#fecaca', red: '#dc2626', yellow: '#eab308', gold: '#94a3b8',
 };
 const RESULT = [
   { key: 'eagle',  label: 'Eagle',    color: COL.yellow, test: d => d <= -2 },
-  { key: 'birdie', label: 'Birdies',  color: '#7fae8c',  test: d => d === -1 },
-  { key: 'par',    label: 'Pars',     color: '#cfe1d2',  test: d => d === 0 },
-  { key: 'bogey',  label: 'Bogeys',   color: '#ecbdb5',  test: d => d === 1 },
-  { key: 'double', label: 'Doubles+', color: '#d06a5d',  test: d => d >= 2 },
+  { key: 'birdie', label: 'Birdies',  color: '#16a34a',  test: d => d === -1 },
+  { key: 'par',    label: 'Pars',     color: '#bbf7d0',  test: d => d === 0 },
+  { key: 'bogey',  label: 'Bogeys',   color: '#fecaca',  test: d => d === 1 },
+  { key: 'double', label: 'Doubles+', color: '#f87171',  test: d => d >= 2 },
 ];
 
 // ── Scratch baseline (expected strokes to hole out) ──
@@ -99,8 +99,8 @@ function resultColor(d) { return resultOf(d).color; }
 function sgFill(v) {
   if (v == null) return 'transparent';
   const t = Math.min(1, Math.abs(v) / 1.5);
-  if (Math.abs(v) < 0.15) return '#efeee8';
-  return v > 0 ? `rgba(95,160,115,${0.18 + 0.45 * t})` : `rgba(214,110,96,${0.18 + 0.45 * t})`;
+  if (Math.abs(v) < 0.15) return '#f1f5f9';
+  return v > 0 ? `rgba(22,163,74,${0.18 + 0.45 * t})` : `rgba(220,38,38,${0.18 + 0.45 * t})`;
 }
 
 // ── Data ──
@@ -291,7 +291,9 @@ const svgOpen = (w, h, extra = '') => `<svg viewBox="0 0 ${w} ${h}" width="100%"
 const txt = (x, y, s, a = '') => `<text x="${x}" y="${y}" ${a}>${s}</text>`;
 
 // ── Sections ──
+let inPane = false;   // true while a tabbed widget builds a pane from a stand-alone card
 function section(num, eyebrow, name, aside = '') {
+  if (inPane) return `<div class="pane-head"><b>${name}</b>${aside}</div>`;
   return `<div class="sec-head"><div class="sec-title"><span class="sec-num">${String(num).padStart(2, '0')}</span><div>
     ${eyebrow ? `<div class="sec-eyebrow">${eyebrow}</div>` : ''}<h2 class="sec-name">${name}</h2></div></div>${aside}</div>`;
 }
@@ -399,7 +401,7 @@ function clubsHtml(a) {
   </section>`;
 }
 
-function sgHtml(a) {
+function sgOverviewBody(a) {
   const prev = previous(a.round).map(analyze).filter(x => x.ch != null);
   const prevAvg = prev.length ? avg(prev.map(x => x.vsHcp)) : null;
   const max = Math.max(4, ...CATS.map(c => Math.abs(a.cats[c.key]))) ;
@@ -415,16 +417,14 @@ function sgHtml(a) {
   CATS.forEach((c, i) => {
     const v = a.cats[c.key], y = 24 + i * rowH;
     s += txt(0, y + 12, c.label, `font-size="11" fill="${COL.ink}"`);
-    s += `<rect x="${L}" y="${y + 4}" width="${W - L - R}" height="10" rx="2" fill="#f1f0ea"/>`;
+    s += `<rect x="${L}" y="${y + 4}" width="${W - L - R}" height="10" rx="2" fill="#f1f5f9"/>`;
     s += `<rect x="${Math.min(x(0), x(v))}" y="${y + 4}" width="${Math.abs(x(v) - x(0))}" height="10" rx="2" fill="${v >= 0 ? COL.green : COL.red}" opacity=".85"/>`;
     s += txt(W, y + 13, sg1(v), `font-size="11" font-weight="700" fill="${v >= 0 ? COL.green : COL.red}" text-anchor="end"`);
   });
   s += '</svg>';
   const worst = [...CATS].sort((p, q) => a.cats[p.key] - a.cats[q.key])[0];
   const best = [...CATS].sort((p, q) => a.cats[q.key] - a.cats[p.key])[0];
-  return `<section class="card w7">
-    ${section(3, '', 'Strokes gained')}
-    <p class="note" style="margin:-8px 0 10px">vs handicap · expected ${a.ch != null ? a.expected : '—'}</p>
+  return `<p class="note" style="margin:0 0 10px">vs handicap · expected ${a.ch != null ? a.expected : '—'}</p>
     <div class="sg-layout">
       <div>${s}</div>
       <div class="sg-cards">
@@ -432,43 +432,58 @@ function sgHtml(a) {
         ${a.cats[worst.key] < 0 ? `<div class="sg-card bad"><b class="neg">${sg1(a.cats[worst.key])}</b><span class="lbl neg">${worst.label}</span><br>strokes lost</div>` : ''}
         ${a.cats[best.key] > 0 ? `<div class="sg-card"><span class="lbl">⚑ ${best.label}</span><br>${best.label} led your round at ${sg1(a.cats[best.key])}.</div>` : ''}
       </div>
-    </div>
-  </section>`;
+    </div>`;
 }
 
 function shapeHtml(a) {
   const hs = a.holes;
-  let cp = 0, ch = 0;
-  const vsPar = [0], vsH = [0];
-  hs.forEach(h => { cp += h.score - h.par; ch += h.score - h.par - h.strokes; vsPar.push(cp); vsH.push(ch); });
-  const lo = Math.min(...vsPar, ...vsH), hi = Math.max(...vsPar, ...vsH);
-  const W = 460, H = 220, L = 30, T = 10, B = 26;
-  const x = i => L + (W - L - 10) * i / hs.length;
-  const y = v => T + (H - T - B) * (v - lo) / Math.max(1, hi - lo);
+  // Running total of strokes gained/lost against your handicap: up is ahead of it, down is behind.
+  let ch = 0;
+  const net = [0];
+  hs.forEach(h => { ch += h.strokes - (h.score - h.par); net.push(ch); });
+  const top = Math.max(1, ...net), bot = Math.min(-1, ...net);
+  const hi = Math.ceil(top), lo = Math.floor(bot);
+  const W = 520, H = 250, L = 34, R = 14, T = 22, B = 26;
+  const x = i => L + (W - L - R) * i / hs.length;
+  const y = v => T + (H - T - B) * (hi - v) / (hi - lo);
   let s = svgOpen(W, H);
-  [lo, 0, hi].filter((v, i, arr) => arr.indexOf(v) === i).forEach(v => {
-    s += `<line x1="${L}" x2="${W - 10}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? COL.faint : COL.line}" stroke-dasharray="${v === 0 ? '3 3' : ''}"/>`;
-    s += txt(L - 6, y(v) + 3, v === 0 ? 'E' : toPar(v), `font-size="9.5" fill="${COL.muted}" text-anchor="end"`);
-  });
-  hs.forEach((h, i) => { s += txt(x(i + 1), H - 8, h.hole, `font-size="9" fill="${COL.muted}" text-anchor="middle"`); });
-  const path = arr => arr.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
-  s += `<path d="${path(vsPar)}" fill="none" stroke="${COL.faint}" stroke-width="1.5" stroke-dasharray="4 3"/>`;
-  s += `<path d="${path(vsH)}" fill="none" stroke="${COL.greenD}" stroke-width="2.2"/>`;
+  // Shaded halves so "ahead" and "behind" read at a glance
+  s += `<rect x="${L}" y="${T}" width="${W - L - R}" height="${y(0) - T}" fill="${COL.sageL}"/>`;
+  s += `<rect x="${L}" y="${y(0)}" width="${W - L - R}" height="${H - B - y(0)}" fill="#fef2f2"/>`;
+  const step = hi - lo > 8 ? 2 : 1;
+  for (let v = lo; v <= hi; v++) {
+    if (v !== 0 && (v - lo) % step) continue;
+    s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="${v === 0 ? COL.muted : COL.line}" ${v === 0 ? '' : 'stroke-dasharray="2 3"'}/>`;
+    s += txt(L - 6, y(v) + 3, v === 0 ? '0' : v > 0 ? `+${v}` : v, `font-size="10" fill="${COL.muted}" text-anchor="end"`);
+  }
+  s += txt(L + 6, T + 12, '▲ Ahead of your handicap', `font-size="10" font-weight="600" fill="${COL.green}"`);
+  s += txt(L + 6, H - B - 6, '▼ Behind your handicap', `font-size="10" font-weight="600" fill="${COL.red}"`);
+  hs.forEach((h, i) => { s += txt(x(i + 1), H - 8, h.hole, `font-size="10" fill="${COL.muted}" text-anchor="middle"`); });
+  s += `<path d="${net.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('')}" fill="none" stroke="${COL.greenD}" stroke-width="2.4" stroke-linejoin="round"/>`;
   hs.forEach((h, i) => {
-    s += `<circle cx="${x(i + 1)}" cy="${y(vsPar[i + 1])}" r="2.6" fill="${COL.faint}"/>`;
-    s += `<circle cx="${x(i + 1)}" cy="${y(vsH[i + 1])}" r="3.6" fill="${resultColor(h.score - h.par)}" stroke="#fff" stroke-width="1"/>`;
+    s += `<circle cx="${x(i + 1)}" cy="${y(net[i + 1])}" r="4.5" fill="${resultColor(h.score - h.par)}" stroke="#fff" stroke-width="1.2"><title>Hole ${h.hole}: ${h.score} (par ${h.par}) · ${sg1(net[i + 1])} vs handicap</title></circle>`;
   });
+  // Call out the hole that helped most and the one that cost most
+  const delta = i => net[i + 1] - net[i];
+  const idx = hs.map((_, i) => i);
+  const gain = idx.reduce((p, i) => delta(i) > delta(p) ? i : p, 0);
+  const loss = idx.reduce((p, i) => delta(i) < delta(p) ? i : p, 0);
+  const tag = (i, text, col, above) => txt(Math.min(W - R - 30, Math.max(L + 30, x(i + 1))), y(net[i + 1]) + (above ? -11 : 18), text, `font-size="10" font-weight="700" fill="${col}" text-anchor="middle"`);
+  if (delta(gain) > 0.5) s += tag(gain, `H${hs[gain].hole} ${sg1(delta(gain))}`, COL.green, true);
+  if (loss !== gain && delta(loss) < -0.5) s += tag(loss, `H${hs[loss].hole} ${sg1(delta(loss))}`, COL.red, false);
   s += '</svg>';
   const out = a.nine('out'), inn = a.nine('in');
+  const finish = net.at(-1);
+  const dots = [['Birdie or better', COL.green], ['Par', '#bbf7d0'], ['Bogey', '#fecaca'], ['Double+', '#f87171']];
   return `<section class="card">
-    ${section(4, 'Scoring timeline', 'The shape of your round')}
-    <p class="note" style="margin:-8px 0 8px">Cumulative score · lower is better · dot colours show each hole's result</p>
-    <div class="legend" style="justify-content:flex-start;margin:0 0 6px"><span><i class="sq" style="background:${COL.greenD};height:2px;width:14px"></i>Vs handicap <b>${toPar(vsH.at(-1))}</b></span><span style="color:${COL.faint}"><i class="dash"></i>Vs par <b>${toPar(vsPar.at(-1))}</b></span></div>
+    ${section(4, 'Round timeline', 'How the round unfolded')}
+    <p class="note" style="margin:-8px 0 8px">Running strokes gained against your handicap after each hole. Climbing means you’re gaining on it; falling means you’re giving strokes back. You finished <b class="${signCls(finish)}">${sg1(finish)}</b>.</p>
+    <div class="legend" style="justify-content:flex-start;margin:0 0 6px">${dots.map(d => `<span><i style="background:${d[1]}"></i>${d[0]}</span>`).join('')}<span style="color:var(--faint)">dot colour = score on that hole</span></div>
     ${s}
-    <div class="strip" style="margin:10px 0 0;background:none;padding:0">
-      ${out.holes.length ? `<div><span>Out</span> <b>${out.score}</b><small>${toPar(out.score - out.par)}</small></div>` : ''}
-      ${inn.holes.length ? `<div><span>In</span> <b>${inn.score}</b><small>${toPar(inn.score - inn.par)}</small></div>` : ''}
-      <div><span>Finish</span> <b>${toPar(a.score - a.par)}</b><small>to par</small></div>
+    <div class="strip" style="margin:10px 0 0">
+      ${out.holes.length ? `<div><span>Front nine</span> <b>${out.score}</b><small>${toPar(out.score - out.par)} to par</small></div>` : ''}
+      ${inn.holes.length ? `<div><span>Back nine</span> <b>${inn.score}</b><small>${toPar(inn.score - inn.par)} to par</small></div>` : ''}
+      <div><span>Total</span> <b>${a.score}</b><small>${toPar(a.score - a.par)} to par</small></div>
     </div>
   </section>`;
 }
@@ -544,7 +559,7 @@ function teeHtml(a) {
   });
   series.forEach((x, i) => {
     const bx = TL + i * bw + 2, w = bw - 4, hh = TH - TT - TB;
-    const parts = [[x.t.hit, '#6a9a7d'], [x.t.left, '#d58b80'], [x.t.right, '#e6cd8b']];
+    const parts = [[x.t.hit, '#16a34a'], [x.t.left, '#3b82f6'], [x.t.right, '#f97316']];
     let yy = TT + hh;
     parts.forEach(([n, c]) => { const h = hh * n / x.t.n; yy -= h; tr += `<rect x="${bx}" y="${yy}" width="${w}" height="${h}" fill="${c}"/>`; });
     tr += txt(bx + w / 2, TT + hh - 4, pct(x.t.hit, x.t.n), `font-size="8.5" fill="#fff" font-weight="700" text-anchor="middle"`);
@@ -561,14 +576,14 @@ function teeHtml(a) {
     <div class="strip">
       <div><b class="neg">${pct(t.left, t.n)}%</b><span>Left</span></div>
       <div class="big"><b>${rate}%</b><span>Fairway</span></div>
-      <div><b style="color:#b8953a">${pct(t.right, t.n)}%</b><span>Right</span></div>
+      <div><b style="color:#f97316">${pct(t.right, t.n)}%</b><span>Right</span></div>
     </div>
     <div class="split">
       <div>${s}<div class="legend" style="gap:18px"><span><b>${t.left}</b> left</span><span><b>${t.hit}</b> fairway</span><span><b>${t.right}</b> right</span></div></div>
       <div>
         <h3 class="sub-title">Your tee-shot trend</h3>
         ${tr}
-        <div class="legend"><span><i style="background:#6a9a7d"></i>Fairway</span><span><i style="background:#d58b80"></i>Left</span><span><i style="background:#e6cd8b"></i>Right</span></div>
+        <div class="legend"><span><i style="background:#16a34a"></i>Fairway</span><span><i style="background:#3b82f6"></i>Left</span><span><i style="background:#f97316"></i>Right</span></div>
         <div class="strip" style="margin:12px 0 0">
           <div><b>${prevRate ?? '—'}%</b><span>previous 10 avg</span></div>
           <div><b class="${rate >= (prevRate ?? 0) ? 'pos' : 'neg'}">${prevRate != null ? (rate - prevRate > 0 ? '+' : '') + (rate - prevRate) + ' pts' : '—'}</b><span>vs average</span></div>
@@ -667,7 +682,7 @@ function roundStatsHtml(a) {
   </section>`;
 }
 
-function turnHtml(a) {
+function turnBody(a) {
   const out = a.nine('out'), inn = a.nine('in');
   if (!out.holes.length || !inn.holes.length) return '';
   const lim = Math.max(3, Math.ceil(Math.max(...CATS.flatMap(c => [Math.abs(out[c.key]), Math.abs(inn[c.key])]))));
@@ -696,15 +711,13 @@ function turnHtml(a) {
   const moved = [...CATS].sort((p, q) => Math.abs(inn[q.key] - out[q.key]) - Math.abs(inn[p.key] - out[p.key]))[0];
   const mv = inn[moved.key] - out[moved.key];
   const line = `${moved.label} ${mv > 0 ? 'came alive after the turn' : 'slipped after the turn'}.`;
-  return `<section class="card">
-    ${section(9, 'At the turn', level ? 'Level at the turn' : delta > 0 ? 'The back nine was better' : 'The turn cost you', '<span class="sec-aside" style="letter-spacing:.14em;text-transform:uppercase;font-size:9.5px">Strokes gained<br>vs handicap</span>')}
+  return `<p class="note" style="margin:0 0 10px"><b style="color:var(--ink)">${level ? 'Level at the turn' : delta > 0 ? 'The back nine was better' : 'The turn cost you'}</b> · strokes gained vs handicap</p>
     ${s}
     <div class="legend"><span><i style="background:#fff;border:2px solid ${COL.greenD};width:8px;height:8px"></i>Out (front nine)</span><span><i style="background:${COL.greenD}"></i>In (back nine)</span></div>
     <div class="callout">
       <div class="big"><small>OUT</small> ${sg1(out.total)} → <small>IN</small> ${sg1(inn.total)} ${level ? '' : `<span class="${signCls(delta)}">${f1(Math.abs(delta))} ${delta > 0 ? 'better' : 'worse'}</span>`}</div>
       <div class="txt">${line}</div>
-    </div>
-  </section>`;
+    </div>`;
 }
 
 function mixHtml(a) {
@@ -731,7 +744,7 @@ function mixHtml(a) {
 }
 function ordinal(n) { const s = ['th', 'st', 'nd', 'rd'], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
 
-function sgGridHtml(a) {
+function sgGridBody(a) {
   const grid = (hs, label) => {
     const totals = c => sum(hs.map(h => h.cats[c]));
     const row = (name, vals, tot, cls = '') => `<tr class="${cls}"><td>${name}</td>${vals.join('')}<td class="tot" style="background:${sgFill(tot)}">${sg1(tot)}</td></tr>`;
@@ -744,11 +757,9 @@ function sgGridHtml(a) {
     </table></div>`;
   };
   const out = a.holes.filter(h => h.hole <= 9), inn = a.holes.filter(h => h.hole > 9);
-  return `<section class="card wide">
-    ${section(11, '', 'Strokes gained · every hole', `<div class="legend" style="margin:0;align-items:center"><span><i class="sq" style="background:rgba(214,110,96,.5)"></i>Lost</span><span><i class="sq" style="background:#efeee8"></i>Neutral</span><span><i class="sq" style="background:rgba(95,160,115,.5)"></i>Gained</span><span style="font:600 12px var(--sans);color:var(--ink);letter-spacing:.1em">TOTAL <b class="serif ${signCls(a.vsHcp)}" style="font-size:22px">${sg1(a.vsHcp)}</b></span></div>`)}
+  return `<div class="legend" style="margin:0 0 10px;justify-content:flex-start;align-items:center"><span><i class="sq" style="background:rgba(220,38,38,.5)"></i>Lost</span><span><i class="sq" style="background:#f1f5f9"></i>Neutral</span><span><i class="sq" style="background:rgba(22,163,74,.5)"></i>Gained</span><span style="font:600 12px var(--sans);color:var(--ink);letter-spacing:.1em">TOTAL <b class="${signCls(a.vsHcp)}" style="font-size:18px">${sg1(a.vsHcp)}</b></span></div>
     <div class="sg-grids">${out.length ? grid(out, 'OUT') : ''}${inn.length ? grid(inn, 'IN') : ''}</div>
-    ${a.partialHoles ? `<p class="note"><span style="color:var(--gold)">•</span> ${plural(a.partialHoles, 'hole')} had shots the sensors missed; the unexplained strokes are counted as short game.</p>` : ''}
-  </section>`;
+    ${a.partialHoles ? `<p class="note"><span style="color:var(--gold)">•</span> ${plural(a.partialHoles, 'hole')} had shots the sensors missed; the unexplained strokes are counted as short game.</p>` : ''}`;
 }
 
 function holeMap(h) {
@@ -783,7 +794,7 @@ function holeMap(h) {
       const label = `${clubShort(x.club)} · ${Math.round(x.dist)} yd`;
       const lw = label.length * 5.4 + 12;
       const lx = Math.max(2, Math.min(W - lw - 2, mx + 6));
-      s += `<rect x="${lx}" y="${my - 9}" width="${lw}" height="17" rx="8.5" fill="#fffdf7" stroke="#d8cfb8"/>` + txt(lx + lw / 2, my + 3, label, `font-size="9.5" font-weight="600" fill="${COL.ink}" text-anchor="middle"`);
+      s += `<rect x="${lx}" y="${my - 9}" width="${lw}" height="17" rx="8.5" fill="#fff" stroke="#e8edf3"/>` + txt(lx + lw / 2, my + 3, label, `font-size="9.5" font-weight="600" fill="${COL.ink}" text-anchor="middle"`);
     }
     s += `<circle cx="${px}" cy="${py}" r="7" fill="#fff" stroke="${COL.greenD}" stroke-width="1.2"/>` + txt(px, py + 3, i + 1, `font-size="8.5" font-weight="700" fill="${COL.ink}" text-anchor="middle"`);
   });
@@ -925,7 +936,7 @@ function clubSG(a) {
   }
   return by;
 }
-function clubSgHtml(a) {
+function clubSgBody(a) {
   const now = clubSG(a);
   const prev = previous(a.round).map(r => clubSG(analyze(r)));
   const clubs = CLUB_ORDER.filter(c => now[c]);
@@ -938,7 +949,7 @@ function clubSgHtml(a) {
   s += `<line x1="0" x2="${W}" y1="${mid}" y2="${mid}" stroke="${COL.faint}"/>`;
   clubs.forEach((c, i) => {
     const x0 = i * colW;
-    if (i % 2 === 0) s += `<rect x="${x0}" y="0" width="${colW}" height="${H - 6}" fill="#f2f1ec"/>`;
+    if (i % 2 === 0) s += `<rect x="${x0}" y="0" width="${colW}" height="${H - 6}" fill="#f8fafc"/>`;
     const hist5 = histFor(c).slice(0, 5).reverse();
     const bw = 7;
     hist5.forEach((v, j) => {
@@ -958,13 +969,54 @@ function clubSgHtml(a) {
     s += txt(x0 + colW / 2, H - 8, clubShort(c), `font-size="12.5" font-weight="700" fill="${COL.ink}" text-anchor="middle"`);
   });
   s += '</svg>';
-  return `<section class="card wide">
-    ${section(16, 'Strokes gained', 'Club by club', '<span class="sec-aside" style="letter-spacing:.12em;text-transform:uppercase;font-size:9.5px">This round vs<br>last 10 rounds</span>')}
-    <div class="legend" style="justify-content:flex-start;margin:-6px 0 8px"><span><i class="sq" style="background:${COL.green}"></i>This round</span><span><i class="sq" style="background:#bcd8c2"></i>Last 5 rounds, oldest first</span><span style="color:${COL.ink}"><i class="dash"></i>Last 5 average</span><span style="color:${COL.red}"><i class="dash"></i>Last 10 average</span></div>
+  return `<div class="legend" style="justify-content:flex-start;margin:0 0 8px"><span><i class="sq" style="background:${COL.green}"></i>This round</span><span><i class="sq" style="background:#bcd8c2"></i>Last 5 rounds, oldest first</span><span style="color:${COL.ink}"><i class="dash"></i>Last 5 average</span><span style="color:${COL.red}"><i class="dash"></i>Last 10 average</span></div>
     <div style="overflow-x:auto">${s}</div>
-    <p class="note">Strokes gained added up over every shot hit with the club; a penalty counts against the club that caused it. Above the line gained strokes, below lost.</p>
+    <p class="note">Strokes gained added up over every shot hit with the club; a penalty counts against the club that caused it. Above the line gained strokes, below lost.</p>`;
+}
+
+// Run a stand-alone card builder and keep only its inner content, for use inside a tabbed widget.
+function paneOf(build, a) {
+  inPane = true;
+  try { return (build(a) || '').replace(/^\s*<section[^>]*>/, '').replace(/<\/section>\s*$/, ''); }
+  finally { inPane = false; }
+}
+
+// One card whose tabs show/hide panes. tabs: [key, label, html]; empty panes are dropped.
+function widgetHtml(title, tabs, cls = '') {
+  tabs = tabs.filter(t => t[2] && t[2].trim());
+  if (!tabs.length) return '';
+  return `<section class="card wide tabs-widget ${cls}">
+    ${section(0, '', title)}
+    ${tabs.length > 1 ? `<div class="w-tabs">${tabs.map((t, i) => `<button type="button" class="w-tab${i ? '' : ' active'}" data-pane="${t[0]}">${t[1]}</button>`).join('')}</div>` : ''}
+    ${tabs.map((t, i) => `<div class="w-pane" data-pane="${t[0]}"${i ? ' hidden' : ''}>${t[2]}</div>`).join('')}
   </section>`;
 }
+
+function sgWidgetHtml(a) {
+  return widgetHtml('Strokes gained', [
+    ['cat', 'By category', sgOverviewBody(a)],
+    ['turn', 'Front vs back', turnBody(a)],
+    ['hole', 'Every hole', sgGridBody(a)],
+    ['club', 'By club', clubSgBody(a)],
+  ]);
+}
+const scoringPuttingHtml = a => widgetHtml('Scoring & putting', [
+  ['stats', 'Round stats', paneOf(roundStatsHtml, a)],
+  ['mix', 'Scoring mix', paneOf(mixHtml, a)],
+  ['putt', 'Putting', paneOf(puttingHtml, a)],
+]);
+const teeApproachHtml = a => widgetHtml('Tee & approach', [
+  ['tee', 'Off the tee', paneOf(teeHtml, a)],
+  ['app', 'Approaches', paneOf(approachHtml, a)],
+]);
+const holeByHoleHtml = a => widgetHtml('Hole by hole', [
+  ['mem', 'Holes you’ll remember', paneOf(memorableHtml, a)],
+  ['course', 'This course', paneOf(courseHtml, a)],
+]);
+const historyHtml = a => widgetHtml('History & pace', [
+  ['recent', 'Recent rounds', paneOf(recentHtml, a)],
+  ['time', 'Time & movement', paneOf(timeHtml, a)],
+]);
 
 const FOCUS_TIPS = {
   off_tee: 'Pick a target line on every tee and commit — a fairway wood off the tee is fine when the driver is wandering.',
@@ -991,12 +1043,15 @@ function render(id) {
   document.getElementById('round-select').value = r.activity_id;
   const a = analyze(r);
   if (!a.holes.length) { el.innerHTML = heroHtml(a) + '<p class="empty">This round has no hole-by-hole detail.</p>'; return; }
-  const stack = (cls, ...parts) => parts.some(Boolean) ? `<div class="stack ${cls}">${parts.join('')}</div>` : '';
   el.innerHTML = [
-    heroHtml(a), scorecardHtml(a), clubsHtml(a), sgHtml(a), puttingHtml(a), shapeHtml(a), mixHtml(a),
-    stack('w7', teeHtml(a), roundStatsHtml(a)), approachHtml(a), turnHtml(a), timeHtml(a), sgGridHtml(a), memorableHtml(a),
-    courseHtml(a), recentHtml(a), clubSgHtml(a), focusHtml(a),
+    heroHtml(a), scorecardHtml(a), scoringPuttingHtml(a), clubsHtml(a), sgWidgetHtml(a), shapeHtml(a),
+    teeApproachHtml(a), holeByHoleHtml(a), historyHtml(a), focusHtml(a),
   ].filter(Boolean).join('');
+  el.querySelectorAll('.w-tab').forEach(btn => btn.addEventListener('click', () => {
+    const card = btn.closest('.tabs-widget');
+    card.querySelectorAll('.w-tab').forEach(b => b.classList.toggle('active', b === btn));
+    card.querySelectorAll('.w-pane').forEach(p => { p.hidden = p.dataset.pane !== btn.dataset.pane; });
+  }));
   // Renumber so skipped sections don't leave gaps.
   el.querySelectorAll('.sec-num').forEach((n, i) => { n.textContent = String(i + 1).padStart(2, '0'); });
   document.title = `${a.score} at ${r.course} · Round Report`;

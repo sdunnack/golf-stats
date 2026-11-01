@@ -68,18 +68,10 @@ function noData(id, msg = 'Not enough data') {
   if (el) el.innerHTML = `<div class="no-data">${msg}</div>`;
 }
 
-// Plot wrapper: clears any prior content (e.g. a leftover no-data note) so a
-// chart that toggles between "no data" and a real plot never leaves residue.
-function plotClear(id, traces, layout, cfg = CFG) {
-  const el = typeof id === 'string' ? document.getElementById(id) : id;
-  if (el) el.innerHTML = '';
-  return Plotly['newPlot'](id, traces, layout, cfg);
-}
 function setSummary(id, text) {
   const el = document.getElementById(id);
   if (el) el.textContent = text;
 }
-function catAxis(overrides = {}) { return { ...AX, type: 'category', showgrid: false, ...overrides }; }
 
 // ── Breakdown helpers (stat strips, SVG charts) ────────────────────────────────
 const BD = { green: '#16a34a', greenD: '#15803d', greenL: '#dcfce7', red: '#dc2626', text: '#0f172a',
@@ -292,16 +284,19 @@ async function loadShots() {
 
 // ── Filtering ─────────────────────────────────────────────────────────────────
 // Base filter = round-length + date range + valid score (course-agnostic).
-function baseFilteredRounds() {
+function baseFilteredRounds(allCourses = false, yearsBack = 0) {
   const holes    = document.getElementById('filter-holes').value;
   const range    = document.getElementById('filter-range')?.value || 'custom';
   const useDates = range === 'custom';
-  const dateFrom = range === 'thisyear' ? `${new Date().getFullYear()}-01-01`
+  const now = new Date(), year = now.getFullYear() - yearsBack;
+  const dateFrom = range === 'thisyear' ? `${year}-01-01`
     : useDates ? document.getElementById('filter-date-from').value : '';
-  const dateTo   = useDates ? document.getElementById('filter-date-to').value : '';
+  // Prior-year windows stop at today's month/day so they line up with the year so far.
+  const dateTo   = yearsBack && range === 'thisyear' ? `${year}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+    : useDates ? document.getElementById('filter-date-to').value : '';
   const rounds = allRounds.filter(r => {
     // Course tabs filter by course first so "last N" counts that course's rounds.
-    if ((mode === 'home' || mode === 'other') && r.course !== selectedCourse) return false;
+    if (!allCourses && (mode === 'home' || mode === 'other') && r.course !== selectedCourse) return false;
     if (holes === '18' && r.holes_played !== 18) return false;
     if (holes === '9'  && r.holes_played !== 9)  return false;
     if (dateFrom && r.date < dateFrom) return false;
@@ -436,13 +431,6 @@ function trendLine(chartId, summaryId, dates, vals, label, color, yRange = null,
   const within = sd > 0 ? vs.filter(v => Math.abs(v - mean) <= sd).length : n;
   const strip = [{ value: `${r1(mean)}${sfx}`, label: 'Average', big: true },
     { value: `${within}/${n}`, label: 'In normal range' }];
-  if (n >= 4) {
-    const k = Math.min(5, Math.floor(n / 2));
-    const d = avg(vs.slice(-k)) - avg(vs.slice(0, k));
-    const good = higherIsBetter ? d > 0 : d < 0;
-    strip.push({ value: Math.abs(d) < 0.05 ? 'flat' : `${d > 0 ? '▲' : '▼'} ${r1(Math.abs(d))}`, label: `First ${k} → last ${k}`,
-      cls: Math.abs(d) < 0.05 ? 'flat' : good ? 'up' : 'down' });
-  }
   el.innerHTML = `<div class="bd-chart">${s}</div>`
     + legend([[BD.text, label], [color, `${MA_WINDOW}-round avg`], [BD.greenL, 'Normal range (avg ± 1 sd)']])
     + statStrip([...strip, ...extraStats]);
@@ -469,8 +457,12 @@ function scoringCounts(holes) {
 
 // ════════════════════════════════ COURSE VIEW ════════════════════════════════
 function renderCourseView() {
-  const base = baseFilteredRounds();
-  const rounds = base.filter(r => r.course === selectedCourse);
+  const rounds = baseFilteredRounds();
+  // Home + "This year" compares with the same stretch of last year; otherwise with every
+  // course under the same length/date filters.
+  const yoy = mode === 'home' && document.getElementById('filter-range').value === 'thisyear';
+  const base = yoy ? baseFilteredRounds(false, 1) : baseFilteredRounds(true);
+  const vsLabel = yoy ? 'vs last year' : 'vs overall';
   const { holes, shots } = bundle(rounds);
   const meta = courseMeta[selectedCourse];
 
@@ -492,7 +484,7 @@ function renderCourseView() {
   const stats = perRoundStats(rounds, holes);
   const agg = aggregateMetrics(rounds, holes);
 
-  renderKpiBand('ck-band', rounds, holes, base, { compareLabel: 'vs overall',
+  renderKpiBand('ck-band', rounds, holes, base, { compareLabel: vsLabel,
     extra: `${rounds.length} round${rounds.length !== 1 ? 's' : ''}` });
 
   const vsParVals = stats.map(st => st.vsPar).filter(v => v != null);
@@ -502,12 +494,8 @@ function renderCourseView() {
   renderCourseRecords(rounds, stats);
   renderInsights(rounds, holes, 'insights-course');
   renderCourseHoles(holes);
-  renderParTypeBreakdown(holes, 'chart-c-par-type', 'summary-c-par-type');
   renderFairwayMissDirection(holes, rounds, 'chart-c-fwy-miss', 'summary-c-fwy-miss');
-  renderScramblingTrend(rounds, holes, 'chart-c-scramble-trend', 'summary-c-scramble-trend');
-  renderPenaltyTrend(rounds, holes, 'chart-c-penalty-trend', 'summary-c-penalty-trend');
-  renderStrokesGained(rounds, 'chart-c-sg', 'summary-c-sg', base, 'your overall');
-  renderCourseVsOverall(rounds, holes, base);
+  renderStrokesGained(rounds, 'chart-c-sg', 'summary-c-sg', base, yoy ? 'last year' : 'your overall');
   renderCourseScorecards(rounds, holes, shots);
 }
 
@@ -629,12 +617,17 @@ function renderCourseRecords(rounds, stats) {
 
   const bestRound = rounds.reduce((a, b) => b.score < a.score ? b : a);
   const cards = [];
-  cards.push(recordCard('Best round', bestRound.score, recordDate(bestRound.date)));
+  const bestStat = stats.find(x => x.activity_id === bestRound.activity_id);
+  const parTag = v => v != null ? ` <span class="rec-par">(${fmtSigned(v)})</span>` : '';
+  cards.push(recordCard('Best round', `${bestRound.score}${parTag(bestStat?.vsPar)}`, recordDate(bestRound.date)));
 
+  // Only a separate card when the best vs-par round isn't the best-score round (e.g. different tees).
   const vsParStats = stats.filter(s => s.vsPar != null);
   if (vsParStats.length) {
     const lowVsPar = vsParStats.reduce((a, b) => b.vsPar < a.vsPar ? b : a);
-    cards.push(recordCard('Low vs par', fmtSigned(lowVsPar.vsPar), recordDate(lowVsPar.date)));
+    if (lowVsPar.activity_id !== bestRound.activity_id && lowVsPar.vsPar < (bestStat?.vsPar ?? Infinity)) {
+      cards.push(recordCard('Low vs par', fmtSigned(lowVsPar.vsPar), recordDate(lowVsPar.date)));
+    }
   }
   const f9 = stats.filter(s => s.front9 != null);
   if (f9.length) { const b = f9.reduce((a, x) => x.front9 < a.front9 ? x : a); cards.push(recordCard('Best front 9', b.front9, recordDate(b.date))); }
@@ -648,13 +641,14 @@ function renderCourseRecords(rounds, stats) {
   const withPutts = rounds.filter(r => r.putts != null && r.putts > 0);
   if (withPutts.length) { const b = withPutts.reduce((a, x) => x.putts < a.putts ? x : a); cards.push(recordCard('Fewest putts', b.putts, recordDate(b.date))); }
 
-  // Trajectory: first vs recent score average
+  // Scoring trend: average score of the later half of the rounds vs the earlier half.
   if (rounds.length >= 4) {
     const half = Math.floor(rounds.length / 2);
     const early = avg(rounds.slice(0, half).map(r => r.score));
     const late  = avg(rounds.slice(half).map(r => r.score));
     const delta = late - early;
-    cards.push(`<div><b class="${delta < 0 ? 'up' : 'down'}" style="${delta < 0 ? '' : 'color:var(--neg)'}">${delta < 0 ? '▼' : '▲'} ${Math.abs(delta).toFixed(1)}</b><span>Trend</span><small>${delta < 0 ? 'improving' : 'rising'} · early vs recent half</small></div>`);
+    const flat = Math.abs(delta) < 0.05;
+    cards.push(`<div><b style="color:${flat ? 'var(--text-muted)' : delta < 0 ? 'var(--primary-dark)' : 'var(--neg)'}">${flat ? 'Even' : fmtSigned(Math.round(delta * 10) / 10)}</b><span>Scoring trend</span><small>${late.toFixed(1)} avg lately vs ${early.toFixed(1)} earlier</small></div>`);
   }
   el.innerHTML = cards.join('');
 }
@@ -689,8 +683,11 @@ function renderHoleHeatmapStrip(containerId, cells) {
 }
 
 function renderCourseHoles(holes) {
-  const ids = ['chart-c-hole-score','chart-c-hole-gir','chart-c-hole-putts','chart-c-hole-pen'];
-  if (!holes.length) { ids.forEach(id => noData(id, 'No hole-level data')); return; }
+  if (!holes.length) {
+    holeMetrics = [];
+    ['chart-c-hole-score', 'chart-c-hole-metric'].forEach(id => noData(id, 'No hole-level data'));
+    return;
+  }
   const holeNums = [...new Set(holes.map(h => h.hole))].sort((a,b) => a-b);
 
   // Score by hole — every result stacked best→worst, avg to par underneath
@@ -699,10 +696,12 @@ function renderCourseHoles(holes) {
   const withPar = holeNums.filter(n => avgToPar(n) != null);
   if (withPar.length) {
     const col = n => {
-      const results = holes.filter(h => h.hole === n && h.par != null).sort((a, b) => (a.score - a.par) - (b.score - b.par));
+      const { counts, total } = scoringCounts(holes.filter(h => h.hole === n));
       const a = avgToPar(n);
       const cls = a >= 1.5 ? 'down' : a <= 0.8 ? 'up' : '';
-      return `<div><div class="hn">${n}</div>${results.map(h => `<div class="cell" style="background:${resultColor(h.score, h.par)}" title="H${n} · ${h.date}: ${h.score} (par ${h.par})"></div>`).join('')}<div class="av ${cls}">${fmtSigned(a)}</div></div>`;
+      const tip = `Hole ${n} (${total} rounds): ` + RESULT_ORDER.filter(k => counts[k]).map(k => `${RESULT_SHORT[k]} ${Math.round(counts[k] / total * 100)}%`).join(', ');
+      const segs = RESULT_ORDER.filter(k => counts[k]).map(k => `<div style="flex:${counts[k]};background:${RESULT_COLORS[k]}"></div>`).join('');
+      return `<div title="${tip}"><div class="hn">${n}</div><div class="bar">${segs}</div><div class="av ${cls}">${fmtSigned(a)}</div></div>`;
     };
     const nine = ns => ns.length ? `<div class="result-heat-nine">${ns.map(col).join('')}</div>` : '';
     const front = withPar.filter(n => n <= 9), back = withPar.filter(n => n > 9);
@@ -717,116 +716,64 @@ function renderCourseHoles(holes) {
     setSummary('summary-c-hole-score', '');
   }
 
-  // GIR % by hole — higher is better
-  const girData = holeNums.map(n => {
+  // GIR / putts / penalties share one card; the tabs pick which one to plot.
+  const girCells = holeNums.map(n => {
     const hh = holes.filter(h => h.hole === n && h.gir != null);
-    return hh.length ? { hole: n, gir_pct: hh.filter(h => h.gir).length / hh.length * 100 } : null;
+    if (!hh.length) return null;
+    const pct = hh.filter(h => h.gir).length / hh.length * 100;
+    const { bg, fg } = heatStops(1 - pct / 100);
+    return { hole: n, pct, bg, fg, display: fmt(pct, '%'), title: `Hole ${n}: ${fmt(pct, '%')} GIR` };
   }).filter(Boolean);
-  if (girData.length) {
-    const cells = girData.map(x => {
-      const { bg, fg } = heatStops(1 - x.gir_pct / 100);
-      return { hole: x.hole, bg, fg, display: fmt(x.gir_pct, '%'), title: `Hole ${x.hole}: ${fmt(x.gir_pct, '%')} GIR` };
-    });
-    renderHoleHeatmapStrip('chart-c-hole-gir', cells);
-    const best = girData.reduce((a,b) => b.gir_pct > a.gir_pct ? b : a);
-    const worst = girData.reduce((a,b) => b.gir_pct < a.gir_pct ? b : a);
-    setSummary('summary-c-hole-gir', `Best GIR: H${best.hole} (${fmt(best.gir_pct, '%')}). Lowest: H${worst.hole} (${fmt(worst.gir_pct, '%')}).`);
-  } else { noData('chart-c-hole-gir', 'No GIR data'); }
-
-  // Putts by hole — lower is better, baseline ~2
-  const puttData = holeNums.map(n => {
+  const puttCells = holeNums.map(n => {
     const hh = holes.filter(h => h.hole === n && h.putts != null);
     if (!hh.length) return null;
-    const putts = hh.map(h => h.putts);
-    return { hole: n, avg_putts: avg(putts), best_putts: Math.min(...putts), worst_putts: Math.max(...putts) };
+    const putts = hh.map(h => h.putts), a = avg(putts);
+    const { bg, fg } = heatStops((a - 1.3) / 1.6); // ~1.3 (great) .. ~2.9 (rough) mapped to 0..1
+    return { hole: n, a, bg, fg, display: a.toFixed(2),
+      title: `Hole ${n}: avg ${a.toFixed(2)} putts, best ${Math.min(...putts)}, worst ${Math.max(...putts)}` };
   }).filter(Boolean);
-  if (puttData.length) {
-    const cells = puttData.map(x => {
-      const t = (x.avg_putts - 1.3) / 1.6; // ~1.3 (great) .. ~2.9 (rough) mapped to 0..1
-      const { bg, fg } = heatStops(t);
-      return { hole: x.hole, bg, fg, display: x.avg_putts.toFixed(2),
-        title: `Hole ${x.hole}: avg ${x.avg_putts.toFixed(2)} putts, best ${x.best_putts}, worst ${x.worst_putts}` };
-    });
-    renderHoleHeatmapStrip('chart-c-hole-putts', cells);
-    const worst = puttData.reduce((a,b) => b.avg_putts > a.avg_putts ? b : a);
-    setSummary('summary-c-hole-putts', `Toughest green: H${worst.hole} (${worst.avg_putts.toFixed(2)} avg putts). Baseline ~2/hole.`);
-  } else { noData('chart-c-hole-putts', 'No putt data'); }
-
-  // Penalties by hole — lower is better
-  const penData = holeNums.map(n => {
-    const hh = holes.filter(h => h.hole === n);
-    return { hole: n, avg_pen: avg(hh.map(h => h.penalties || 0)), total_pen: sum(hh.map(h => h.penalties || 0)) };
-  }).filter(d => d.total_pen > 0);
-  if (penData.length) {
-    const maxAvg = Math.max(...penData.map(d => d.avg_pen), 0.1);
-    const cells = penData.map(x => {
-      const { bg, fg } = heatStops(x.avg_pen / maxAvg);
-      return { hole: x.hole, bg, fg, display: x.total_pen, title: `Hole ${x.hole}: ${x.total_pen} penalty stroke${x.total_pen !== 1 ? 's' : ''} total` };
-    });
-    renderHoleHeatmapStrip('chart-c-hole-pen', cells);
-    const worst = penData.reduce((a,b) => b.total_pen > a.total_pen ? b : a);
-    setSummary('summary-c-hole-pen', `Most penalties: H${worst.hole} (${worst.total_pen} total).`);
-  } else { noData('chart-c-hole-pen', 'No penalty data'); setSummary('summary-c-hole-pen', ''); }
+  const penTotals = holeNums.map(n => sum(holes.filter(h => h.hole === n).map(h => h.penalties || 0)));
+  const maxPen = Math.max(...penTotals, 1);
+  const penCells = holeNums.map((n, i) => {
+    const { bg, fg } = heatStops(penTotals[i] / maxPen);
+    return { hole: n, total: penTotals[i], bg, fg, display: penTotals[i],
+      title: `Hole ${n}: ${penTotals[i]} penalty stroke${penTotals[i] !== 1 ? 's' : ''} total` };
+  });
+  const pick = (cells, key, cmp) => cells.reduce((p, c) => cmp(c[key], p[key]) ? c : p);
+  holeMetrics = [
+    { key: 'gir', label: 'GIR %', cells: girCells, empty: 'No GIR data',
+      desc: 'How often you reach each green in regulation here.',
+      summary: c => `Best GIR: H${pick(c, 'pct', (a, b) => a > b).hole} (${fmt(pick(c, 'pct', (a, b) => a > b).pct, '%')}). Lowest: H${pick(c, 'pct', (a, b) => a < b).hole} (${fmt(pick(c, 'pct', (a, b) => a < b).pct, '%')}).` },
+    { key: 'putts', label: 'Putts', cells: puttCells, empty: 'No putt data',
+      desc: 'Average putts on each green at this course (hover for best and worst).',
+      summary: c => { const w = pick(c, 'a', (a, b) => a > b); return `Toughest green: H${w.hole} (${w.a.toFixed(2)} avg putts). Baseline ~2/hole.`; } },
+    { key: 'pen', label: 'Penalties', cells: penTotals.some(t => t > 0) ? penCells : [], empty: 'No penalty data',
+      desc: 'Total penalty strokes incurred on each hole here, across the rounds in the filter.',
+      summary: c => {
+        const w = pick(c, 'total', (a, b) => a > b), total = sum(c.map(x => x.total));
+        const nRounds = new Set(holes.map(h => h.activity_id)).size;
+        return `${(total / nRounds).toFixed(1)} penalty strokes per round. Most: H${w.hole} (${w.total} total).`;
+      } },
+  ];
+  renderHoleMetric();
 }
 
-function renderCourseVsOverall(courseRounds, courseHoles, baseRounds) {
-  const overall = bundle(baseRounds);
-  const cAgg = aggregateMetrics(courseRounds, courseHoles);
-  const oAgg = aggregateMetrics(baseRounds, overall.holes);
+let holeMetrics = [];
+let holeMetricKey = 'gir';
 
-  // Comparison table. lowerBetter => improvement when course value < overall.
-  const rows = [
-    { label: 'Avg Score',  c: cAgg.score,  o: oAgg.score,  lowerBetter: true,  sfx: '' },
-    { label: 'Avg vs Par', c: cAgg.vsPar,  o: oAgg.vsPar,  lowerBetter: true,  signed: true },
-    { label: 'Avg Putts',  c: cAgg.putts,  o: oAgg.putts,  lowerBetter: true,  sfx: '' },
-    { label: 'GIR %',      c: cAgg.girPct, o: oAgg.girPct, lowerBetter: false, sfx: '%' },
-    { label: 'Fairway %',  c: cAgg.fwyPct, o: oAgg.fwyPct, lowerBetter: false, sfx: '%' },
-    { label: '1-Putt %',   c: cAgg.onePct, o: oAgg.onePct, lowerBetter: false, sfx: '%' },
-    { label: '3-Putt %',   c: cAgg.threePct, o: oAgg.threePct, lowerBetter: true, sfx: '%' },
-  ];
-  // Paired dots per stat: filled = this course, hollow = all courses.
-  const el = document.getElementById('course-vs-table');
-  const show = (v, r) => v == null ? '—' : r.signed ? fmtSigned(v) : fmt(v, r.sfx || '');
-  const W = Math.max(180, chartWidth(el) - 118);
-  // Each axis is centred on the all-courses value; `span` is the gap that reaches the edge.
-  const SPAN = { 'Avg Score': 6, 'Avg vs Par': 6, 'Avg Putts': 3, 'GIR %': 12, 'Fairway %': 12, '1-Putt %': 10, '3-Putt %': 10 };
-  el.innerHTML = rows.filter(r => r.c != null && r.o != null).map(r => {
-    const span = Math.max(SPAN[r.label] || 5, Math.abs(r.c - r.o) * 1.3);
-    const x = v => 14 + (W - 28) * (v - (r.o - span)) / (2 * span);
-    const diff = r.c - r.o;
-    const better = Math.abs(diff) < 0.05 ? null : r.lowerBetter ? diff < 0 : diff > 0;
-    const col = better == null ? BD.subtle : better ? BD.green : BD.red;
-    return `<div style="display:grid;grid-template-columns:110px ${W}px;align-items:center;margin-bottom:6px">
-      <span style="font-weight:600;font-size:12.5px">${r.label}</span>
-      <div class="bd-chart">${svgOpen(W, 42)}
-        <line x1="${x(r.o)}" x2="${x(r.o)}" y1="10" y2="30" stroke="${BD.light}" stroke-width="2"/>
-        <line x1="${x(r.c)}" x2="${x(r.o)}" y1="20" y2="20" stroke="${col}" stroke-width="3"/>
-        <circle cx="${x(r.o)}" cy="20" r="6" fill="#fff" stroke="${BD.muted}" stroke-width="2"/>
-        <circle cx="${x(r.c)}" cy="20" r="6" fill="${col}"/>
-        ${svgText(x(r.c), 8, show(r.c, r), `font-size="10.5" font-weight="800" fill="${better === false ? BD.red : BD.greenD}" text-anchor="middle"`)}
-        ${svgText(x(r.o), 40, show(r.o, r), `font-size="10" fill="${BD.muted}" text-anchor="middle"`)}
-      </svg></div></div>`;
-  }).join('') + legend([[BD.green, 'This course', 'dot'], ['#fff;border:2px solid ' + BD.muted, 'All courses', 'dot']]);
-
-  // Scoring mix comparison (requires par)
-  const c = scoringCounts(courseHoles);
-  const o = scoringCounts(overall.holes);
-  if (c.total && o.total) {
-    plotClear('chart-c-scoring-compare', [
-      { x: RESULT_ORDER, y: RESULT_ORDER.map(k => c.counts[k] / c.total * 100),
-        name: 'This Course', type: 'bar', marker: { color: C_GREEN } },
-      { x: RESULT_ORDER, y: RESULT_ORDER.map(k => o.counts[k] / o.total * 100),
-        name: 'All Courses', type: 'bar', marker: { color: C_GRAY } },
-    ], L({ height: 280, barmode: 'group', xaxis: catAxis(),
-      yaxis: { ...AX, type: 'linear', title: { text: '% of holes', standoff: 6 } } }), CFG);
-    const cBirdiePlus = (c.counts['Birdie'] + c.counts['Eagle or better']) / c.total * 100;
-    const oBirdiePlus = (o.counts['Birdie'] + o.counts['Eagle or better']) / o.total * 100;
-    setSummary('summary-c-scoring-compare',
-      `Birdie-or-better here: ${cBirdiePlus.toFixed(1)}% vs ${oBirdiePlus.toFixed(1)}% overall.`);
-  } else {
-    noData('chart-c-scoring-compare', 'Par data required for scoring mix');
-    setSummary('summary-c-scoring-compare', '');
-  }
+function renderHoleMetric() {
+  const tabs = document.getElementById('hole-metric-tabs');
+  if (!tabs || !holeMetrics.length) return;
+  const m = holeMetrics.find(x => x.key === holeMetricKey) || holeMetrics[0];
+  tabs.innerHTML = holeMetrics.map(x =>
+    `<button type="button" class="trend-tab${x.key === m.key ? ' active' : ''}" data-key="${x.key}">${x.label}</button>`).join('');
+  tabs.querySelectorAll('.trend-tab').forEach(btn => btn.addEventListener('click', () => {
+    holeMetricKey = btn.dataset.key;
+    renderHoleMetric();
+  }));
+  document.getElementById('hole-metric-desc').textContent = m.desc;
+  renderHoleHeatmapStrip('chart-c-hole-metric', m.cells);
+  setSummary('summary-c-hole-metric', m.cells.length ? m.summary(m.cells) : '');
 }
 
 function renderCourseScorecards(rounds, holes, shots) {
@@ -1042,7 +989,7 @@ function renderKpiBand(id, rounds, holes, compare, opts = {}) {
     cells.push(cell('Avg score', fmt(a.score), deltaHtml(a.score, b.score, true, '', vs), sparkline(series('score'))));
   } else {
     cells.push(cell(`Avg score · ${opts.extra}`, fmt(a.score), deltaHtml(a.score, b.score, true, '', vs), sparkline(series('score'))));
-    cells.push(cell('Avg vs par', a.vsPar != null ? fmtSigned(a.vsPar) : '—', deltaHtml(a.vsPar, b.vsPar, true, '', vs)));
+    cells.push(cell('Avg vs par', a.vsPar != null ? fmtSigned(a.vsPar) : '—', deltaHtml(a.vsPar, b.vsPar, true, '', vs), parTypeLine(holes)));
   }
   cells.push(cell('Avg putts', fmt(a.putts), deltaHtml(a.putts, b.putts, true, '', vs), sparkline(series('putts'))));
   cells.push(cell('GIR', fmt(a.girPct, '%'), deltaHtml(a.girPct, b.girPct, false, ' pts', vs), sparkline(series('gir_pct'))));
@@ -1055,22 +1002,16 @@ const FULL_SWING_TYPES = new Set(['TEE', 'APPROACH', 'LAYUP']);
 
 // ── New overall charts ──────────────────────────────────────────────────────────
 
-function renderParTypeBreakdown(holes, chartId, summaryId) {
+// Avg score to par on par 3s / 4s / 5s, as a one-line sub-label for the "Avg vs par" KPI cell.
+function parTypeLine(holes) {
   const data = [3, 4, 5].map(par => {
     const hs = holes.filter(h => h.par === par && h.score != null);
-    if (!hs.length) return null;
-    return { par, n: hs.length, avgVsPar: avg(hs.map(h => h.score - h.par)) };
+    return hs.length ? { par, v: avg(hs.map(h => h.score - h.par)) } : null;
   }).filter(Boolean);
-
-  if (!data.length) { noData(chartId, 'Par data required'); setSummary(summaryId, ''); return; }
-
-  const worst = data.reduce((a, b) => b.avgVsPar > a.avgVsPar ? b : a);
-  const best  = data.reduce((a, b) => b.avgVsPar < a.avgVsPar ? b : a);
-  document.getElementById(chartId).innerHTML = statStrip(data.map(d => ({
-    value: fmtSigned(d.avgVsPar), label: `Par ${d.par}s · avg to par`, sub: `${d.n} holes`,
-    cls: data.length > 1 && d === best ? 'up' : data.length > 1 && d === worst ? 'down' : '' })));
-  setSummary(summaryId,
-    `Strongest: Par ${best.par} (avg ${fmtSigned(best.avgVsPar)}). Weakest: Par ${worst.par} (avg ${fmtSigned(worst.avgVsPar)}).`);
+  if (!data.length) return '';
+  const best = data.reduce((a, b) => b.v < a.v ? b : a), worst = data.reduce((a, b) => b.v > a.v ? b : a);
+  return `<div class="par-types">${data.map(d =>
+    `<span class="${data.length > 1 && d === best ? 'up' : data.length > 1 && d === worst ? 'down' : ''}">P${d.par} <b>${fmtSigned(d.v)}</b></span>`).join('')}</div>`;
 }
 
 const FWY_LEFT_COLOR  = '#3B82F6';
@@ -1709,8 +1650,8 @@ function switchPanel(panel) {
   const activeView = document.querySelector('.mode-view.active');
   if (!activeView) return;
   activeView.querySelectorAll('.sub-panel').forEach(p => p.classList.toggle('active', p.dataset.panel === panel));
-  // Tabs and filters apply to both Stats and Insights panels
-  const showFilters = panel === 'stats' || panel === 'insights';
+  // Course tabs and filters only apply to the Stats panel
+  const showFilters = panel === 'stats';
   document.querySelector('.filter-bar')?.classList.toggle('filter-bar--hidden', !showFilters);
   document.querySelector('.tabs-filter-row')?.classList.toggle('tabs-filter-row--hidden', !showFilters);
 }
