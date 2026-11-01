@@ -783,10 +783,16 @@ function renderCourseScorecards(rounds, holes, shots) {
     `<option value="${r.activity_id}">${r.date} (Score: ${r.score})</option>`).join('')
     || '<option value="">No rounds available</option>';
   if (sorted.length) renderScorecard(sorted[0].activity_id, holes, shots);
-  else document.getElementById('c-scorecard-table').innerHTML = '';
+  else {
+    document.getElementById('c-scorecard-report').hidden = true;
+    document.getElementById('c-scorecard-table').innerHTML = '';
+  }
 }
 
 function renderScorecard(actId, holesAll, shotsAll) {
+  const reportLink = document.getElementById('c-scorecard-report');
+  reportLink.href = `round.html#${actId}`;
+  reportLink.hidden = !actId;
   const holes = (holesAll || allHoles).filter(h => h.activity_id === actId).sort((a,b)=>a.hole-b.hole);
   const target = document.getElementById('c-scorecard-table');
   if (!holes.length) { target.innerHTML = '<div class="no-data">No hole detail for this round.</div>'; return; }
@@ -1747,7 +1753,7 @@ function setupChrome() {
   // Sidebar filters only apply to the By Course view; hide elsewhere.
   document.body.classList.toggle('filters-hidden', mode !== 'other');
   // Wire left nav buttons.
-  document.querySelectorAll('.nav-btn').forEach(btn =>
+  document.querySelectorAll('.nav-btn[data-panel]').forEach(btn =>
     btn.addEventListener('click', () => switchPanel(btn.dataset.panel)));
   // Set initial sub-panel state.
   switchPanel('stats');

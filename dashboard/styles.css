@@ -90,17 +90,6 @@ body.header-collapsed .hero-overlay {
   align-items: center;
   gap: 16px;
 }
-.report-link {
-  font-size: 12px;
-  font-weight: 600;
-  color: #f8fafc;
-  text-decoration: none;
-  padding: 5px 11px;
-  border: 1px solid rgba(248, 250, 252, .35);
-  border-radius: 999px;
-  white-space: nowrap;
-}
-.report-link:hover { background: rgba(248, 250, 252, .12); }
 
 .last-updated {
   font-size: 11px;
@@ -148,6 +137,7 @@ body.header-collapsed .hero-overlay {
   transition: background .15s, color .15s;
   text-align: center;
   line-height: 1.2;
+  text-decoration: none;
 }
 
 .nav-btn:hover {
@@ -909,15 +899,22 @@ body.filters-hidden .filter-course-only {
 }
 
 .section-title {
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .1em;
-    color: var(--text-subtle);
+    color: var(--text);
     margin: 28px 0 14px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
 }
+.scorecard-picker { display: flex; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; }
+.report-btn {
+  font-size: 13px; font-weight: 600; color: var(--primary-dark); text-decoration: none;
+  padding: 8px 14px; border: 1px solid var(--primary-dark); border-radius: 999px; white-space: nowrap;
+}
+.report-btn:hover { background: var(--primary-muted); }
+.report-btn[hidden] { display: none; }
 .mode-view>.section-title:first-of-type {
   margin-top: 22px;
 }

@@ -23,7 +23,6 @@
           <h1>Golf Stats</h1>
         </div>
         <div class="header-right">
-          <a class="report-link" href="round.html">Latest round report →</a>
           <span id="last-updated" class="last-updated"></span>
         </div>
       </div>
@@ -60,6 +59,13 @@
           </svg>
           <span>Training</span>
         </button>
+        <a class="nav-btn" href="round.html">
+          <svg width="18" height="18" fill="none" viewBox="0 0 18 18">
+            <rect x="3" y="1.5" width="12" height="15" rx="2" stroke="currentColor" stroke-width="1.5" />
+            <path d="M6 6h6M6 9h6M6 12h3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          <span>Round report</span>
+        </a>
       </nav>
 
       <main class="main">
@@ -184,9 +190,12 @@
                 </div>
 <h3 class="section-title">Scorecards</h3>
             <div class="chart-card">
-              <div class="filter-bar-item" style="max-width:520px;margin-bottom:16px">
-                <label for="c-scorecard-selector">Select Round</label>
-                <select id="c-scorecard-selector" style="width:100%"></select>
+              <div class="scorecard-picker">
+                <div class="filter-bar-item" style="max-width:520px;flex:1">
+                  <label for="c-scorecard-selector">Select Round</label>
+                  <select id="c-scorecard-selector" style="width:100%"></select>
+                </div>
+                <a id="c-scorecard-report" class="report-btn" href="round.html" hidden>View round report →</a>
               </div>
               <div id="c-scorecard-table"></div>
               </div>
