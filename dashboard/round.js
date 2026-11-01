@@ -982,10 +982,10 @@ function paneOf(build, a) {
 }
 
 // One card whose tabs show/hide panes. tabs: [key, label, html]; empty panes are dropped.
-function widgetHtml(title, tabs, cls = '') {
+function widgetHtml(title, tabs, cls = 'wide') {
   tabs = tabs.filter(t => t[2] && t[2].trim());
   if (!tabs.length) return '';
-  return `<section class="card wide tabs-widget ${cls}">
+  return `<section class="card tabs-widget ${cls}">
     ${section(0, '', title)}
     ${tabs.length > 1 ? `<div class="w-tabs">${tabs.map((t, i) => `<button type="button" class="w-tab${i ? '' : ' active'}" data-pane="${t[0]}">${t[1]}</button>`).join('')}</div>` : ''}
     ${tabs.map((t, i) => `<div class="w-pane" data-pane="${t[0]}"${i ? ' hidden' : ''}>${t[2]}</div>`).join('')}
@@ -1000,11 +1000,11 @@ function sgWidgetHtml(a) {
     ['club', 'By club', clubSgBody(a)],
   ]);
 }
-const scoringPuttingHtml = a => widgetHtml('Scoring & putting', [
+const scoringPuttingHtml = (a, paired) => widgetHtml('Scoring & putting', [
   ['stats', 'Round stats', paneOf(roundStatsHtml, a)],
   ['mix', 'Scoring mix', paneOf(mixHtml, a)],
   ['putt', 'Putting', paneOf(puttingHtml, a)],
-]);
+], paired ? '' : 'wide');
 const teeApproachHtml = a => widgetHtml('Tee & approach', [
   ['tee', 'Off the tee', paneOf(teeHtml, a)],
   ['app', 'Approaches', paneOf(approachHtml, a)],
@@ -1043,9 +1043,9 @@ function render(id) {
   document.getElementById('round-select').value = r.activity_id;
   const a = analyze(r);
   if (!a.holes.length) { el.innerHTML = heroHtml(a) + '<p class="empty">This round has no hole-by-hole detail.</p>'; return; }
-  const clubs = clubsHtml(a);
+  const clubs = clubsHtml(a), shape = shapeHtml(a);
   el.innerHTML = [
-    heroHtml(a), scorecardHtml(a, !!clubs), clubs, scoringPuttingHtml(a), sgWidgetHtml(a), shapeHtml(a),
+    heroHtml(a), scorecardHtml(a, !!clubs), clubs, scoringPuttingHtml(a, !!shape), shape, sgWidgetHtml(a),
     teeApproachHtml(a), holeByHoleHtml(a), historyHtml(a), focusHtml(a),
   ].filter(Boolean).join('');
   el.querySelectorAll('.w-tab').forEach(btn => btn.addEventListener('click', () => {
